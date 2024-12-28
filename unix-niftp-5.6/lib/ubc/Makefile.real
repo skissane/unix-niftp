@@ -1,0 +1,31 @@
+# unix-niftp lib/ubc/Makefile.real $Revision: 5.5 $ $Date: 90/08/01 13:38:50 $
+#
+# Makefile for UBC X25 network interface code
+#
+#	libnet.a
+#
+NOBJ	= netopen.o netlisten.o netsubs.o yb.o
+SRCS	= netsubs.h netopen.c netlisten.c netsubs.c yb.h yb.c Makefile.real
+
+all:	libnet.a
+
+libnet.a: $(NOBJ)
+	ar cr libnet.a $(NOBJ)
+	$(RANLIB) libnet.a
+
+shardist: $(SRCS)
+	shar $(SHOPT) $(SRCS) > /tmp/niftp-lib.sh
+
+install:
+	@echo "	"OK - nothing to install
+
+clean:
+	rm -f *.o
+
+$H/ftp.h: $H/tab.h $H/ftp.h
+
+netopen.o: $H/ftp.h $H/infusr.h yb.h
+netlisten.o: $H/ftp.h $H/infusr.h yb.h
+netsubs.o: $H/ftp.h $H/infusr.h yb.h
+raddrtrans.o: $H/ftp.h $H/nrs.h
+yb.o:	yb.h

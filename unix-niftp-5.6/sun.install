@@ -1,0 +1,92 @@
+Untar the (compressed) file into a new directory.  Type "make" (or if
+you want "make SPEED=quick" if you want).  This should run the
+"Configure" script which will generate a file called config.sh (used for
+subsequent Configures) as well as obeying various files (all ending in
+.SH) which in turn generate a few tailored objects (e.g.  makefile,
+h/opts.h, ...).
+
+Configure can be run at any time, as the .SH files don't touch the file
+they are due to create unless there is a change to be made.
+
+If you realise that you have made a mistake when configuring (i.e.
+asking for anb option you want to change) you can remove the relevent
+variable setting in config.sh (i.e. delete the whole line) and re-run
+Configure (e.g. "Configure quick" or "make configure") which should just
+ask you the relevant question.
+Alternatively, run "Configure" (i.e. without any arguments) and it will
+ask you to confirm every assumption it is making.
+
+The only pathname that has to be known at compile time is the location
+of the run time tailoring file, normally /etc/niftptailor.  If you want
+another pathname, ensure this is set in the CFLAGS
+(-DNRSTAILOR=\"/x/y\") before compiling.
+
+Please note that you should NOT edit anything anywhere else as it is
+likely that these edits will be lost, either at the next Configure, or
+at the next release. If you need a modification that is not catered for
+in Configure, please inform me & I shall ensure that it is catered for
+in some way.
+
+Under normal circumstances, a single call of "make" will do the
+Configure & then generate all the binaries.  If configure isn't smart
+enough (e.g. it didn't realise that your system really DOES have the
+rename procedure), please let me know, with an indication of how it
+should have worked it out.
+
+Once eveything is compiled it can be installed by typing "make install"
+(as root!).  This will set the owner and modes as directed.
+
+It uses cp, so symbolic links will not be removed if they are set up in
+advance.
+
+To test it, it is necessary to set up an NRS DBM file.  The normal way
+of doing this is to run dbencode giving it the output of the c-nrs
+program (in dbm1 format) as stdin.  If you do not have c-nrs or a valid
+DERFIL2, you may be able to pick up a copy of the input file from
+another site.
+
+Failing this, generate a null DBM file and use UAIEF records (as in the
+samples/ directory) to put in enough entries to get a real database.
+
+The exact location of the database is normally determined by the
+run-time tailor file "/etc/niftptailor" which allows objects to move
+without recompiling.  README.tailor gives a list of what can be
+tailored, along with the default default, and there are some examples in
+samples/.
+
+You will want to tailor the listeners and channel info if nothing else.
+You will probably want to set MAILPROG to be sendmail.
+
+Test it using lookdbm -- note that the FULL name has to be given, e.g.
+"lookdbm uk.ac.cam.cl".
+
+If you have non-standard called addresses you can bind a called address
+to a service using the QADDRTYPE tailoring facility.
+
+Before using cpf, ftpkey has to be run once.
+
+
+SUNs only
+=========
+
+The SUN Q process (listener) was made to conform to the Sun YB calling
+procedure, i.e. an instance of the listener is invoked by yb.inetd
+(or equivalent -- see the x25d package from info-server@uk.ac.cam.cl)
+whenever an incoming call arrives, rather than having a process
+listening all the time.
+
+A typical entry in /etc/tbts-auth would be:
+
+/usr/lib/niftp/lj:ftp|ftp.mail:*
+
+meaning that if a call arrives for called address FTP or FTP.MAIL from
+any host (the *), then invoke the program /usr/lib/niftp/lj.  This
+mechanism can be used to restrict which sites can access which services,
+
+/usr/lib/niftp/lj:ftp.news:0000080117*
+
+Due to limitations in the SUN yb.inetd, no arguments are passed to the
+called program, so it decides the channel name by using the last
+component of the command name.  In the above example, lj would be a link
+to qsun, indicating that it is processing qj.
+

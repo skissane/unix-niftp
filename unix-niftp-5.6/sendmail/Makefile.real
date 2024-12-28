@@ -1,0 +1,30 @@
+# unix-niftp sendmail/makefile $Revision: 5.5 $ $Date: 90/08/01 13:39:55 $
+L	= ../lib
+LIBG	= $L/gen/libgen.a
+LCFLAGS	= -DCPF=\"$(UBINDIR)/cpf\" -DMAILMOD=$(MAILMOD) -DMAILSP=\"$(MAILSP)\"
+all :	ni_send
+
+ni_send : ni_send.o $(LIBG)
+	$(CC) -o ni_send $(LDFLAGS) ni_send.o $(LIBG)
+
+ni_send.o : ni_send.c
+	$(CC) $(CFLAGS) $(LCFLAGS) -c ni_send.c
+
+ni_send.o : $H/opts.h $H/nrs.h
+
+clean:
+	-rm -f $(all) *.old *.o
+
+install inst-ni_send: $(LBINDIR)/ni_send
+$(LBINDIR)/ni_send: ni_send
+	$(CP) ni_send $(LBINDIR)/ni_send
+	$(CHUG) root $(LBINDIR)/ni_send
+	$(CHMOD) 700 $(LBINDIR)/ni_send
+
+tidy:
+	rm -f *.o
+
+clobber: tidy
+	rm -f $(all)
+
+#	anything else ??

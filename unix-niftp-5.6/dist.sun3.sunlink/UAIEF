@@ -1,0 +1,16 @@
+# Full UAIEF file containing old hosts, OLD serc names, RElay hosts
+# Lines may be "# comment" or : separated fields.  "\" is a single char quote.
+# Fields in order, none optional are:
+#  1) Long form name  2) Short form name  3) Net             4) Context
+#  5) Forward DTE     6) Forward YBTS     7) Reverse DTE     8) Reverse YBTS
+#  9) Gateway count/list as agreed       10) The number of transfers / connect
+# 11) Local host flag                    12) Any additional parameters
+#   Applications strings are intentionally omitted.  If only one
+#   direction, the other DTE/YBTS fields should be NULL.
+#   DTEs should be 12 or 14 digits.
+# Contexts are:-  1) x29 2) TS29 3) NIFTP 4) MAIL 127) FTP.NEWS
+#
+# Get the ball rolling .....
+h:uk.ac.cambridge.computer-lab.test:uk.ac.cam.cl.test:janet:3:000008013177:FTP:000008013177:FTP::50:1:
+# Only use this if you REALLY can't get through the PSS -> JANET gateway ....
+# h:uk.ac.cambridge.computer-lab.test:uk.ac.cam.cl.test:pss:3:23422233939909:FTP:23422233939909:FTP::50:1:

@@ -1,0 +1,45 @@
+Just a quickie .....
+
+This should be built by some sort of admin/guru.
+
+As such, the builder should NOT have "." in PATH (or path for csh users)
+before the standard directories as this may be a security loophole.
+
+You have been warned !!
+
+See doc/installation.txt for some preliminary documentation.
+[ Do not be worried by its size -- in contains things like a complete
+  description of how to aquire and configure UKsendmail !
+]
+If running PP, see README.pp and doc/pp-inst.txt (supplied by xtel).
+See README.* for other bits.
+See samples/* for some samples.
+
+First time only, some (e.g. YuckBucket) need a `fpc "start listen all"'
+
+The code now uses DES encryption.
+If this is in a separate library, you may need -ldes.
+If you don't have the des code, get it from any comp.sources.unix archive or
+elsewhere.
+If you can't get it, or don't have the time, there may be a pre-compiled
+library in lib/des/libdes-<arch>.a which you can use.
+If not, and there is REALLY no alternative, define CRUDDY_CRYPT_ONLY.
+If you want a smooth transition, define CRUDDY_CRYPT_COMPAT
+
+inet has been resurrected by "Allan R. Black" <allan@uk.ac.strath.cs>.
+Define FTPONLY if you want the old format.
+
+See README.x25b for using x25b to relay X.25 calls over TCP
+
+NEW FEATURES:
+92/01/16 Logs various errors (e.g. before the error log file has been tailored)
+	 to $LOGDIR/log.ERROR [[ Note that it will be COMPILED IN $LOGDIR ]]
+
+	 -DNOPREFIXHACK disables the address prefix hacking code in 
+	 (mainly of use to sites with a 0000 DNIC that isn't JANET)
+
+91/11/18 Allow the Backoff interval (time before retry) to be run time tailored
+	 Allow a channel to be set as "ordered", i.e. items are always
+	 delivered in the order that they were queued. Note that if there is an
+	 error with a single transfer, no other transfers to that host will be
+	 tried. [[ Mainly used for news ]]

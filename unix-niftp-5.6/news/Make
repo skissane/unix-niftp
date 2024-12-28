@@ -1,0 +1,9 @@
+#! /bin/sh
+if test -f Makefile.real
+then	make -f ../Makefile.com -f Makefile.real p=.. $*
+else	echo No Makefile.real so $0 $* ignored.
+	case `pwd` in
+	*news)	exit 0;;
+	*)	exit 1;;
+	esac
+fi

@@ -1,0 +1,26 @@
+Mailer descriptions for Sendmail
+================================
+
+Two descriptions are provided, for use with Jim Crammond's UK-Sendmail-1.4
+configuration package. One configuration is a direct replacement for
+'hhcpm.m4' and the other is a version that invokes an authorisation process.
+
+When setting up a machine description with UK-sendmail-1.4, type 'MAKE',
+specify your machine and domain names as appropriate, and ask for the
+'janet' mailer in addition to any others you may need. When MAKE is done,
+put a copy of niftpm.m4 in the new configuration directory under the name
+'hhcpm.m4'. You may wish to replace the copy of hhcpm.m4 in Mailers.a so
+that new configurations will always get the NIFTP mailer rather than the
+York one.
+
+You may have trouble with addresses in the 'uk.ac' domain, as UK-sendmail
+strips off this prefix for the hhcp mailer. A fix for that is contained
+in chnMAKE.patch which should be applied to MAKE in the chn directory.
+
+Files supplied: auth-niftpm.m4 niftpm.m4 chnMAKE.patch
+
+NB: If you roll it yourself, it is ESSENTIAL that when cpf is exec'd by
+    ni_send, that the uid is root or the value of MAILUSER in niftptailor.
+    As cpf should NOT be setuid (as this would allow ANYONE to pretend to be
+    the mailer), the S flag should be set in the sendmail.cf so that ni_send
+    and hence cpf, runs as root.

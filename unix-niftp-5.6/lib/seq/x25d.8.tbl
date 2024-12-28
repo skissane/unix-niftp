@@ -1,0 +1,72 @@
+.TH X25D 8
+.SH NAME
+x25d \- listen for incoming X.25 calls
+.SH SYNOPSIS
+.B x25d 
+.SH DESCRIPTION
+.IR X25d
+listens for incoming calls and starts up a process based on
+the action described in /etc/x25d.conf.
+The process chosen is based on
+.B protocol id
+and (if appropriate)
+.B YBTS.
+.SH "CONFIGURATION FILE FORMAT"
+Each process description takes up one line of the configuration file
+and consists of five fields:
+.IP protid
+the protocol id ("X.29" or "YB").
+"X.29" matches "0x01<any><any><any>".
+"YB" matches "0x7fffffff".
+.IP YBTS
+the service required (e.g. "ftp" or "ftp.mail").
+This should be "-" for X.29.
+.IP adaptor
+The protocol adaptor (adapter) to be used - either "X.25" or "X.29".
+.IP program
+The program to be started to service the call.
+This should be the full pathname of either a UNIX-NIFTP listener (for YB)
+or a login handler (usually /etc/getty) for X.29.
+.IP args
+The arguments to the process,
+space separated and starting with the process name (i.e. argv[0]).
+.SH "variable substitution"
+Any argument of the form "$<variable name>"
+will be replaced by the appropriate string value.
+Variable names and the values to be substituted are as follows:
+.IP "host, calling_host or calling_name"
+The full NRS name of the host making the call,
+or the DTE if no name can be found.
+.IP "short or calling_shortname"
+As above, but shortened to fit a utmp host entry.
+.IP "dte or calling_dte"
+The DTE address of the host making the call.
+.IP "ybts, called or called_ybts"
+The service being requested, e.g. "ftp.mail".
+.IP "calling_ybts or calling"
+The calling hosts's YBTS.
+.IP called_dte
+The DTE address used to connect to you.
+.IP tty
+The tty name attached to the incomin call.
+This is of the form "tty[xyzefg][0-9a-zA-E]".
+.PP
+Comments (starting with "#") and blank lines are ignored.
+.SH example
+.TS
+l l l l l.
+#ProtID	YBTS or -	Adaptor	Command	argv[0->]
+#
+X.29	-	X.29	/etc/getty	getty $tty
+YB	ftp	X.25	/usr/lib/niftp/qseq	janet
+YB	ftp.mail	X.25	/usr/lib/niftp/qseq	janet
+YB	ftp.news	X.25	/usr/etc/x25r	x25r -h news-serv
+.TE
+.SH "SEE ALSO"
+x25(4)
+.SH FILES
+/etc/x25d.conf
+.SH BUGS
+At present only board 0 line 0 is supported.
+.SH AUTHOR
+Allan Black <allan@uk.ac.strath.cs>

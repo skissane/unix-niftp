@@ -1,0 +1,202 @@
+Received: from gannet.cl.cam.ac.uk by gnnt.Cl.Cam.AC.UK id aa09852;
+          9 Mar 90 16:41 GMT
+Received: from uk.co.cv.edg by uk.ac.cam.cl.gannet (4.0/SMI-3.0DEV3)
+	id AA09848; Fri, 9 Mar 90 16:41:31 GMT
+Received: from haley by cvedg.edg.cv.co.uk; Fri, 9 Mar 90 16:37:08 GMT
+Received: by haley.cvedg.prime.com (3.2/SMI-3.0DEV3)
+	id AA03955; Fri, 9 Mar 90 16:37:01 GMT
+From: Kevin Quinlan <kquinlan@uk.co.cv.edg>
+Message-Id: <9003091637.AA03955@haley.cvedg.prime.com>
+Subject: Re: Help please
+To: Piete Brooks <pb@uk.ac.cam.cl>
+Date: Fri, 9 Mar 90 16:36:55 BST
+In-Reply-To:  <9003091553.aa07838@gnnt.Cl.Cam.AC.UK>; from "Piete Brooks" at Mar 09, 90 3:53 pm
+X-Mailer: ELM [version 2.2 PL13]
+
+Piete,
+
+> * Please send to me -- I'm sure it's better than nothing !
+
+OK - it is attached - but I have just re-read it and I realise
+how much I left out.  I *think* most of it is either in the docs
+or the example files, but it is ages since I did this.  Still it
+may be OK for somebody.
+
+Re: connection to uk.ac.ed.lfcs
+
+> * How did it fail ?
+
+Well it seems to have worked, I left it in the queue and it must
+have gone off.  But it was rather strange, the call was accepted
+but no data transferred eitehr way.
+
+Anyway - I suspect she will get there eventually, but I remember
+the struggle that I had too :-)
+
+Regards
+
+
+Kevin
+-- 
+
+ +---------------------------------------------------------------+
+ | Kevin Quinlan, Prime Computer R & D, Amersham, HP7 0PX, UK    |
+ | kquinlan@cvedg.prime.com                                      |
+ | kquinlan@uk.co.cv.edg                  +44 494 714771 x 269   |
+ +---------------------------------------------------------------+
+--------------------------- Cut Here ---------------------------
+	   Some notes on Installing niftp on a Sun.
+
+
+These are my recollections of the problems encountered while
+installing niftp on a Sun 2, yes really, a Sun 2.
+
+I came to this knowing little about X25 a just a bit about
+networking but with quite a lot of experience of installing
+Public Domain and User Supported software; so I was not too
+worried when my first effort at compilation failed.
+
+These notes are intended to cover some of the things not
+mentioned in the manual - or that do not look like they will be
+included in the manual.
+
+The assumptions are, first; that you have installed Sunlink X25
+and perhaps like me, discovered that it doesn't do an awful lot
+if you can't use the Internet Router.  Secondly, that you have a
+full distribution of niftp, this was written about version
+5.0.1.6.
+
+The first point is to lay out the directories for containing the
+sources as the author intended.  Choose a directory level and
+make directories for niftp (this has levels below it) and the
+X25 daemons (ybtsd and x29d). I also put a sendmail directory at
+this level.  The point is that some Makefiles assume that the
+directories are laid out like this.
+
+To install the X25 daemons I had to create a tty_pty.o file with
+the patch as the supplied object was for a Sun 3.  Fortunately I
+was able to get someone to compile it for me, I can supply a
+modified Sun 2 tty_pty.o for those that need it.  Here some
+fooling about with the source was also required, I suspect that
+I did not do this correctly, but I had to have 2 ioctl.h files;
+one as supplied with the original system and the other as
+supplied with Sunlink X25.  (I have to recompile the zs_async
+driver when I build a system and this needs the original
+ioctl.h).  If the compilation of the X25 daemons returns a lot
+of errors, this is probably the problem.  Rename one of the
+ioctl.h files - change the reference in the problem source and
+recompile.
+
+
+If you get this far, you can now test the daemons, but before
+you do set up some authorisation files.  Make them as loose as
+possible - wildcard everything possible:  In your ybts-auth you
+will want one entry for ts29 and one for niftp.  Do this even if
+you are not going to allow ts29 calls as it is a good test of
+the connection between the two daemons. So the ybts
+authorisation file should be:
+
+/usr/local/etc/x29d:ts29*|*.ts29:*:
+/usr/local/lib/niftp/qsun:*:*:-n qp
+
+
+My executable files are rooted at /usr/local and my listening
+channel is called qp as I listen on PSS - more about that later.
+
+Start the daemons and test the setup with x29 calls and ts29
+calls (if you can make them) to yourself.  If it doesn't work,
+check the logs (in /tmp by default) and then check the
+authorisation files for any mistakes.  It is a good idea to read
+the manual pages for the daemons to make sure that you
+understand the format of the auth files.
+
+I had a further problem at this stage, I did not know what the
+Yellow Book Transport Service was.  If you do not know either -
+STOP and read about it. (I read X.25 Explained, R.J. Deasington,
+John Wiley 1986).  This will explain about the long addresses that
+you will see in the log files later and gives an inkling about
+what to expect in the packet headers when you are trying to
+debug the installation.
+
+Assuming that you can log in with a straight PAD call and then
+with a Yellow Book string of "ts29", you are ready to install
+niftp.
+
+
+Selecting options at compilation may not be easy, if you have
+installed any PD software you will be used to questions about
+compiler options and so on - but the questions that you may find
+hard are the ones about network options.  There is a simple rule
+here, if you have not heard of it - don't select it.  You may
+cause compilation to fail when it does not find the code.
+
+For Sun / sendmail users you currently have to set the compile
+option "-DMAILOWNSMAIL".
+
+Assuming compilation works; my first attempt did not but a
+subsequent run with the same makefile did, do a make install to
+put the executables in the install directories and make sure
+that niftp spool directories are all built, then you have to
+create the very important niftptailor file.
+
+Just take one of the sample files and change it to suit.  If you
+are on JANET or PSS this should be quite easy.  Just set up one
+queue and one listener to begin with. There are an awful lot of
+options in this file that I know nothing about.  I just changed
+the ones in the file that I edited that appeared to have been
+"localised".  As our machine is on the PSS and I needed to
+communicate into JANET I need a janet listener and queue viz:
+
+QUEUE   pj      level=1,prog=psun
+NET janet       queue=pj,address="23420000000002/%E%X23420000000069/().%D.%T"
+LISTEN qj       address="FTP",channel=janet,level=1,logfile=log.qqj,prog=qsun
+
+The addresses are not real.  But this is the form required for
+going into JANET through a gateway.
+
+Note that pj in the QUEUE line matches queue=pj in the NET line
+and channel=janet in the LISTEN line matches janet in the NET
+line.  Listeners are q<something> (in this case j for JANET) and
+outgoing queues are p<something> eg pj or pjnews and so on.
+
+The log level is rather mysterious, but if you set it to -1 you
+get a massive amount of logging, if you set it to 1 you get a
+little.  127 is probably sufficient for most debugging and 1 for
+normal running. (Have a look in .../niftp/h/log.h)
+
+Next you must make an nrs database.  If you don't know what nrs
+or UAIEF stand for don't worry (I still don't know what UAIEF
+means!).  Copy or edit an existing UAIEF file (there is one in
+the niftp kit) - do not try and create one from scratch.  I do
+not have the dbmake program so I made one using the dbpatch
+program.  Just truncate the nrsdbm.pag and nrsdbm.dir files and
+use dbpatch on the null database. Don't forget to put yourself
+in the database.  You may need advise on choosing a name, your
+number you should have already.  The channel names in the UAIEF
+should match those in the niftptailor file.
+
+
+Now call a host that is in your UAIEF, there is an example in
+the sample UAIEF file.  Try yourself first (You will need a
+listener on your channel ie PSS in my case!), although there may
+be a problem with that on a Sun every now and then look in the
+log files for niftp and (very useful this) the ybts daemon.
+Make sure that the address is being looked up in the UAIEF
+correctly ie your address translates correctly to your hostname.
+Then try some other hosts, can you make contact? Does the
+address translate correctly.  I had two  problems here: First,
+niftp did not work with Non Fast Select, (there is now a patch),
+second the reverse address translation does not work for
+international calls, you have to change netlisten.c in
+(.../niftp/lib/sun).  Make anything other than 2342 or 0000
+default to "i", then you can have a queue called ipss in the
+niftptailor and UAIEF files.
+
+
+Assuming you got this far you are well on the way to a
+successful niftp installation, other points to watch are the use
+of fpc (poor documentation) and the use of cpf (tricky -
+especially setting up those securedirs) and of course setting up
+your sendmail.cf is easy - unless like me you need to have
+ethernet, local, uucp and different relays on niftp for
+different domains.  I'll write about that in part 2 if necessary.

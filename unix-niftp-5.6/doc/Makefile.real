@@ -1,0 +1,69 @@
+# Makefile for the unix-niftp installation guide
+#################################################################
+#
+# $Header: /Nfs/heaton/glob/src/usr.lib/niftp/src/doc/Makefile.real,v 5.5 90/08/01 13:32:14 pb Exp $
+#
+# $Log:	Makefile.real,v $
+# Revision 5.5  90/08/01  13:32:14  pb
+# Distribution of Aug90RealPP+sequent: Full PP release and support for Sequent X.25 board
+# 
+# Revision 5.2  89/01/13  14:38:16  pb
+# Distribution of Jan89SuckMail: Support Sucking of mail
+# 
+# Revision 1.1  88/04/05  08:32:25  jpo
+# Initial revision
+# 
+#
+#################################################################
+#
+# Macro definitions etc.
+#
+IFILES	=	installation.ms intro.ms requirements.ms unpack.ms \
+		compile.ms install.ms runtime.ms starting.ms nrs.ms mail.ms \
+		mmdf.ms sendmail.ms news.ms appendix1.ms
+PFILES	=	pp-inst.ms
+DIST	= 	$(IFILES) $(PFILES) Makefile.real
+NROFF	=	nroff
+TROFF	=	psroff
+MACROS	=	-ms
+TFLGS	=
+NFLGS	=
+SPELL	=	spell -b
+SHAR	=	shar
+SHARFLGS=	# -cv
+
+#################################################################
+#
+# Building Rules
+#
+#################################################################
+
+all: nroff
+
+nroff: installation.txt pp-inst.txt
+installation.txt: $(IFILES)
+	soelim installation.ms | tbl | $(NROFF) $(MACROS) $(NFLGS) > $@
+
+pp-inst.txt: $(PFILES)
+	soelim pp-inst.ms | tbl | $(NROFF) $(MACROS) $(NFLGS) > $@
+
+troff: installation.trf pp-inst.trf
+installation.trf: $(IFILES)
+	soelim installation.ms | tbl | $(TROFF) $(MACROS) $(TFLGS) > $@
+
+pp-inst.trf: $(PFILES)
+	soelim pp-inst.ms | tbl | $(TROFF) $(MACROS) $(TFLGS) > $@
+
+install: ;
+
+clean:
+	rm -f installation.txt pp-inst.txt shar.out
+
+tidy: clean
+
+spell:
+	$(SPELL) $(IFILES) $(PFILES)
+
+shar:	shar.out
+shar.out: $(DIST)
+	$(SHAR) $(SHARFLGS) $(DIST) > $@

@@ -1,0 +1,47 @@
+# uk.ac.nott.cs NRS configuration file
+
+TABLE	/usr/spool/niftp/nrsdbm
+
+DQUEUE  /usr/spool/niftp       # default queue
+
+SPOOLER /usr/spool/niftp/ftpspool.pid  # pid of super daemon
+
+# the directory containing the default binaries
+
+BINDIR  /usr/local/lib/niftp
+
+# the default logfile directory
+
+LOGDIR  /usr/spool/niftp/logs
+
+SETUPPROG  /usr/local/lib/niftp/setup
+# Remember to move these 2 when done
+KEYFILE	   /usr/lib/niftp/key/keyfile
+SECUREDIRS /usr/lib/niftp/securedirs
+MAILDIR	   /usr/spool/niftp/mail
+NEWSDIR	   /usr/spool/niftp/news
+DOCKETDIR   /usr/spool/niftp/dockets
+NEWSPROC   "/usr/local/lib/niftp/newsin %s"
+
+# owners of services running over ftp
+
+MAILUSER   mmdf
+NEWSUSER   root
+
+# known about queues
+
+QUEUE	qj	level=1,prog=pubc
+# QUEUE	  qe	  level=1,prog=pinet
+
+# various configuration details for each network
+
+NET janet       queue=qj,address="%E%X%D/%T"
+# NET ether       queue=qe,address="%D%X%T",show="the ethernet"
+
+DOMAIN  "uk.ac", "uk.co", "uk.ac.nott"  # known domains
+
+# specifications for listeners
+
+LISTEN janet0	address="FTP",channel=janet,level=1,logfile=log.qj0,prog=qubc
+LISTEN janet1	address="FTP",channel=janet,level=1,logfile=log.qj1,prog=qubc
+# LISTEN ether	  address="911",level=1,prog=qinet,logfile=log.qe

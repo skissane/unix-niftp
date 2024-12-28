@@ -1,0 +1,25 @@
+# unix-niftp lib/sendmail/Makefile.real $Revision: 5.5 $ $Date: 90/08/01 13:33:39 $
+#
+# Makefile for the sendmail library
+#
+#	libmail.a	for P or Q mail
+#
+LIB = ../../nrs/nrsdb/libnrs.a ../../nrs/dbm/libdbm.a
+MOBJ	= ni_mail.o
+SRCS	= ni_mail.c Makefile.real
+
+libmail.a:	$(MOBJ)
+	ar cr libmail.a $(MOBJ)
+	$(RANLIB) libmail.a
+
+ni_mail.o:	$H/ftp.h
+$H/ftp.h:	$H/tab.h # $H/csinterface.h
+
+shardist:	$(SRCS)
+	shar $(SHOPT) $(SRCS) > /tmp/niftp-lib.sh
+
+install:
+	@echo "	"OK - nothing to install
+
+clean:
+	rm -f *.o

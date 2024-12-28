@@ -1,0 +1,47 @@
+# unix-niftp lib/gen/Makefile.real $Header: /Nfs/heaton/glob/src/usr.lib/niftp/src/lib/gen/Makefile.real,v 5.5 90/08/01 13:34:03 pb Exp $
+# Makefile for the general library
+#
+#	libgen.a
+#
+GOBJ	= db.o conf.o dbdget.o dbenter.o dbget.o tailor.o dbm.o decrypt.o \
+	  encrypt.o hash.o setcrypt.o getpass.o ni_rtn.o lockfile.o \
+	  getwd.o fullpath.o rename.o bzero.o bcopy.o strcmpuc.o log.o \
+	  hide_pss_pw.o same_net.o dbfind.o
+
+SRCS	= hash.h \
+	  db.c conf.c dbdget.c dbenter.c dbget.c tailor.c dbm.c decrypt.c \
+	  encrypt.c hash.c setcrypt.c getpass.c ni_rtn.c lockfile.o \
+	  getwd.c fullpath.c rename.c bzero.c bcopy.c strcmpuc.c log.c \
+	  hise_pss_pw.c same_net.c dbfind.c \
+	  Makefile.real
+
+all: libgen.a
+
+libgen.a: $(GOBJ)
+	@echo ""
+	@echo \
+"They may be some \"ranlib: warning: libgen.a (X.o): no symbol table\""
+	@echo \
+"messages. These are to be expected (as your main libraries contain them)"
+	@echo ""
+	ar cr libgen.a $(GOBJ)
+	$(RANLIB) libgen.a
+
+shardist: $(SRCS)
+	shar $(SHOPT) $(SRCS) > /tmp/niftp-lib.sh
+
+install:
+	@echo "	"OK - nothing to install
+
+clean:
+	rm -f *.o
+	
+$H/ftp.h: $H/tab.h $H/opts.h
+
+conf.o: $H/nrs.h $H/opts.h $H/hcontrol.h
+dbdget.o: $H/db.h $H/nrs.h
+dbenter.o: $H/db.h $H/nrs.h $H/opts.h
+dbget.o: $H/db.h $H/nrs.h $H/opts.h
+tailor.c: $H/nrs.h $H/opts.h $H/hcontrol.h
+dbm.o:  hash.h
+hash.o: hash.h

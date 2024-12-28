@@ -1,0 +1,39 @@
+# NRS configuration file
+
+# TABLE   /usr/spool/nrsdbm
+
+DQUEUE  /usr/spool/niftp          # default queue
+
+# the directory containing the default binaries
+BINDIR  /usr/lib/niftp
+
+# the default logfile directory
+LOGDIR  /usr/spool/niftp/logs
+
+MAILPROG "/usr/lib/mmdf/lib/v6mail"
+NEWSPROC "/usr/lib/niftp/lognews %s"
+NEWSUSER news
+QADDRTYPE	ftp,ftp, ftp.mail,mail, ftp.news,news, nrs.ftp,ftp
+
+SETUPPROG  /usr/lib/niftp/setup
+KEYFILE    /usr/lib/niftp/key/keyfile
+SECUREDIRS /usr/lib/niftp/securedirs
+
+# known about queues
+QUEUE   qj      level=127,prog=pyork
+QUEUE   qe      level=127,prog=pinet
+
+# various configuration details for each network
+NET janet	queue=qj,address="000008011707/%E%X%D/%T"
+NET ether       queue=qe,address="%D%X%T",show="the ethernet"
+
+DOMAIN  "uk.ac.cam.cl","uk.ac.cambridge.computer-lab","uk.ac.cam","uk.ac.cambridge","uk.ac","uk","uk.co" # known domains
+
+# specifications for listeners
+
+LISTEN jl1 address="FTP.MAIL",channel=janet,level=97,prog=qyork
+LISTEN jl2 address="FTP.MAIL",channel=janet,level=97,prog=qyork
+LISTEN jlf address="FTP,NRS.FTP",channel=janet,level=127,prog=qyork
+LISTEN jln address="FTP.NEWS",channel=janet,level=97,prog=qyork
+LISTEN jtest address="TEST",channel=janet,level=32767,prog=qyork
+LISTEN ether address="911",level=127,prog=qinet

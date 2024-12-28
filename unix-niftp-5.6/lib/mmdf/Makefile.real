@@ -1,0 +1,30 @@
+# unix-niftp lib/mmdf/Makefile.real $Revision: 5.4 $ $Date: 89/08/27 14:30:50 $
+#
+# Makefile for the MMDF interface library
+#
+#	libmail.a	for P or Q mail
+#
+MOBJ	= ni_mail.o conf_niftp.o rp_valstr.o \
+	  ml_send.o pgmwait.o
+SRCS	= ni_mail.c conf_niftp.c rp_valstr.c \
+	  ni_rtn.c ml_send.c pgmwait.c \
+	  Makefile.real
+
+libmail.a: $(MOBJ)
+	ar cr libmail.a $(MOBJ)
+	$(RANLIB) libmail.a
+
+shardist: $(SRCS)
+	shar $(SHOPT) $(SRCS) > /tmp/niftp-lib.sh
+
+install:
+	@echo "	"OK - nothing to install
+
+clean:
+	rm -f *.o
+
+ni_mail.o:	$H/ftp.h mmdf.h conf_niftp.h util.h
+ml_send.o:	mmdf.h util.h
+ni_rtn.o:	mmdf.h util.h
+rp_valstr.o:	mmdf.h util.h
+pgmwait.o:	util.h

@@ -1,0 +1,26 @@
+# unix-niftp lib/inet/Makefile.real $Revision: 5.5 $ $Date: 90/08/01 13:35:36 $
+# Makefile for BSD Internet Domain TCP/IP network interface code
+#
+#	libnet.a
+#
+NOBJ	= netsubs.o netlisten.o netopen.o
+SRCS	= netsubs.c netlisten.c netopen.c Makefile.real
+
+all:	libnet.a
+
+libnet.a: $(NOBJ)
+	ar cr libnet.a $(NOBJ)
+	$(RANLIB) libnet.a
+
+shardist: $(SRCS)
+	shar $(SHOPT) $(SRCS) > /tmp/niftp-lib.sh
+
+install:
+	@echo "	"OK - nothing to install
+
+clean:
+	rm -f *.o
+
+$H/ftp.h: $H/tab.h
+
+netsubs.o: $H/ftp.h $H/infusr.h

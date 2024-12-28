@@ -1,0 +1,46 @@
+Makefile
+README.sunlink.sun3
+UAIEF
+core-files
+samples
+
+-C ..
+README.nrs
+README.mail
+README.queues
+README.tailor
+
+-C man
+cpf.l
+dbencode.l
+dbpatch.l
+ftpq.l
+ftprm.l
+
+-C ../bin
+cpf.o
+dbpatch.o
+fpc.o
+ftp.o
+ftpkey.o
+ftpq.o
+ftprm.o
+ftpspool.o
+ftq.o
+ftshow.o
+killspool.o
+lookdbm.o
+setup.o
+
+-C ../lib/gen
+libgen.a
+
+-C ../progmail
+libmail.a
+
+-C ../sun
+libnet.a
+
+-C ../pqproc
+libp.a
+adr_trans.o

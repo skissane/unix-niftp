@@ -1,0 +1,15 @@
+/* LINTLIBRARY */
+/* If you install this change the include to get the right dir.h and remove
+ * the ARGSUSED lines */
+#include <sys/types.h>
+#include <ndir.h>
+/* ARGSUSED */
+void closedir(dirp) DIR *dirp;{;}
+/* ARGSUSED */
+DIR *opendir(name) char *name; { return 0; }
+/* ARGSUSED */
+struct direct *readdir(dirp) DIR *dirp; {  return 0; }
+/* ARGSUSED */
+void seekdir(dirp, loc) DIR *dirp; long loc; {;}
+/* ARGSUSED */
+long telldir(dirp) DIR *dirp; { return( 0 ); }

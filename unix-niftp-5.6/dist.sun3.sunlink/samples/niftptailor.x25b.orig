@@ -1,0 +1,20 @@
+FTPUSER		root
+MAILUSER	root
+NEWSUSER	root
+MAILPROG	"/usr/lib/sendmail"
+DOCETDIR	"/usr/spool/niftp/docets"
+SPOOLER		"/usr/spool/niftp/ftpspooler"
+
+TABLE   /usr/spool/niftp/nrsdbm	# NRS configuration file
+DQUEUE  /usr/spool/niftp	# default queue
+BINDIR  /usr/lib/niftp		# directory containing the default binaries
+LOGDIR  /usr/spool/niftp/logs	# the default logfile directory
+SETUPPROG  /usr/lib/niftp/setup
+KEYFILE    /usr/lib/niftp/key/keyfile
+
+DOMAIN  "uk.ac.cam.cl","uk.ac.cam","uk.ac","uk","uk.ac.cambridge.computer-lab","uk.ac.cambridge","uk.co" # known domains
+
+QUEUE   qj      level=127,prog=px25b	# known about queues
+NET janet	queue=qj,address="gannet/%E%X%D/%T"
+
+LISTEN lj       level=111

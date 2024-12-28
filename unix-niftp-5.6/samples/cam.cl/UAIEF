@@ -1,0 +1,107 @@
+# Full UAIEF file containing old hosts, OLD serc names, RElay hosts
+# does not contain any local information yet
+#
+# file containing information about old sites no in the NRS database
+# Comments
+#   Lines may be "#  comment" or ":" separated fields.
+#   "\" is a single character quote.
+# Fields in order, none optional are:
+#  1) Long form name  2) Short form name
+#  3) Net             4) Context
+#  5) Forward DTE     6) Forward YBTS
+#  7) Reverse DTE     8) Reverse YBTS
+#  9) Gateway count/list as agreed
+# 10) The number of ftp transfers / TS connection (see below)
+# 11) Local host flag
+# 12) Any additional per entry parameters agreed
+#   Applications strings are intentionally omitted.  If only one
+#   direction, the other DTE/YBTS fields should be NULL.
+#   DTEs should be 12 or 14 digits.
+#
+# Field 10 is now a bit string, and can be entered in the form 0x<hex string>
+# with the meanings defined in h/nrs.h, something like
+#
+# | 80000000 not used
+# | 7f000000 CUG in BINARY - use 64000000 for cug of 00	{not impl}
+# |   fc0000 not used
+# |    20000 Non Fast Call Select (overridden by niftptailor){sun}131072
+# |    10000 Fast Call Select (overridden by niftptailor) {sun}    65536
+# |     8000 is unix-niftp (e.g. encrypt PW)			   32768
+# |     4000 reverse charge call			{sunlink}  16384
+# |     3000 Call type:	1 = use gateway number 1	{not impl}  4096
+#			2 = use gateway number 2	{not impl}  8192
+#			3 = never call this host (it polls)	   12288
+# |      e00 packet size: 1=16, 2=32, ... 7=1024	{sunlink}  n*512
+# |      1c0 window size				{sunlink}  n* 64
+# |       3f Max transfers per TS connections
+# [ {} specifies which interfaces implement this facility ]
+# Contexts are:-
+#  1) x29 2) TS29 3) NIFTP 4) MAIL 126) gateway 127) FTP.NEWS
+#
+# some examples
+#
+# Entries to make 0000080198xx appear as cam.cudn+xx
+h:uk.ac.cambridge.cudn:uk.ac.cam.cudn:janet:126:::0000080198:::::
+h:uk.ac.cambridge.cpse:uk.ac.cam.cpse:janet:126:::00000801:::::
+#
+# Real gateways: "janet" + "000000000040" + sep + rest -> "p." + rest
+h:uk.ac.pss-gate:uk.ac.pss-gate:janet:126:p.#::00000000004000:::::
+h:uk.ac.pss-gate:uk.ac.pss-gate:janet:126:p.#::000000000040:::::
+h:uk.ac.lon.pss:uk.ac.lon.pss:janet:126:p.#::00004000004000:::::
+h:uk.ac.lon.pss:uk.ac.lon.pss:janet:126:p.#::000040000040:::::
+#
+# News hosts
+h:uk.ac.cambridge.computer-lab:uk.ac.cam.cl:janet:127:000008011707:FTP.NEWS:000008011707:FTP.NEWS::50:1:
+h:uk.ac.cambridge.computer-lab.test:uk.ac.cam.cl.test:janet:127:000008013177:FTP.NEWS:000008013177:FTP.NEWS::50:1:
+h:uk.ac.imperial.computing:uk.ac.ic.doc:janet:127:000005101000:0270+Y0+1+FTP.NEWS:000005101000:0270+Y0+1+FTP.NEWS::50:0:
+s:uk.ac.icdoc:uk.ac.ic.doc
+h:uk.ac.cambridge.mrc-apu:uk.ac.cam.mrc-apu:janet:127:000008008100:FTP.NEWS:000008008100:FTP.NEWS::50:0:
+h:uk.ac.nottingham.computer-science:uk.ac.nott.cs:janet:127:000021000018:FTP.NEWS:000021000018:FTP.NEWS:0:50:0:
+h:uk.ac.reading:uk.ac.rdg:janet:127:000050100000:FTP.NEWS:000050100000:FTP.NEWS::50:0:
+h:uk.ac.manchester.computer-science.unix:uk.ac.man.cs.ux:janet:127:000010113300:FTP.NEWS:000010113300:FTP.NEWS:0:50:0:
+h:uk.ac.ukc:uk.ac.ukc:janet:127:000049200000:FTP.NEWS:000049200000:FTP.NEWS:0:50:0:
+h:uk.ac.lancaster.computing:uk.ac.lancs.comp:janet:127:000010407000:FTP.NEWS:000010407000:FTP.NEWS:0:50:0:
+#
+# Not yet in NRS
+h:uk.ac.cambridge.swan:uk.ac.cam.swan:janet:1:00000801250003::00000801250003:::50:0:
+h:uk.ac.cambridge.swan:uk.ac.cam.swan:janet:3:00000801250003:FTP:00000801250003:FTP::50:0:
+h:uk.ac.cambridge.swan:uk.ac.cam.swan:janet:4:00000801250003:FTP.MAIL:00000801250003:FTP.MAIL::50:0:
+h:uk.ac.cambridge.cl-niftp:uk.ac.cam.cl-niftp:janet:3:000008011707:test:000008011707:test::50:0:
+h:uk.ac.cambridge.mrc-apu:uk.ac.cam.mrc-apu:janet:3:::000008008100:FTP::50:0:
+h:uk.ac.cambridge.mrc-niftp:uk.ac.cam.mrc-niftp:janet:3:000008008100:niFTP:000008008100:niFTP::50:0:
+h:uk.ac.cambridge.mrc-mail:uk.ac.cam.mrc-mail:janet:4:000008008100:niFTP.MAIL:000008008100:niFTP.MAIL::50:0:
+h:uk.ac.bath.bond:uk.ac.bath.bond:janet:1:00006011001907::00006011001907:::50:0:
+h:uk.ac.bath.maths:uk.ac.bath.maths:janet:3:::000060110002:FTP::50:0:
+h:uk.ac.bath.maths:uk.ac.bath.maths:janet:4:::000060110002:FTP.MAIL::50:0:
+h:uk.ac.cambridge.testphx:uk.ac.cam.testphx:janet:4:000008019007:MVS.FTP.MAIL:000008019007:MVS.FTP.MAIL::50:0:
+h:uk.ac.cambridge.phxtest:uk.ac.cam.phxtest:janet:4:000008019007:MVS.FTP.MAIL:000008019007:MVS.FTP.MAIL::50:0:
+h:uk.ac.nrs.dc-4:uk.ac.nrs.dc-4:janet:3:00000801172250:NRS.FTP:00000801172250:NRS.FTP::50:0:
+h:uk.ac.nrs.dc-4:uk.ac.nrs.dc-4:janet:4:000008011707:FTP.MAIL:000008011707:NRS.FTP.MAIL::50:0:
+h:uk.ac.nireading:uk.ac.nirdg:janet:3:000050100000:NIFTP:000050100000:NIFTP::50:0:
+h:uk.ac.nireading:uk.ac.nirdg:janet:4:000050100000:NIFTP.MAIL:000050100000:NIFTP.MAIL::50:0:
+#
+# Local hosts (mark as local)
+h:uk.ac.cambridge.computer-lab.jenny:uk.ac.cam.cl.jenny:::::::::1:
+h:uk.ac.cambridge.computer-lab.test:uk.ac.cam.cl.test:::::::::1:
+h:uk.ac.cambridge.computer-lab.magog:uk.ac.cam.cl.magog:::::::::1:
+# Local hosts (testing)
+#
+# These were in NOMAXTS
+h::uk.ac.brad.eeng:janet:::::::1::
+h::uk.ac.bris.qga:janet:::::::1::
+h::uk.ac.cam.eng-icf:janet:::::::1::
+h::uk.ac.man.psy:janet:::::::1::
+h::uk.ac.man.ph.g1:janet:::::::1::
+h::uk.ac.man.ph.g2:janet:::::::1::
+h::uk.ac.rl.gb:janet:::::::1::
+h::uk.ac.rl.gd:janet:::::::1::
+h::uk.ac.rl.gk:janet:::::::1::
+h::uk.ac.rl.ge:janet:::::::1::
+h::uk.ac.rl.gm:janet:::::::1::
+h::uk.ac.shef.shga:janet:::::::1::
+h::uk.ac.soton.ncws:janet:::::::1::
+h::uk.ac.soton.ga:janet:::::::1::
+h::uk.ac.ucl.euclid:janet:::::::1::
+h::uk.ac.warwk.ga:janet:::::::1::
+h::uk.alv:janet:::::::1::
+h::uk.mod.rsre:pss:::::::1::

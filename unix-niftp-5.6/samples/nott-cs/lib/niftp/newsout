@@ -1,0 +1,28 @@
+#! /bin/sh
+#
+# /usr/lib/niftp/newsout
+#
+# takes news output from standard input and places in a file,
+# then calls cpf to make the transfer.
+PATH=:/usr/local:/usr/ucb:/bin:/usr/bin
+
+case $# in
+	1) TO=$1;;
+	*) echo usage: newsout sitename >&2 ; exit 1;;
+esac
+
+cd /usr/spool/news/batchout
+
+TMP=tmp.$$
+cat > $TMP
+BASE=$TO.`IFS=": "; set \`date\`; echo $3.$4`
+for SUF in a b c d e f g h i j k l m n o p q r s t u v w x y z
+do
+	if ln $TMP $BASE.$SUF
+	then
+		rm $TMP;
+		cpf -N $BASE.$SUF @$TO
+		exit 0
+	fi
+done
+echo newsout - cannot generate filename >&2 ; exit 1

@@ -1,0 +1,18 @@
+#! /bin/sh
+
+PATH=/usr/local:/usr/ucb:/bin:/usr/bin
+export PATH
+
+echo Niftp		;
+				cd /usr/spool/niftp/logs
+				for L in pj qj0 qj1
+				do
+					mv log.$L log.$L.yest
+				done
+#
+# add the .tftp to your own skulker, dont run this seperatly
+#
+echo Find		;	find / -name ".tftp.*" -o \
+					-a -atime +3	\
+					-a -exec rm -f {} ';' -print
+echo Done at `date`

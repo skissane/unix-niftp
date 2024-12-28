@@ -1,0 +1,27 @@
+        START - enable + start any stopped things
+        STOP  - disable + stop listeners immeadiately, stop
+                senders when finished
+        TERMINATE - disable + kill thing
+        ENABLE - enable but don't restart
+        DISABLE - disable but don't kill anything.
+
+        Item can be a
+        QUEUE
+        LISTENER
+        HOST
+
+If an item is unique then there is no problem, otherwise you
+can prefix it with "queue", "listen" or "host" to force to the
+correct type.
+
+All above can be used as arguments :-
+        fpc "start qj" "stop janet" (quoting is significant)
+or interactively
+
+There is a of qualifier "all" which means what it says:-
+        I.e. "stop listen all" stops all listeners
+             "stop all" stops all queues.
+
+
+ALso there is a command kill which can only be used as an
+argument which shuts down the system.

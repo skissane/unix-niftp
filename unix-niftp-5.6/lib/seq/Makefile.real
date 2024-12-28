@@ -1,0 +1,37 @@
+# unix-niftp lib/seq/Makefile.real $Revision: 5.5 $ $Date: 90/08/01 13:37:46 $
+#
+# Makefile for Sequent X.25 board (Morningstar Technologies) code
+#
+NOBJ	= netopen.o netlisten.o netsubs.o
+SRCS	= netopen.c netlisten.c netsubs.c Makefile.real Make x25d.8.tbl \
+	  x25d.conf x25d.8 x25d.c
+
+ETCDIR	= /etc
+
+all:	libnet.a # x25d
+
+libnet.a: $(NOBJ)
+	ar cr libnet.a $(NOBJ)
+	$(RANLIB) libnet.a
+
+x25d: x25d.o
+	${CC} -o x25d $(LDFLAGS) x25d.o
+
+shardist: $(SRCS)
+	shar $(SHOPT) $(SRCS) > /tmp/niftp-lib.sh
+
+install: # inst-x25d
+	@echo no libs to install
+
+inst-x25d:		$(ETCDIR)/x25d
+$(ETCDIR)/x25d:	x25d
+	cp x25d $(ETCDIR)/x25d
+
+clean:
+	rm -f *.o
+
+$H/ftp.h: $H/tab.h
+
+netopen.o: $H/ftp.h $H/infusr.h
+netlisten.o: $H/ftp.h $H/infusr.h
+netsubs.o: $H/ftp.h $H/infusr.h

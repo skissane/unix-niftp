@@ -1,0 +1,19 @@
+#! /bin/sh
+prog=$0
+subject="(No Subject)"
+
+while test $# -gt 0
+do      case "$1" in
+        -s*)    subject=`expr "$1" : '-.\(.*\)'`;;
+        -v*)    via=`expr "$1" : '-.\(.*\)'`;
+		comment="Via: \"$via\" ";;
+	esac
+done
+
+case $# in
+0)	exit 1;;
+esac
+
+echo $prog called with $comment Subject: $subject for $*
+cat
+echo ""

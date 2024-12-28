@@ -1,0 +1,33 @@
+.....
+
+To generate an NRS DBM file (pathname tailored by TABLE in niftptailor),
+two sources files need to be generated, the intermediate file generated
+by the c-nrs processor (send a message to "info-server@uk.ac.cam.cl"
+with a subject line of "Subject: request catalogue; topic c-nrs" for
+details) and a set of patches to this information in a "machine
+readable" format called UAIEF records.
+
+To get the main intermediate file, type "make dbm1" in the c-nrs
+directory, having checked that dbm1.cf is correct.
+The make will actually make two calls to c-nrs, one for forward and one
+for reverse, concatinating the results.
+
+The UAIEF records descibe information which isn't held in the NRS, such
+as non-standard contexts (e.g. FTP.NEWS is allocated 127), non-standard
+networks (such as inet for ethernet hosts), non-standard information
+(such as "this host only accepts 2 transfers per call") and any hosts
+which are either not yet in the NRS, or are secret addresses.
+
+[ If using news, it might be worth considering putting all news entries
+  in a new (pseudo) network called "news".  By doing this and setting up
+  duplicate QUEUE and NET entries for a new wueue (e.g. qu in
+  samples/cam.cl/nt.complex), it is possible to manipulate all news in a
+  simple manner, and it also ensures that outgoing news does not block
+  FTP or MAIL transfers.
+]
+
+
+The next step is to type "dbencode < dbm1" to generate the base
+information, and then type "dbencode < UAIEF" to add the patches.
+
+...

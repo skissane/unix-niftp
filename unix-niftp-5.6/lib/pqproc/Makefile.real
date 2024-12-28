@@ -1,0 +1,91 @@
+# unix-niftp lib/pqproc/Makefile.real : 5.0 Date: 87/03/23 03:49:21 $
+# Makefile for the protocol process librarys
+#
+#	libp.a		for P processes
+#	libq.a		for Q processes
+#
+#	libppp.a	for PP P process -- make by PP, not by unix-niftp
+#
+#QOBJPP	= ppPspool.o 			# Stupid -- why have PP but still spool
+QOBJPP	= ppQunspool.o ppQdummy.o	# Do PP properly, i.e. unspooled
+COBJ	= tcccomm.o rectrans.o timer.o dec.o data.o record.o adr_trans.o \
+	  attr_log.o stat.o ts_buff_dec.o find_user.o
+QOBJ	= perms.o krbpw.o qdocket.o rsft.o nrs_rev.o $(QOBJPP)	# Q end library
+POBJ	= pdocket.o sft.o no_ppPunspl.o			# P end library
+PPPOBJ	= pdocket.o sft.o ppPunspool.o ppPdummy.o	# PP P end library
+SRCS	= tcccomm.c rectrans.c timer.c dec.c data.c record.c adr_trans.c \
+	  attr_log.c stat.c rtab.c \
+	  pdocket.c sft.c \
+	  perms.c krbpw.c qdocket.c rsft.c nrs_rev.c \
+	  ts_buff_dec.c \
+	  no_ppQspool.c no_ppQunspl.c ppQspool.c no_ppPunspool.c \
+	  ppPdummy.c ppQdummy.c \
+	  find_user.c \
+	  Makefile.real
+
+all: libp.a libq.a	# NOT libppp.a
+
+libp.a: $(COBJ) $(POBJ)
+	ar cr $@ $(COBJ) $(POBJ)
+	$(RANLIB) $@
+
+libq.a: $(COBJ) $(QOBJ)
+	ar cr $@ $(COBJ) $(QOBJ)
+	$(RANLIB) $@
+
+libppp.a: $(COBJ) $(PPPOBJ)
+	ar cr $@ $(COBJ) $(PPPOBJ)
+	$(RANLIB) $@
+
+ppQunspool.o: .ppQunspool.o
+.ppQunspool.o: no_ppQunspl.o
+	@-if [ -r ppQunspool.o ]; \
+	then touch $@ ; \
+	else echo "	ppQunspool.o not found, so using no_ppQunspl.o"; \
+	     echo $(CP) no_ppQunspl.o ppQunspool.o; \
+	     $(CP) no_ppQunspl.o ppQunspool.o && touch $@; \
+	fi
+
+#ppPunspool.o: .ppPunspool.o
+#.ppPunspool.o: no_ppPunspl.o
+#	@-if [ -r ppPunspool.o ]; \
+#	then touch $@ ; \
+#	else echo "	ppPunspool.o not found, so using no_ppPunspl.o"; \
+#	     echo $(CP) no_ppPunspl.o ppPunspool.o; \
+#	     $(CP) no_ppPunspl.o ppPunspool.o && touch $@; \
+#	fi
+
+libpq.a: $(COBJ) $(QOBJ) $(POBJ)
+	ar cr libpq.a $(COBJ) $(QOBJ) $(POBJ)
+	$(RANLIB) libpq.a
+
+shardist: $(SRCS)
+	shar $(SHOPT) $(SRCS) > /tmp/niftp-lib.sh
+
+install:
+	@echo "	"OK - nothing to install
+
+clean:
+	rm -f *.o .*.o
+
+$(COBJ) $(POBJ) $(QOBJ): $H/ftp.h
+$H/ftp.h: $H/tab.h $H/opts.h
+
+krbpw.o:	$H/ftp.h krbpw.c
+	/bin/rm -f $@
+	$(CC) $(CFLAGS) -c -DUNIXNIFTP $<
+
+
+adr_trans.o:	$H/ftp.h $H/nrs.h
+data.o:		$H/ftp.h $H/files.h
+dec.o:		$H/files.h $H/ftp.h $H/infusr.h
+nrs_rev.o:	$H/ftp.h $H/nrs.h
+pdocket.o:	$H/ftp.h
+perms.o:	$H/ftp.h $H/infusr.h $H/files.h
+qdocket.o:	$H/ftp.h $H/nrs.h
+record.o:	$H/ftp.h
+rectrans.o:	$H/ftp.h
+rsft.o:		$H/ftp.h $H/files.h $H/sfttab.h $H/nrs.h $H/infusr.h
+sft.o:		$H/ftp.h $H/infusr.h $H/sfttab.h
+tcccomm.o:	$H/ftp.h
+timer.o:	$H/ftp.h

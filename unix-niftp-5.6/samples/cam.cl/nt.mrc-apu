@@ -1,0 +1,40 @@
+FTPUSER		pb
+MAILUSER	pb
+NEWSUSER	pb
+MAILPROG	"/bin/mail"
+DOCKETDIR	"/usr/sirius/piete/niftp/usr/spool/niftp/dockets"
+MAILDIR		"/usr/sirius/piete/niftp/usr/spool/niftp/mail"
+SPOOLER		"/usr/sirius/piete/niftp/usr/spool/niftp/ftpspooler"
+NEWSDIR		"/usr/sirius/piete/niftp/usr/spool/niftp/news"
+
+# NRS configuration file
+TABLE   /usr/sirius/piete/niftp/usr/spool/nrsdbm
+
+DQUEUE  /usr/sirius/piete/niftp/usr/spool/niftp          # default queue
+
+# the directory containing the default binaries
+BINDIR  /usr/sirius/piete/niftp/usr/lib/niftp
+
+# the default logfile directory
+LOGDIR  /usr/sirius/piete/niftp/usr/spool/niftp/logs
+
+NEWSPROC rnews
+
+SETUPPROG  /usr/sirius/piete/niftp/usr/lib/niftp/setup
+KEYFILE    /usr/sirius/piete/niftp/usr/lib/niftp/key/keyfile
+SECUREDIRS /usr/sirius/piete/niftp/usr/lib/niftp/securedirs
+
+# known about queues
+QUEUE   qj      level=127,prog=pyork
+QUEUE   qe      level=1,prog=pinet
+
+# various configuration details for each network
+NET janet queue=qj,address="000008008100/%E%X%D/%T"
+NET ether       queue=qe,address="%D%X%T",show="the ethernet"
+
+DOMAIN  "uk.ac.cam","uk.ac.cambridge","uk.ac","uk","uk.co" # known domains
+
+# specifications for listeners
+
+LISTEN jl address="niFTP,niFTP.MAIL,niFTP.NEWS",channel=janet,level=127,prog=qyork
+LISTEN ether address="911",level=1,prog=qinet

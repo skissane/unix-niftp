@@ -1,0 +1,20 @@
+# unix-niftp lib/yorkbox/Makefile.real $Revision: 5.5 $ $Date: 90/08/01 13:39:30 $
+# Makefile for YORKBOX X25 network interface code
+#	libnet.a
+NOBJ	= netopen.o netlisten.o netsubs.o
+SRCS	= netopen.c netlisten.c netsubs.c netio.h hhall.h Makefile.real
+
+all:	libnet.a
+
+libnet.a: $(NOBJ)
+	ar cr libnet.a $(NOBJ)
+	$(RANLIB) libnet.a
+
+shardist: $(SRCS)
+	shar $(SHOPT) $(SRCS) > /tmp/niftp-lib-yb.sh
+
+install:; @echo "	"OK - nothing to install
+
+clean:; rm -f *.o
+
+$(NOBJ): $H/ftp.h $H/infusr.h $H/tab.h netio.h hhall.h

@@ -1,0 +1,118 @@
+#! /bin/sh
+cat << \EOM
+This is an attempt to set up a binary bootstrap distribution of unix-niftp
+for SUN3s running SUNLINK.
+
+It will not run on any other hardware (e.g. SUN2s or SUN4s) or using another
+X25 interface (e.g. UBC) -- I'm afraid you'll have to do that from source.
+
+This section provides the absolute minimum to get you started.
+
+It is distributed as a Makefile, a set of .o files and a few libraries.
+You link it on your local system (to pick up the correct x25 library).
+
+It is assumed that sendmail is used (if you are running MMDF, then you
+should know enough to be able to install from sources !)
+
+[ now type return ]
+EOM
+
+read continue || exit 1
+
+cat << \EOM
+
+To make things simple, it assumes a standard directory structure.
+If this is not suitable, make symbolic links in relevant places before
+make is run.  The setup is:
+
+/etc/niftptailor	tailoring info
+/usr/bin/*		user callable binaries (cpf,
+/usr/lib/niftp		system callable binaries
+/usr/spool/niftp	NRS DBM file and queue directories
+
+[EXPERT: if TABLE is changed in niftptailor, NRSDBM has to change in Makefile]
+
+To get things started, you have to create a file called /etc/niftptailor.
+This describes the various system specific parts of the local setup.
+In this case, the only field that should need to be edited are the NET and
+QUEUE fields, which should indicate how JANET and PSS should be called.
+Examples are give in samples/niftptailor.{janet,pss}
+
+Further info is available in REAME.sunlink.sun3
+
+[ now type return ]
+EOM
+
+read continue || exit 1
+
+touch .README.stamp
+
+exit 0
+
+There are certain "one off" operations to create directories, etc.
+These are usually called internally by make, but can be called as needed.
+
+help	list the possible make options
+
+all	build the binaries
+install	install all the binaries & the tailor file
+
+patch	use dbpatch on the UAIEF file to generate an NRS DBM file.
+showmode show the modes of the installed binaries and directories
+setmode set the mode of the installed binaries and directories
+keyfile	create the master password file (once only)
+mkdirs	create the necessary directories
+
+dbpatch:	dbpatch < UAIEF		(done once by make install)
+This generates a tiny NRS database from a very unpleasant textual format.
+The distributed file contain one entry :- uk.ac.cam.cl.test
+The idea is that you can pick up other things from there.
+
+lookdbm:	lookdbm uk.ac.cam.cl.test
+Type "lookdbm uk.ac.cam.cl.test".
+
+cpf:		cpf -b "<FTP>niftp.sun.binp.Z@uk.ac.cam.cl.test" x.Z
+put a request into the queue to make a transfer.
+An error message such as "cannot signal spooler" indicates that ftpspool
+is not running.
+
+ftpspool:	ftpspool /tmp/ftpspool		(in /etc/rc.local)
+usually started by /etc/rc.local, this manages all the queues.
+Look in the log file (/tmp/ftpspool) to check that the daemons aren't
+in a failure loop.
+
+ftshow:		ftshow /usr/spool/niftp/logs/ST*
+show any current activity.
+
+fpc:		/usr/lib/niftp/fpc "start cam.cl.test"
+instruct ftpspool as to which queues are to be processed.
+With ant argument it runs interactively.
+Main command are:
+	kill		kill the current spooler and all activities
+	stop q | host	stop processing the specified queue or name host
+	start q | host	start processing the specified queue or name host
+			(acts as a kick)
+
+ftpq:		ftpq -mald
+shows what is all on all the queues. Useful args are:
+	ftpq -mals	show info per host
+	ftpq -mal	show all pending requests
+	ftpq -mals	show all pending & recently finished requests
+
+ftprm:		ftprm -mali
+deleted queued items,  Useful args are:
+	ftprm -mali	interactive delete
+	ftprm host	deletes ALL entries for that host.
+
+setup:		(called internally)
+maintains per-user password info for remote hosts.
+
+killspool:	(called internally)
+Wakes up the spooler.
+
+ftpkey:		usr/lib/niftp/ftpkey
+==========	ONLY CALLED ONCE!	==========
+sets the master ftp password
+
+
+See also /usr/spool/niftp/logs/log* for other logging info.

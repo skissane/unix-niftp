@@ -1,0 +1,62 @@
+  ALIAS		NETALIASES	{"serc", "janet"}
+  ALTPWFILE	altpwfile	(char *) 0
+  BANNEDFILE	banned_file	(char *) 0
+  BANNEDUSERS	banned_users	(char *) 0		(not yet used)
+  BINDIR	BINDIR		"/usr/lib/niftp"
+  DISKFULL	DISKFULLS
+  DOCKETDIR	DOCKETDIR	"/usr/spool/niftp/dockets"
+  DOMAIN	NRSdomains	"uk.ac.", "uk.co.", ".", ".ac.uk", ".co.uk"
+  DQUEUE	NRSdqueue	"/usr/spool/niftp"
+  FTPUSER	FTPuser FTPuid	"daemon" (1)
+  GUESTUSER	guest_name	"guest"
+  HOST				(not yet implemented ...)
+  KEYFILE	KEYFILE		"/usr/lib/niftp/key/keyfile"
+  KILLSPOOL	KILLSPOOL	"/usr/lib/niftp/killspool"
+  LISTEN	NULL							+
+  LOGDIR	LOGDIR		"/usr/spool/niftp/logs"
+  LONGFORM	uselongform	(Configure able)
+  MAILDIR	MAILDIR		"/usr/spool/niftp/mail"			+
+  MAILFMT	MAILFMT		(Configure able)			+
+  MAILPROG	mailprog	"/bin/mail"				+
+  NET		NETWORKS	"janet","qj",  "pss","qp"		+
+  OURNAME	ourname		""					+
+  OUTDTYPE	outdtype	"lp"
+Q PADDRTYPE	p_addrtype	"FTP", "FTP.MAIL", "FTP.JTMP", "FTP.NEWS" +
+  PRINTER	printer		"lpr %s %s"
+P PPCHAN	PPchan		"grey"
+P PPDIR		PPdir		"$spool/pp"
+P PPPROC	PPproc		"inline"
+P PPUSER	PPuser PPuid	"pp" (211)
+Q QADDRTYPE	q_addrtype	ftp, ftp.mail, ftp.pp, ftp.jtmp, ftp.news +
+Q QRETRIES	QRETRIES	QRETRIES (100)
+Q QTIMEOUT	QTIMEOUT	QTIMEOUT (60L*60*100)
+  QUEUE		NRSqueues	"qu","qj", "qj"				+
+  SECUREDIRS	SECUREDIRS	"/usr/lib/niftp/securedirs"
+  SETUPPROG	SETUPPROG	"/usr/lib/niftp/setup"
+  SPOOLER	NRSdspooler	"/usr/spool/niftp/ftpspooler"
+  TABLE		NRSdbase	"/usr/spool/niftp/nrsdbm"
+J JMTPDIR	JTMPDIR		"/usr/spool/niftp/jtmp"
+J JTMPPROC	JTMPproc	"djtmp"
+J JTMPUSER	JTMPuser (uid)	"root" (0)
+M MAILUSER	MAILuser (uid)	"mmdf" (211)				+
+N NEWSDIR	NEWSdir		"/usr/spool/niftp/news"
+N NEWSPROC	NEWSPROC	"rnews"
+N NEWSUSER	NEWSuser (uid)	"mmdf" (211)
+(nrsbuild only)	NRSnetworks	"janet", "pss"
+
+net:	address, level, local=TRUE|FALSE, queue, show, pkt, wnd,(N)fcs
+queue:	prog, level, statfile, logfile, errfile, dir, dbase, master, ordered, backoff
+listen:	address, level, channel, prog, statfile, logfile, errfile, infomsg, opts, nchar
+listen/opts: reject, complain, creject, reverse, allow_tji
+addrtype: ftp, mail, pp, jtmp, news
+
+reject: reject all calls, giving infomsg as reason
+
+level:	the debug level is a bit mask. The values are in h/log.h
+	Every log message includes the bit which caused it to be generated, e.g.
+log.00008.0aae.001: sending  ProtiD      [==Int] (x)0100
+	means that it a logging message, generated because 0x8 was set, from
+	process 0x0aae, one second after the last message was printed.
+	If there is too much logging, find the lines you want to remove, and
+	clear that bit in the level mask (having checked that there are no
+	useful messages which share the flag).

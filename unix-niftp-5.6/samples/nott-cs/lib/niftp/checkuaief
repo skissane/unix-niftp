@@ -1,0 +1,16 @@
+#! /bin/awk -f
+BEGIN { FS = ":" }
+$1 ~ /^#/ { next }
+$1 == "h" { if( NF != 13 ){
+		print "field error - line " NR, "no. = " NF
+		print }
+		next
+	}
+$1 == "s" || $1 == "r" { if( ( $1 == "h" && NF != 3) || ($1 == "r" && NF != 4)) {
+		print "field error - line " NR, "no. = " NF
+		print
+		}
+		next
+	}
+
+{ print "unknown field - line " NR; print }

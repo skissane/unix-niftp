@@ -1,0 +1,3437 @@
+#! /bin/sh
+# $Header: /Nfs/blyth/glob/src/usr.lib/niftp/unix-niftp-5.6/RCS/Configure,v 5.6.1.7 1993/05/10 13:55:46 pb Rel $
+#
+# If these # comments don't work, trim them.  Don't worry about the other
+# shell scripts, Configure will trim # comments from them for you.
+#
+# $Log: Configure,v $
+# Revision 5.6.1.7  1993/05/10  13:55:46  pb
+# Distribution of Apr93SunybytsdPPLDYbAANSICC: Sun YBTSD + PP LD_ + YuckBucked ANSI CC preliminary HACK
+#
+# Revision 5.6  1991/06/07  16:59:22  pb
+# Distribution of Oct90deslib+PPaids: Include des/lib/ and a few aids for PP sites
+#
+# Revision 5.5  90/08/01  13:21:30  pb
+# Distribution of Aug90RealPP+sequent: Full PP release and support for Sequent X.25 board
+# 
+# Revision 5.4  89/08/27  14:31:20  pb
+# Distribution of Aug89PPsupport: Update READMEs for PP
+# 
+# Revision 5.3  89/07/16  12:00:37  pb
+# Distribution of Jul89PPsupport: Support PP spooled P and Q and unspooled Q
+# 
+# Revision 5.2  89/01/13  14:24:53  pb
+# Distribution of Jan89SuckMail: Support Sucking of mail
+# 
+# Revision 5.1  88/10/07  17:30:11  pb
+# Distribution of Oct88MultipleP: Support multiple P processes + window/pkt sizes + YBTS + banned
+# 
+# Revision 5.0.1.6  88/02/11  06:31:20  pb
+# Distribution of Jan88ReleaseMod2: More documentation + x25b + sendmail fixes + sun fixes
+# 
+# Revision 5.0.1.3  87/12/09  16:16:00  pb
+# Distribution of PreUKNETdecMeeting: Stable version before UKNET Dec 87 meeting
+# 
+# Revision 5.0  87/09/28  13:46:15  pb
+# Distribution of PreWjaTsSort: Fixes up to wja interlock to sort out common TS library
+# 
+# Revision 5.2  87/09/28  11:52:33  pb
+# *** empty log message ***
+# 
+# Revision 3.4  87/08/09  09:08:52  pb
+# Add cflags quetion.
+# change ${xx:-yy} -> ${xx-yy}
+# 
+# Revision 3.3  87/07/11  11:42:52  pb
+# Add quiet switch
+# 
+# Revision 3.2  87/07/11  10:19:30  pb
+# ask for the group which owns niftp
+# 
+# Revision 3.1  86/10/15  08:19:16  pb
+# *** empty log message ***
+# 
+# 
+
+# Yes, you may rip this off to use in other distribution packages.
+
+# sanity checks
+export PATH || (echo "OOPS, this isn't sh.  Desperation time.  I will feed myself to sh."; sh $0 $*; kill $$)
+
+PATH=".:/bin:/usr/bin:/usr/local/bin:/usr/ucb:/usr/local:/usr/lbin:/etc:$PATH"
+if test ! -t 0; then
+    echo "Say 'sh Configure', not 'sh <Configure'"
+    exit 1
+fi
+
+# list of possible configurations
+configlist="ddex dyork dinet dubc dipcs dsun dx25b dseq"
+systems="bsd bsd4_2 bsd4_1 usg system5 system3 v7 gux63 xenix other"
+mailers="mail hhmail sendmail v6mail"
+mailerdirs="/bin /usr/bin /usr/lbin /usr/local /usr/lib /usr/lib/mmdf"
+fullpath="/usr/local/bin /usr/lbin /usr/local /usr/bin /bin /usr/ucb /etc"
+nodir="blurfl/dyick$$"
+archs="arch machine mach"
+validarch="vax sun3x sun3 sun4c sun4 hp9000s300 hp9000s800 mipsdec mips"
+
+
+# Still to be done:
+# SOME for ni_mail.c is a buffer size: if undefined, set to 40
+# ENOUGH for cpf.c & qft.c is a buffer size, defaulting to 100
+# MASK for decyrpt.c is a mask, defaulting to 0xFF
+#
+# What about ETHER_CHANNEL & DO_IPCS
+#
+# MAILUID, MAILGID and maildir should be determined ....
+#
+# What about KENT_MAIL and UCL_ISID UCL_V77 UCL_STATS
+# Should these options only be selectable if UKC and UCL respactively are set?
+# Could the UCL & UKC things be split to be what they actually mean ?
+
+CONFIG=''
+awkf=''
+bannedfile=''
+c=''
+catchall=''
+chgrp=''
+chmod=''
+chown=''
+chug=''
+cp=''
+cpp=''
+creatrunc=''
+crypt=''
+cryptcompat=''
+cryptcruddy=''
+debug=''
+def_pktsize=''
+def_wndsize=''
+deslib=''
+dircompacts=''
+eunice=''
+eunicefix=': # '
+fcntl=''
+flock=''
+fopena=''
+freedisk=''
+getgroups=''
+getwd=''
+grp=''
+ascii=''
+bzero=''
+bcopy=''
+envppld=''
+guest=''
+guestuser=''
+hashndir=''
+iandd=''
+ioctl=''
+cflags=''
+krbcflags=''
+libc=''
+ldflags=''
+rmtdbm=''
+rmtdbmd=''
+libexp=''
+libndir=''
+local=''
+longform=''
+macros=''
+mail=''
+mailer=''
+mailmode=''
+mailownsmail=''
+mailspooldir=''
+mailtype=''
+manext=''
+mansrc=''
+mixedlines=''
+n=''
+ndir=''
+ndircomm=''
+ndirh=''
+ndirlib=''
+news=''
+newsmode=''
+newsspooldir=''
+pp=''
+ppmode=''
+ppspooldir=''
+pplib=''
+ppproc=''
+ppchan=''
+noleadingzeros=''
+camtechack=''
+novfork=''
+novoid=''
+privatebin=''
+profile=''
+publicbin=''
+ranlib=''
+rename=''
+restartsys=''
+seteuid=''
+setlinebuf=''
+setvbuf=''
+sharpbang=''
+shsharp=''
+sigret=''
+softmail=''
+softnews=''
+softpp=''
+spool=''
+standalone=''
+startsh=''
+strchr=''
+string=''
+strip=''
+termio=''
+testprotid=''
+uchar=''
+ucl=''
+ukc=''
+usendir=''
+
+
+tmode=''
+all=''
+quiet=''
+quick=''
+blank=' '
+
+while test $# -gt 0
+do case "$1" in
+	quiet)	tmode="$tmode quiet";;
+	quick)	tmode="$tmode quick";;
+	all)	tmode="$tmode all"  ;;
+	normal)	tmode="$tmode "     ;;
+	*)	echo unknown mode "'"$1"'"
+		exit 1;;
+   esac
+   shift
+done
+
+allsys=""
+for prog in $configlist ; do eval $prog="" ; done
+
+: get old answers, if there is a config file out there
+if test -f config.sh; then
+    echo "(Fetching default answers from your old config.sh file...)"
+    . config.sh
+fi
+
+mode="${tmode-$mode}"
+case "$mode" in *quiet*) quiet=quiet;; esac
+case "$mode" in *quick*) quick=quick;; esac
+case "$mode" in *all*)   all=all;; esac
+
+# If quiet, set echoq to do nothing.
+case "$quiet" in
+'')	echoq=echo;;
+*)	echoq=true;;
+esac
+
+: some greps do not return status, grrr.
+echo "grimblepritz" >grimble
+if grep blurfldyick grimble >/dev/null 2>&1 ; then
+    contains=contains
+else
+    if grep grimblepritz grimble >/dev/null 2>&1 ; then
+	contains=grep
+    else
+	contains=contains
+    fi
+fi
+rm grimble
+: the following should work in any shell
+case $contains in
+contains*)
+    $echoq " "
+    $echoq "AGH!  Grep doesn't return a status.  Attempting remedial action."
+    cat >contains <<'EOSS'
+grep "$1" "$2" >.greptmp && cat .greptmp && test -s .greptmp
+EOSS
+chmod 755 contains
+esac
+
+: first determine how to suppress newline on echo command
+$echoq "Checking echo to see how to suppress newlines..."
+(echo "hi there\c" ; echo " ") >.echotmp
+if $contains c .echotmp >/dev/null 2>&1 ; then
+    $echoq "...using -n."
+    n='-n'
+    c=''
+else
+    $echoq "...using \\\c."
+    n=''
+    c='\c'
+fi
+case $quick in
+'')
+echo $n "Type carriage return to continue.  Your cursor should be here-->$c"
+	read ans;;
+*)
+	$echoq $n "This should all -->$c"
+	$echoq "<-- be one line"
+	blank="$n $c";;
+esac
+rm .echotmp
+
+: now set up to do reads with possible shell escape
+: if this does not work on your machine, 1,$s/. myread/read ans/
+cat <<EOSC >myread
+ans='!'
+while expr "X\$ans" : "X!" >/dev/null; do
+    read ans
+    case "\$ans" in
+    !)
+	sh
+	echo " "
+	echo $n "Your answer: $c"
+	;;
+    !*)
+	set \`expr "X\$ans" : "X!\(.*\)\$"\`
+	sh -c "\$*"
+	echo " "
+	echo $n "Your answer: $c"
+	;;
+    esac
+done
+EOSC
+
+: general instructions
+case "$quick" in
+'')
+sysn=niftp
+cat <<EOH
+
+           FOR A FAST CONFIGURATION, USE "Configure quick" (and/or quiet)
+
+ This installation shell script will examine your system and ask you questions
+to determine how $sysn and its auxiliary files should be installed.  If you
+get stuck on a question, you may use a ! shell escape to start a subshell or
+execute a command.  Many of the questions will have default answers in square
+brackets--typing carriage return will give you the default.
+ On some of the questions which ask for file or directory names you are
+allowed to use the ~name construct to specify the login directory belonging to
+"name", even if you don't have a shell which knows about that.
+Questions where this is allowed will be marked "(~name ok)"
+ Much effort has been expended to ensure that this shell script will run on
+any Unix system.  If despite that it blows up on you, your best bet is to edit
+Configure and run it again. Also let me (pb@uk.ac.cam.cl) know how I blew it.
+
+This installation script affects things by doing direct variable substitutions
+on some of the files included in this kit. You can give configure arguments:
+quick (to zip through quickly, not asking you to confirm each answer)
+quiet (to omit comments on what it is doing and confirmation of its guesses)
+all   (to force it to ask you all questions)
+normal(to cancel the all the above saved options)
+
+EOH
+    echo $n "[Type carriage return to continue] $c"
+    . myread;;
+esac
+
+: ----------Now for the statndard Configure stuff ----------
+$echoq " "
+$echoq "	... Configuring configure to your system ..."
+
+: get list of predefined functions in a handy place
+$echoq " "
+rm -f libc.list
+if test -f /lib/libc.a
+then
+    $echoq "Your C library is in /lib/libc.a.  You're normal."
+    libc=/lib/libc.a
+else
+    if test -f /usr/lib/libc.a
+    then $echoq "Your C library is in /usr/lib/libc.a, of all places."
+	 libc=/usr/lib/libc.a
+    else if test -f "$libc"
+	 then    $echoq "Your C library is in $libc, like you said before."
+	 else
+	    cat <<'EOM'
+ 
+I can't seem to find your C library.  I've looked for /lib/libc.a and
+/usr/lib/libc.a, but neither of those are there.  What is the full name
+EOM
+	    echo $n "of your C library? $c"
+	    . myread
+	    libc="$ans"
+	fi
+    fi
+fi
+
+
+: make some quick guesses about what we are up against
+: ------------------------------------------------------
+: this needs some more work done on it ......
+: ------------------------------------------------------
+$echoq $blank
+case $all in
+?*) for system in $systems; do eval $system=""; done;;
+esac
+case `eval echo $allsys` in
+*define*)	$echoq $n "assuming system is still$c"
+		for system in $systems;	do
+			case `eval echo \\$$system` in
+			define)	$echoq $n " $system$c";;
+			esac
+		done;	$echoq " ";;
+*)
+    for system in $systems; do eval $system="undef"; done
+    $echoq $n "Hmm...  $c"
+    if $contains SIGTSTP /usr/include/signal.h >/dev/null 2>&1 ; then
+        bsd4_2=define
+    elif
+	if test ! -r libc.list; then ar t $libc > libc.list; fi
+	$contains fcntl.o libc.list >/dev/null 2>&1 ; then
+	usg=define
+	case `uname` in
+	    UX63)	gux63=define;;
+	esac
+    else
+	v7=define
+    fi
+    case "$bsd4_1+$bsd4_2" in
+    *define*)	bsd=define;;
+    esac
+    case "$system3+$system5" in
+    *define*)	usg=define;;
+    esac
+    $echoq $n "looks like this system is$c"
+    for system in $systems;	do
+	case `eval echo \\$$system` in
+	define)	$echoq $n " $system$c";;
+	esac
+    done;	$echoq " "
+    if test ! -r libc.list; then ar t $libc > libc.list; fi
+    if $contains vmssystem.o libc.list >/dev/null 2>&1 ; then
+        cat <<'EOI'
+There is, however, a strange, musty smell in the air that reminds me of
+something...hmm...yes...I've got it...there's a VMS nearby, or I'm a Blit.
+EOI
+        eunicefix=unixtovms
+        eunice=define
+    : it so happens the Eunice I know will not run shell scripts in Unix format
+    else
+        $echoq $blank
+        $echoq "Congratulations.  You aren't running Eunice."
+        eunicefix=':'
+        eunice=undef
+    fi
+;;
+esac
+
+case "$all$cpp" in
+''|all*)
+    : see how we invoke the C preprocessor
+    $echoq $blank
+    $echoq "Checking to see how your C preprocessor is invoked..."
+    cat <<'EOT' >testcpp.c
+#define ABC abc
+#define XYZ xyz
+ABC+XYZ
+EOT
+    $echoq $n "Maybe 'cc -E' will work... $c"
+    cc -E testcpp.c >testcpp.out 2>&1
+    if $contains 'abc+xyz' testcpp.out >/dev/null 2>&1 ; then
+        $echoq "Yup, it does."
+        cpp='cc -E'
+    else
+        $echoq $n "maybe 'cc -P' ... $c"
+        cc -P testcpp.c >testcpp.out 2>&1
+        if $contains 'abc+xyz' testcpp.out >/dev/null 2>&1 ; then
+	    $echoq "Yup, that does."
+	    cpp='cc -P'
+        else
+	    $echoq $n "maybe '/lib/cpp'... $c"
+	    /lib/cpp testcpp.c >testcpp.out 2>&1
+	    if $contains 'abc+xyz' testcpp.out >/dev/null 2>&1 ; then
+		$echoq "Phew"
+	        $echoq "I was beginning to wonder."
+	        cpp='/lib/cpp'
+	    else
+		$echoq "Nope."
+	        $echoq $n "Hmm...maybe you already told me... $c"
+	        case "$cpp" in
+	        '') ;;
+	        *) $cpp testcpp.c >testcpp.out 2>&1;;
+	        esac
+	        if $contains 'abc+xyz' testcpp.out >/dev/null 2>&1 ; then
+		    $echoq "Yup -- $cpp"
+	        else
+		    $echoq "Nope"
+		    echo $n "I can't find a C preprocessor.  Name one: $c"
+		    . myread
+		    cpp="$ans"
+		    $cpp testcpp.c >testcpp.out 2>&1
+		    if $contains 'abc+xyz' testcpp.out >/dev/null 2>&1 ; then
+		        $echoq "OK, that will do."
+		    else
+		        echo "Sorry, I can't get that to work.  Go find one."
+		        exit 1
+		    fi
+	        fi
+	    fi
+        fi
+    fi
+    rm -f testcpp.c testcpp.out
+;;
+*) $echoq "assuming C preprocessor is still $cpp";;
+esac
+
+case "$shsharp+$spitshell+$sharpbang" in
+?*+?*+?*)
+#   $echoq "assuming $spitshell to write a sh script, and shsharp $shsharp"
+    $echoq "assuming sh still accepts $sharpbang";;
+*)
+    : see if sh knows # comments
+    $echoq $blank
+    $echoq $n "Checking your sh to see if it knows about # comments... $c"
+    if sh -c '#' >/dev/null 2>&1 ; then
+        $echoq "Yup"
+        shsharp=true
+        spitshell=cat
+        $echoq $blank
+        $echoq $n "Okay, let's see if #! works on this system... $c"
+        echo "#!/bin/echo hi" > try
+        $eunicefix try
+        chmod 755 try
+        try > today
+        if test -s today; then
+	    $echoq "Yup."
+	    sharpbang='#!'
+	    awkf=""
+        else
+	    echo "#! /bin/echo hi" > try
+	    $eunicefix try
+	    chmod 755 try
+	    try > today
+	    if test -s today; then
+	        $echoq "Yup."
+	        sharpbang='#! '
+		awkf=""
+	    else
+	        $echoq "Nope."
+	        sharpbang=': use '
+		awkf="awk -f"
+	    fi
+        fi
+    else
+        $echoq "Nope."
+	$echoq "Your sh doesn't grok # comments--I will strip them later on."
+        shsharp=false
+        echo "exec grep -v '^#'" >spitshell
+        chmod 755 spitshell
+        $eunicefix spitshell
+        spitshell=`pwd`/spitshell
+        $echoq "I presume that if # doesn't work, #! won't work either!"
+        sharpbang=': use '
+	awkf="awk -f"
+    fi
+;;
+esac
+rm -rf try today
+
+: figure out how to guarantee sh startup
+$echoq $blank
+case "$quick+$startsh" in
++?*|?*+)
+    $echoq $n "Check sh startup... $c"
+    startsh=$sharpbang'/bin/sh'
+    $echoq $n "does '$startsh' work... $c"
+    cat >try <<EOSS
+$startsh
+set abc
+test "$?abc" != 1
+EOSS
+    
+    chmod 755 try
+    $eunicefix try
+    if try; then
+        $echoq "Yup, it does."
+    else
+        $echoq "Nope."
+	$echoq "You may have to fix up the shell scripts to make sure sh runs them."
+    fi
+    rm -f try today
+    ;;
+*)  $echoq "assuming ${sharpbang}/bin/sh works" ;;
+esac
+
+: set up shell script to do ~ expansion
+cat >filexp <<EOSS
+$startsh
+: expand filename
+case \$1 in
+~/*|~)
+    echo \$1 | $sed "s|~|\${HOME-\$LOGDIR}|"
+    ;;
+~*)
+    if test -f /bin/csh; then
+	/bin/csh -f -c "glob \$1"
+	echo ""
+    else
+	name=\`$expr x\$1 : '..\([^/]*\)'\`
+	dir=\`$sed </etc/passwd -n -e "/^\${name}:/{s/^[^:]*:[^:]*:[^:]*:[^:]*:[^:]*:\([^:]*\).*"'\$'"/\1/" -e p -e q -e '}'\`
+	if test ! -d "\$dir"; then
+	    me=\`basename \$0\`
+	    echo "\$me: can't locate home directory for: \$name" >&2
+	    exit 1
+	fi
+	case \$1 in
+	*/*)
+	    echo \$dir/\`$expr x\$1 : '..[^/]*/\(.*\)'\`
+	    ;;
+	*)
+	    echo \$dir
+	    ;;
+	esac
+    fi
+    ;;
+*)
+    echo \$1
+    ;;
+esac
+EOSS
+chmod 755 filexp
+$eunicefix filexp
+
+cat <<EOSC >loc
+$startsh
+    thing=\$1
+    shift
+    dflt=\$1
+    shift
+    for dir in \$*; do
+        case "\$thing" in
+        .)
+	    if test -d \$dir/\$thing; then
+	        echo \$dir
+	        exit 0
+	    fi
+	    ;;
+        *)
+	    if test -f \$dir/\$thing; then
+	        echo \$dir/\$thing
+	        exit 0
+	    fi
+	    ;;
+        esac
+    done
+    echo \$dflt
+    exit 1
+EOSC
+chmod 755 loc
+$eunicefix loc
+
+: determine where manual pages go
+case "$quick+$mansrc" in
+?*+?*) $echoq "assuming your man pages are still in $mansrc";;
+*) case "$mansrc" in
+  '') dflt=`loc . $nodir /usr/man/mann /usr/man/local/man1 /usr/man/u_man/man1 /usr/catman/u_man/man1 /usr/man/man1`;;
+  *)  dflt="$mansrc";;
+  esac
+
+  case "$quiet+$quick+$mansrc+$dflt" in
+  *$nodir*) dflt="/usr/man/man1";;
+  ?*+*+*+?*|*+?*+?*+?*)	$echoq "assuming your man pages are in $mansrc"
+	mansrc=$dflt;;
+  *)	mansrc="$nodir";;
+  esac
+
+  while test ! -d "$mansrc" -o -z "$mansrc" ; do
+    case $mansrc in
+      $nodir) ;;
+      *) echo "$mansrc does not appear to exist."
+	 echo "If you REALLY want it, type yes to the next question.";;
+    esac
+    echo " "
+    echo $n "Where do the man1 manual pages (source) go? [$dflt] $c"
+    . myread
+    case "$ans" in
+	yes|y)	mansrc=`filexp $dflt`;
+	break;;
+    esac
+    mansrc=`filexp "$ans"`
+    case $mansrc in
+      '') mansrc=$dflt ;;
+      *)  dflt="$ans";;
+    esac
+   done;;
+esac
+
+case "$mansrc" in
+*l) manext=l;;
+*n) manext=n;;
+*)  manext=1;;
+esac
+
+: ----------Now for more niftp specific stuff ----------
+$echoq " "
+$echoq "          ... Now for niftp specific info ..."
+
+: is it ascii
+$echoq $blank
+case "$all$ascii" in
+define)	$echoq "assuming your system still is still ascii";;
+undef)	$echoq "assuming your system still is still not ascii";;
+*)  case "$quick" in
+   '') cat <<EOM
+ 
+Most systems are ASCII.  If you use another chacter code, then the
+lowercase tables are generated at runtime.
+EOM
+    ;;
+    esac
+    cat > tmp.c << EOF
+main() { printf("%c\n", 0x30); }
+EOF
+    cc tmp.c -o tmp
+    tmp > tmp.out
+    if $contains 0 tmp.out >/dev/null 2>&1
+    then dflt=y
+    else dflt=n
+    fi
+    rm -f tmp tmp.c tmp.out
+    case "$quick" in
+    '') echo $n "Is your system ascii? [$dflt] $c"
+	. myread;;
+    *) ans=;;
+    esac
+    case "$ans$dflt" in
+    n*|f*) ascii='undef' ;;
+    *)     ascii='define' ;;
+    esac
+    ;;
+esac
+
+: check for pdp11
+$echoq " "
+case "$all$small_proc" in
+   define)$echoq "assuming it still wants small processes";;
+   undef)	$echoq "assuming it still wants proper sized processes";;
+   *)
+    cat <<'EOT' >pdp11.c
+#ifdef pdp11
+exit 0
+#else
+exit 1
+#endif
+EOT
+    $cpp pdp11.c | grep exit >pdp11
+    chmod 755 pdp11
+    $eunicefix pdp11
+    rm pdp11.c
+    if pdp11; then
+	small_proc=define
+	$echoq "This looks like a pdp11 to me."
+        if $contains '\-i' $mansrc/cc.1* $mansrc/ld.1* >/dev/null 2>&1
+	then dflt=y
+	else dflt=n
+	fi
+	echo $n "Does your system have separate I and D space? [$dflt] $c"
+	. myread
+	case "$ans$dflt" in
+	n*|f*) iandd=' ' ;;
+	*)     iandd='-i' ;;
+	esac
+    else
+	small_proc=undef
+	$echoq "assuming -i not needed as this doesn't look like a pdp11 to me"
+    fi
+    rm -f pdp11
+    ;;
+esac
+
+case "$sigret" in
+?*)	$echoq "assuming signal routines still return $sigret";;
+*)
+    case "$quick" in
+    '') cat << EOM
+
+Some systems define interupt routines to return int, others void.
+EOM
+    ;;
+    esac
+    tmps=/tmp/t.$$.c
+    tmpo=/tmp/t.$$.C
+    cat <<'EOT' >$tmps
+#include <signal.h>
+EOT
+    $cpp $tmps | grep signal | grep '()' > $tmpo
+    rm -f $tmps
+    case "`cat $tmpo`" in
+    *void*)	dflt=void;;
+    *int*)	dflt=int;;
+    *)		dflt=int;;
+    esac
+    case "$quick" in
+    '') cat $tmpo
+        echo $n "What type should a signal routine return ? [$dflt] $c"
+	. myread;;
+    *) ans=; $echoq "assuming signal routines return $dflt"
+    esac
+    rm -f $tmpo
+    case "$ans" in '') ans="$dflt";; esac
+    sigret="$ans"
+    ;;
+esac
+
+case "$termio+$string+$fcntl+$flock+$ioctl" in
+*def*+*def*+*def*+*def*+*def*)
+	$echoq "assuming .h files still the same ..." ;;
+*)
+    : see if this is a termio system
+    if test -r /usr/include/termio.h ; then
+	termio=define
+	$echoq "termio.h found."
+    else
+	if test -r /usr/include/sgtty.h ; then
+	    termio=undef
+	    $echoq "sgtty.h found."
+	else
+	    termio=undef
+	    $echoq "Neither termio.h nor sgtty.h found--you could have problems."
+	fi
+    fi
+    case "$usg" in
+    define)
+	case "$system3+$system5" in
+	define*) $echoq "assuming still system3" ;;
+	*+define) $echoq "assuming still system5" ;;
+	*) case "$termio" in
+	    define) system5=define ;;
+	    *)	    system3=define ;;
+	   esac
+	;;
+	esac
+	;;
+    esac
+    : see if this has strings.h or string.h
+    if test -r /usr/include/string.h ; then
+	string=define
+	$echoq "string.h found."
+    else
+	if test -r /usr/include/strings.h ; then
+	    string=undef
+	    $echoq "strings.h found."
+	else
+	    string=undef
+	    $echoq "Neither strings.h nor string.h found--you could have problems."
+	fi
+    fi
+
+    : see if this is a termio system
+    if $contains F_SETLKW /usr/include/fcntl.h > /dev/null 2>&1 ; then
+	fcntl=define
+	flock=undef
+	$echoq "fcntl.h (with F_SETLKW) found."
+    else
+	fcntl=undef
+	if $contains LOCK_EX /usr/include/sys/file.h > /dev/null 2>&1 ; then
+	    flock=define
+	    $echoq "flock available."
+	else
+	    flock=undef
+	    $echoq "No flock or fcntl, but that's ok, but locking is SLOW"
+	fi
+    fi
+
+    
+    : see if ioctl defs are in sgtty/termio or sys/ioctl
+    if test -r /usr/include/sys/ioctl.h ; then
+	ioctl=define
+	$echoq "sys/ioctl.h found."
+    else
+	ioctl=undef
+	$echoq "sys/ioctl.h not found, assuming ioctl args are defined in sgtty.h."
+    fi
+;;
+esac
+
+: does the system define u_char ?
+$echoq $blank
+case "$all$uchar" in
+define)	$echoq "assuming your system still defines u_char";;
+undef)	$echoq "assuming your system still does not define u_char";;
+*)
+    if $contains u_char /usr/include/sys/types.h >/dev/null 2>&1
+    then dflt='y'
+    else dflt='n'
+    fi
+
+    case "$quick" in
+    '') cat << EOM
+
+Some systems (e.g. BSD 4.2) typedef u_char as unsigned char.
+EOM
+    ;;
+    esac
+    case "$quick" in
+    '') echo $n "Does your system typdef u_char in <sys/types.h> ? [$dflt] $c"
+	. myread;;
+    *) ans=
+       case "$dflt" in
+    	y*) $echoq "assuming your system defines u_char";;
+	*)  $echoq "assuming your system does not define u_char";;
+       esac;;
+    esac
+    case "$ans$dflt" in
+    y*) uchar=define ;;
+    *)  uchar=undef ;;
+    esac
+    ;;
+esac
+
+: can the system create + truncate a file on opening it ?
+$echoq $blank
+case "$all$creatrunc" in
+define)	$echoq "assuming your system can still truncate files on open";;
+undef)	$echoq "assuming your system still cannot truncate files on open";;
+*)
+    if $contains O_TRUNC /usr/include/sys/file.h >/dev/null 2>&1 ||
+       $contains O_TRUNC /usr/include/sys/fcntl.h >/dev/null 2>&1
+    then dflt='y'
+    else dflt='n'
+    fi
+
+    case "$quick" in
+    '') cat << EOM
+
+Some systems (e.g. BSD 4.2) can truncate and create files on open.
+EOM
+    ;;
+    esac
+    case "$quick" in
+    '') echo $n "Can your system truncate files on open ? [$dflt] $c"
+	. myread;;
+    *) ans=
+       case "$dflt" in
+    	y*) $echoq "assuming your system can truncate files on open";;
+	*)  $echoq "assuming your system cannot truncate files on open";;
+       esac;;
+    esac
+    case "$ans$dflt" in
+    y*) creatrunc=define ;;
+    *)  creatrunc=undef ;;
+    esac
+    ;;
+esac
+
+: Does the system compact directories in file deletion ?
+$echoq $blank
+case "$all$dircompacts" in
+define)	$echoq "assuming your system still compacts directories on file deletion";;
+undef)	$echoq "assuming your system still does not compact directories on file deletion";;
+*)
+    case "$dircompacts" in
+    define)	dflt=y;;
+    *)		dflt=n;;
+    esac
+
+    case "$quick" in
+    '') cat << EOM
+
+Some systems (e.g. BSD 4.3) compact directories when a file is deleted.
+EOM
+    ;;
+    esac
+    echo $n "Does your system compact directories when a file is deleted ? [$dflt] $c"
+    . myread
+    case "$ans$dflt" in
+    y*) dircompacts=define ;;
+    *)  dircompacts=undef ;;
+    esac
+    ;;
+esac
+
+: does fopen "a" REALLY append on EVERY write, or does it just seek on open
+$echoq $blank
+case "$all$fopena" in
+define)	$echoq "assuming fopen(file, \"a\") still appends on each write";;
+undef)	$echoq "assuming fopen(file, \"a\") still only seeks to the end";;
+*)
+    case "$fopena" in
+    define)	dflt=y;;
+    *)		dflt=n;;
+    esac
+
+    case "$quick" in
+    '') cat << EOM
+
+Some systems (e.g. SYSV) have a fopen which treats tha argument "a" as
+a request to append to the file on each write.
+Other (broken) systems merely seek to the end of the file once when it
+is opened. This can cause problems if many processes access the file.
+EOM
+    ;;
+    esac
+    case "$quick" in
+    '') echo $n "Does your fopen REALLY append ? [$dflt] $c"
+	. myread;;
+    *) ans=
+       case "$dflt" in
+	y*)	$echoq "assuming fopen(file, \"a\") does append on each write";;
+	*)	$echoq "assuming fopen(file, \"a\") only seeks to the end";;
+       esac;;
+    esac
+    case "$ans$dflt" in
+    y*) fopena=define ;;
+    *)  fopena=undef ;;
+    esac
+    ;;
+esac
+
+: index or strcpy
+$echoq $blank
+case "$all$strchr" in
+define)	$echoq "assuming your system still uses strchr() and strrchr()";;
+undef)	$echoq "assuming your system still uses index() and rindex()";;
+*)  if test ! -r libc.list; then ar t $libc > libc.list; fi
+    if $contains index.o libc.list >/dev/null 2>&1
+    then
+        $echoq "Your system appears to use index() and rindex() rather than strchr()"
+        $echoq $n "and strrchr().  Is this correct? [y] $c"
+        case "$quiet" in
+	quiet)	ans=$dflt;;
+	*)	. myread;;
+	esac
+        case "$ans" in
+	    n*|f*) strchr='define' ;;
+	    *)     strchr='undef' ;;
+        esac
+    else
+        $echoq "Your system appears to use strchr() and strrchr() rather than index()"
+        $echoq $n "and rindex().  Is this correct? [y] $c"
+        case "$quiet" in
+	quiet)	ans=$dflt;;
+	*)	. myread;;
+	esac
+        case "$ans" in
+	    n*|f*) strchr=undef ;;
+	    *)     strchr=define ;;
+        esac
+    fi
+    ;;
+esac
+
+: does it have getgroups
+$echoq $blank
+case "$all$getgroups" in
+define)	$echoq "assuming your system still uses multiple groups";;
+undef)	$echoq "assuming your system still has only a single group";;
+*)  if test ! -r libc.list; then ar t $libc > libc.list; fi
+    case "$quick" in
+    '') cat <<EOM
+ 
+Some systems (e.g. BSD 4.2) allow a user to be in several groups
+simultaneously.
+EOM
+    ;;
+    esac
+    if $contains getgroups.o libc.list >/dev/null 2>&1
+    then dflt=y
+    else dflt=n
+    fi
+    case "$quick" in
+    '')	echo $n "Does your system have multiple groups per user? [$dflt] $c"
+	. myread;;
+    *) ans=;;
+    esac
+    case "$ans$dflt" in
+    n*|f*) getgroups='undef' ;;
+    *)     getgroups='define' ;;
+    esac
+    ;;
+esac
+
+: does it have getwd
+$echoq $blank
+case "$all$getwd" in
+define)	$echoq "assuming your system still has getwd()";;
+undef)	$echoq "assuming your system still does not have getwd()";;
+*)  if test ! -r libc.list; then ar t $libc > libc.list; fi
+    case "$quick" in
+   '') cat <<EOM
+ 
+Some systems (e.g. BSD 4.2) have a built it "pwd" routine called getwd().
+If there isn't one, the system has to exec pwd which is much slower.
+EOM
+    ;;
+    esac
+    if $contains getwd.o libc.list >/dev/null 2>&1
+    then dflt=y
+    else dflt=n
+    fi
+    case "$quick" in
+    '') echo $n "Does your system have a getwd() routine? [$dflt] $c"
+	. myread;;
+    *) ans=;;
+    esac
+    case "$ans$dflt" in
+    n*|f*) getwd='undef' ;;
+    *)     getwd='define' ;;
+    esac
+    ;;
+esac
+
+: does it have bzero
+$echoq $blank
+case "$all$bzero" in
+define)	$echoq "assuming your system still has bzero()";;
+undef)	$echoq "assuming your system still does not have bzero()";;
+*)  if test ! -r libc.list; then ar t $libc > libc.list; fi
+    case "$quick" in
+   '') cat <<EOM
+ 
+Some systems (e.g. BSD 4.2) have a memory clear routine called bzero().
+If there isn't one, a C procedure will be used.
+EOM
+    ;;
+    esac
+    if $contains bzero.o libc.list >/dev/null 2>&1
+    then dflt=y
+    else dflt=n
+    fi
+    case "$quick" in
+    '') echo $n "Does your system have a bzero() routine? [$dflt] $c"
+	. myread;;
+    *) ans=;;
+    esac
+    case "$ans$dflt" in
+    n*|f*) bzero='undef' ;;
+    *)     bzero='define' ;;
+    esac
+    ;;
+esac
+
+: does it have bcopy
+$echoq $blank
+case "$all$bcopy" in
+define)	$echoq "assuming your system still has bcopy()";;
+undef)	$echoq "assuming your system still does not have bcopy()";;
+*)  if test ! -r libc.list; then ar t $libc > libc.list; fi
+    case "$quick" in
+   '') cat <<EOM
+ 
+Some systems (e.g. BSD 4.2) have a memory copy routine called bcopy().
+If there isn't one, a C procedure will be used.
+EOM
+    ;;
+    esac
+    if $contains bcopy.o libc.list >/dev/null 2>&1
+    then dflt=y
+    else dflt=n
+    fi
+    case "$quick" in
+    '') echo $n "Does your system have a bcopy() routine? [$dflt] $c"
+	. myread;;
+    *) ans=;;
+    esac
+    case "$ans$dflt" in
+    n*|f*) bcopy='undef' ;;
+    *)     bcopy='define' ;;
+    esac
+    ;;
+esac
+
+: does it have setvbuf
+$echoq $blank
+case "$all$setvbuf" in
+define)	$echoq "assuming your system still has setvbuf()";;
+undef)	$echoq "assuming your system still does not have setvbuf()";;
+*)  if test ! -r libc.list; then ar t $libc > libc.list; fi
+    case "$quick" in
+    '') cat <<EOM
+ 
+Some systems (System V) can set a stdio FILE to line buffer using
+the "setvbuf" command.
+
+EOM
+    ;;
+    esac
+    if $contains setvbuf.o libc.list >/dev/null 2>&1
+    then dflt=y
+    else dflt=n
+    fi
+    case "$quick" in
+    '')	echo $n "Does your system have setvbuf ? [$dflt] $c"
+	. myread;;
+    *) ans=;;
+    esac
+    case "$ans$dflt" in
+    n*|f*) setvbuf='undef' ;;
+    *)     setvbuf='define' ;;
+    esac
+    ;;
+esac
+
+: does it have setlinebuf
+$echoq $blank
+case "$all$setlinebuf" in
+define)	$echoq "assuming your system still has setlinebuf()";;
+undef)	$echoq "assuming your system still does not have setlinebuf()";;
+*)  if test ! -r libc.list; then ar t $libc > libc.list; fi
+    case "$quick" in
+    '') cat <<EOM
+ 
+Some systems (e.g. BSD4.2) can set a stdio FILE to line buffer using
+the "setlinebuf" command.
+
+EOM
+    ;;
+    esac
+    if $contains setbuffer.o libc.list >/dev/null 2>&1
+    then dflt=y
+    else dflt=n
+    fi
+    case "$quick" in
+    '')	echo $n "Does your system have setlinebuf ? [$dflt] $c"
+	. myread;;
+    *) ans=;;
+    esac
+    case "$ans$dflt" in
+    n*|f*) setlinebuf='undef' ;;
+    *)     setlinebuf='define' ;;
+    esac
+    ;;
+esac
+
+: does it have seteuid
+$echoq $blank
+case "$all$seteuid" in
+define)	$echoq "assuming your system still has seteuid()";;
+undef)	$echoq "assuming your system still does not have seteuid()";;
+*)  if test ! -r libc.list; then ar t $libc > libc.list; fi
+    case "$quick" in
+    '') cat <<EOM
+ 
+Some systems (e.g. BSD4.2) can set the effective UID (and reset it).
+EOM
+    ;;
+    esac
+    if $contains seteuid.o libc.list >/dev/null 2>&1
+    then dflt=y
+    else dflt=n
+    fi
+    case "$quick" in
+    '')	echo $n "Can your system set the euid? [$dflt] $c"
+	. myread;;
+    *) ans=;;
+    esac
+    case "$ans$dflt" in
+    n*|f*) seteuid='undef' ;;
+    *)     seteuid='define' ;;
+    esac
+    ;;
+esac
+
+: does it have rename
+$echoq $blank
+case "$all$rename" in
+define)	$echoq "assuming your system still has rename()";;
+undef)	$echoq "assuming your system still does not have rename()";;
+*)  if test ! -r libc.list; then ar t $libc > libc.list; fi
+    case "$quick" in
+    '') cat <<EOM
+ 
+Some systems (e.g. BSD 4.2) have an atomic rename() routine.
+Without this programmes need to link & unlink files to do a rename.
+EOM
+    ;;
+    esac
+    if $contains rename.o libc.list >/dev/null 2>&1
+    then dflt=y
+    else dflt=n
+    fi
+    case "$quick" in
+    '') echo $n "Does your system have a rename() routine? [$dflt] $c"
+	. myread;;
+    *) ans=;;
+    esac
+    case "$ans$dflt" in
+    y*) rename='define' ;;
+    *)     rename='undef' ;;
+    esac
+    ;;
+esac
+
+: does it have vfork
+$echoq $blank
+case "$all$novfork" in
+undef)	$echoq "assuming your system still has vfork";;
+define)	$echoq "assuming your system still has no vfork";;
+*)  if test ! -r libc.list; then ar t $libc > libc.list; fi
+    case "$quick" in
+    '') cat <<EOM
+ 
+Some systems (e.g. BSD 4.2) can do a special kind of efficient fork if it 
+known that the programme won't touch certain areas of their address space.
+If you aren't sure, it's not too inefficient to use fork.
+EOM
+    ;;
+    esac
+    if $contains Ovfork.o libc.list >/dev/null 2>&1
+    then dflt=y
+    else dflt=n
+    fi
+    case "$quick" in
+    '') echo $n "Does your system have vfork? [$dflt] $c"
+	. myread;;
+    *) ans=;;
+    esac
+    case "$ans$dflt" in
+    y*) novfork='undef' ;;
+    *)  novfork='define' ;;
+    esac
+    ;;
+esac
+
+: uname ?
+$echoq $blank
+case "$all$uname" in
+define)	$echoq "assuming your system still uses uname()";;
+undef)	;;
+*)  if test ! -r libc.list; then ar t $libc > libc.list; fi
+    if $contains uname.o libc.list >/dev/null 2>&1
+    then dflt=y
+    else dflt=n
+    fi
+    case "$quick" in
+    '') echo $n "Do you want to use uname() to find your system name? [$dflt] $c";
+	. myread;;
+    *) ans=;;
+    esac
+    case "$ans$dflt" in
+    y*)	uname='define'
+	gethostname='undef';;
+    *)  uname='undef';;
+    esac
+    ;;
+esac
+
+: hostname ?
+$echoq $blank
+case "$all$gethostname" in
+define)	$echoq "assuming your system still uses gethostname()";;
+undef)	;;
+*)  if test ! -r libc.list; then ar t $libc > libc.list; fi
+    if $contains gethostname.o libc.list >/dev/null 2>&1
+    then dflt=y
+    else dflt=n
+    fi
+
+    case "$quick" in
+    '') echo $n "Do you want to use hostname() to find your system name? [$dflt] $c";
+	. myread;;
+    *) ans=;;
+    esac
+    case "$ans$dflt" in
+    y*) gethostname='define';;
+    *)  gethostname='undef';;
+    esac
+    ;;
+esac
+
+: check for void type
+$echoq $blank
+case "$all$novoid" in
+define)	$echoq "assuming int should still be used in place of void" ;;
+undef)  $echoq "assuming cc still understands void" ;;
+*)
+    $echoq $n "Checking to see if your C compiler groks the void type...$c"
+    $cat >try.c <<'EOCP'
+void main();
+EOCP
+    if cc -c try.c >/dev/null 2>&1 ; then
+	novoid='undef'
+	$echoq "Yup, it does."
+    else
+	novoid='define'
+	$echoq "Nope."
+	$echoq "I will substitute int."
+    fi
+    rm try.*
+;;
+esac
+
+: see if there are directory access routines out there
+case "$quick+$libndir+$usendir+$ndirh+$ndirlib" in
+?*+undef+undef+sys/dir.h+) $echoq "assuming your system still has readdir() built in";;
+?*+define+undef+../ndir/ndir.h+../ndir/libndir.a)
+			$echoq "assuming you are still using ndir/";;
+../ndir/?*+define+undef+ndir.h+/*)
+			$echoq "assuming you are still using $ndirlib";;
+*)
+    guess=`cd bin; ../loc libndir.a XX /lib /usr/lib /usr/local/lib ../ndir`
+    ndircomm=''
+    ndirh='ndir.h'
+    libndir=define
+    usendir=undef
+    ndirlib=''
+    hashndir='#'
+    case "$guess" in
+    XX)
+	if test ! -r libc.list; then ar t $libc > libc.list; fi
+	if $contains readdir.o libc.list >/dev/null 2>&1 ; then
+	    $echoq "No ndir library found, but you have readdir() so we'll use that."
+	    ndirh='sys/dir.h'
+	    libndir=undef
+	else
+	    $echoq "No ndir library found and no readdir() found--using ndir/"
+	    ndirlib='../ndir/libndir.a'
+	    ndirh='../ndir/ndir.h'
+	    hashndir=' '
+	fi
+	;;
+    *)	$echoq "Ndir library found as $guess."
+	ndirlib="$guess"
+	case "$ndirlib" in
+	../ndir/*)	ndirh='../ndir/ndir.h'; hashndir=' ';;
+	esac
+    esac
+esac
+
+: check need for ranlib
+case "$quick+$ranlib" in
+?*+*echo*) $echoq "assuming your system still does not need ranlib";;
+?*+?*) $echoq "assuming your system still uses $ranlib";;
+*)	case "$quick" in
+	'') cat <<EOM
+ 
+Some systems (e.g. BSD 4.2) need to post-process a library.
+EOM
+    ;;
+    esac
+    case "$ranlib" in
+    ?*)	dflt="$ranlib";;
+    *)	dflt=`loc ranlib no $fullpath`;;
+    esac
+    case "$quick" in
+    '') echo $n "What is the full pathname of ranlib (or no for none)? [$dflt] $c"
+	. myread
+	case "$ans" in
+	'') ans="$dflt";;
+	esac;;
+    *)	ans="$dflt"
+	case "$ans" in
+	no)	$echoq assuming your system does not need ranlib;;
+	*)	$echoq assuming your system uses $ans;;
+	esac
+    esac
+    case "$ans" in
+	''|no) ranlib="@echo no need to do a   ranlib";;
+	*) ranlib="$ans";;
+    esac
+esac
+
+: check need for cp
+case "$quick+$cp" in
+?*+?*) $echoq "assuming your system still uses $cp to install files";;
+*)	case "$quick" in
+	'') cat <<EOM
+ 
+When files are installed, some managers like to use a local program which does
+things such as maintaining datestamps, stripping binaries, ...
+It will be called with two arguments, the source file and the destination.
+EOM
+    ;;
+    esac
+    case "$cp" in
+    ?*)	dflt="$cp";;
+    *)	dflt=cp;;
+    esac
+    case "$quick" in
+    '') echo $n "What command do you want to use to install files ? [$dflt] $c"
+	. myread
+	case "$ans" in
+	'') ans="$dflt";;
+	esac;;
+    *)	ans="$dflt"
+	case "$ans" in
+	*)	$echoq assuming your system uses $ans to install files;;
+	esac
+    esac
+    case "$ans" in
+	'') cp="$dflt";;
+	*) cp="$ans";;
+    esac
+esac
+
+: check need for chown
+case "$quick+$chown" in
+?*+*echo*) $echoq "assuming your system still does not need chown";;
+?*+?*) $echoq "assuming your system still uses $chown";;
+*)	case "$quick" in
+	'') cat <<EOM
+ 
+Some files need to have the owner changed. Some systems consider
+that this should only be done by a system administrator, so put it
+in /etc, whereas some systems allow users to do this so put it in
+/usr/bin or some such.
+EOM
+    ;;
+    esac
+    case "$chown" in
+    ?*)	dflt="$chown";;
+    *)	dflt=`loc chown no $fullpath`;;
+    esac
+    case "$quick" in
+    '') echo $n "What is the full pathname of chown (or no for none)? [$dflt] $c"
+	. myread
+	case "$ans" in
+	'') ans="$dflt";;
+	esac;;
+    *)	ans="$dflt"
+	case "$ans" in
+	no)	$echoq assuming your system does not need chown;;
+	*)	$echoq assuming your system uses $ans;;
+	esac
+    esac
+    case "$ans" in
+	''|no) chown="@echo no need to do a   chown";;
+	*) chown="$ans";;
+    esac
+esac
+
+: check need for chug
+case "$quick+$chug" in
+?*+*echo*) $echoq "assuming your system still does not need chug";;
+?*+?*) $echoq "assuming your system still uses $chug";;
+*)	case "$quick" in
+	'') cat <<EOM
+ 
+Some files need to have the owner and group changed.
+Some systems have a programme called chug which given a name, 
+sets the user and group to be those found in the passwd file.
+
+If chug is not available, chown will be used (for the moment)
+EOM
+    ;;
+    esac
+    case "$chug" in
+    '')	dflt=`loc chug no $fullpath`;;
+    *)	dflt="$chug";;
+    esac
+    case "$quick" in
+    '') echo $n "What is the full pathname of chug (or no for chown)? [$dflt] $c"
+	. myread
+	case "$ans" in
+	'') ans="$dflt";;
+	esac;;
+    *)	ans="$dflt"
+	case "$ans" in
+	n*)	$echoq assuming your system uses $chown;;
+	*)	$echoq assuming your system uses $ans;;
+	esac
+    esac
+    case "$ans" in
+	''|no) chug="$chown";;
+	*) chug="$ans";;
+    esac
+esac
+
+: check need for chgrp
+case "$quick+$chgrp" in
+?*+*echo*) $echoq "assuming your system still does not need chgrp";;
+?*+?*) $echoq "assuming your system still uses $chgrp";;
+*)	case "$quick" in
+	'') cat <<EOM
+ 
+Some files need to have the group changed. Some systems consider
+that this should only be done by a system administrator, so put it
+in /etc, whereas some systems allow users to do this so put it in
+/usr/bin or some such.
+EOM
+    ;;
+    esac
+    case "$chgrp" in
+    ?*)	dflt="$chgrp";;
+    *)	dflt=`loc chgrp no $fullpath`;;
+    esac
+    case "$quick" in
+    '') echo $n "What is the full pathname of chgrp (or no for none)? [$dflt] $c"
+	. myread
+	case "$ans" in
+	'') ans="$dflt";;
+	esac;;
+    *)	ans="$dflt"
+	case "$ans" in
+	no)	$echoq assuming your system does not need chgrp;;
+	*)	$echoq assuming your system uses $ans;;
+	esac
+    esac
+    case "$ans" in
+	''|no) chgrp="@echo no need to do a   chgrp";;
+	*) chgrp="$ans";;
+    esac
+esac
+
+: check need for chmod
+case "$quick+$chmod" in
+?*+*echo*) $echoq "assuming your system still does not need chmod";;
+?*+?*) $echoq "assuming your system still uses $chmod";;
+*)	case "$quick" in
+	'') cat <<EOM
+ 
+Some files need to have the mode changed. Some systems consider
+that this should only be done by a system administrator, so put it
+in /etc, whereas some systems allow users to do this so put it in
+/usr/bin or some such.
+EOM
+    ;;
+    esac
+    case "$chmod" in
+    ?*)	dflt="$chmod";;
+    *)	dflt=`loc chmod no $fullpath`;;
+    esac
+    case "$quick" in
+    '') echo $n "What is the full pathname of chmod (or no for none)? [$dflt] $c"
+	. myread
+	case "$ans" in
+	'') ans="$dflt";;
+	esac;;
+    *)	ans="$dflt"
+	case "$ans" in
+	no)	$echoq assuming your system does not need chmod;;
+	*)	$echoq assuming your system uses $ans;;
+	esac
+    esac
+    case "$ans" in
+	''|no) chmod="@echo no need to do a   chmod";;
+	*) chmod="$ans";;
+    esac
+esac
+
+: check for restartsys calls
+case "$quick+$restartsys" in
+?*+define) $echoq "assuming your system still restarts system calls";;
+?*+undef) $echoq "assuming your system still does not restart system calls";;
+*)	case "$quick" in
+	'') cat <<EOM
+ 
+Some systems (e.g. BSD 4.2) automatically restart system calls which are 
+interupted. To get round this problem, the code has to do longjumps.
+EOM
+    ;;
+    esac
+    case "$restartsys" in
+    undef)	dflt=n;;
+    define)	dflt=y;;
+    *)	case "$bsd+$bsd4_2" in
+	*define*) dflt=y;;
+	*)	  dflt=n;;
+        esac
+    esac
+    $echoq $n "Does your system restart system calls? [$dflt] $c"
+    case "$quick" in
+    '')	. myread;;
+    *)	ans=$dflt;;
+    esac
+    case "$ans$dflt" in
+	y*) restartsys=define;;
+	*)  restartsys=undef;;
+    esac
+esac
+
+$echoq "        Now for some things you may want non-standard"
+
+: determine where public executables go
+case "$publicbin" in
+'')
+    dflt=`loc . /bin $fullpath`
+    ;;
+*)  dflt="$publicbin"
+    ;;
+esac
+case "$quick+$publicbin+$dflt" in
+?*+?*+?*) publicbin=$dflt $echoq "assuming public binaries still go in $publicbin";;
+*) publicbin="$nodir";;
+esac
+while test ! -d "$publicbin" -o -z "$publicbin" ; do
+    case $publicbin in
+      $nodir) ;;
+      *) echo "$publicbin does not appear to exist."
+	 echo "If you REALLY want it, type yes to the next question.";;
+    esac
+    echo " "
+    echo $n "Where do you want to put the public executables? [$dflt] $c"
+    . myread
+    case "$ans" in
+	yes|y)	publicbin=`filexp $dflt`;
+	break;;
+    esac
+    publicbin=`filexp $ans`
+    case $publicbin in
+      '') publicbin=$dflt ;;
+      *)  dflt="$ans";;
+    esac
+done
+
+: determine where the private binaries file goes
+case "$privatebin" in
+'')
+    dflt=`loc . /usr/lib/niftp /usr/lib/niftp /usr/lib/ftp`
+    ;;
+*)  dflt="$privatebin"
+    ;;
+esac
+case "$quick+$privatebin+$dflt" in
+?*+?*+?*) privatebin=$dflt $echoq "assuming private binaries still goes in $privatebin";;
+*) privatebin="$nodir";;
+esac
+while test ! -d "$privatebin" -o -z "$privatebin" ; do
+    case $privatebin in
+      $nodir) ;;
+      *) echo "$privatebin does not appear to exist."
+	 echo "If you REALLY want it, type yes to the next question.";;
+    esac
+    echo " "
+    echo $n "In which directory do you want to put the private binaries ? [$dflt] $c"
+    . myread
+    case "$ans" in
+	yes|y)	privatebin=`filexp $dflt`;
+	break;;
+    esac
+    privatebin=`filexp $ans`
+    case $privatebin in
+      '') privatebin=$dflt ;;
+      *)  dflt="$ans";;
+    esac
+done
+
+case "$spool" in
+'')
+    dflt=`loc . /usr/spool/niftp /usr/spool/niftp usr/spool/ftp`
+    ;;
+*)  dflt="$spool"
+    ;;
+esac
+case "$quick+$spool+$dflt" in
+?*+?*+?*) spool=$dflt $echoq "assuming spool dirs still goes in $spool";;
+*) spool="$nodir";;
+esac
+while test ! -d "$spool" -o -z "$spool" ; do
+    case $spool in
+      $nodir) ;;
+      *) echo "$spool does not appear to exist."
+	 echo "If you REALLY want it, type yes to the next question.";;
+    esac
+    echo " "
+    echo $n "In which directory do you want to put the spool directories ? [$dflt] $c"
+    . myread
+    case "$ans" in
+	yes|y)	spool=`filexp $dflt`;
+	break;;
+    esac
+    spool=`filexp $ans`
+    case $spool in
+      '') spool=$dflt ;;
+      *)  dflt="$ans";;
+    esac
+done
+
+case "$local" in
+'')
+    dflt=`loc . local local`
+    ;;
+*)  dflt="$local"
+    ;;
+esac
+case "$quick+$local+$dflt" in
+?*+?*+?*) local=$dflt $echoq "assuming local configs still goes in $local";;
+*) local="$nodir";;
+esac
+while test ! -d "$local" -o -z "$local" ; do
+    case $local in
+      $nodir) ;;
+      *) echo "$local does not appear to exist."
+	 echo "If you REALLY want it, type yes to the next question.";;
+    esac
+    echo " "
+    echo $n "In which directory do you have your private configurations ? [$dflt] $c"
+    . myread
+    case "$ans" in
+	yes|y)	local=`filexp $dflt`;
+	break;;
+    esac
+    local=`filexp $ans`
+    case $local in
+      '') local=$dflt ;;
+      *)  dflt="$ans";;
+    esac
+done
+
+: check for mailer
+case "$quick+$mailer" in
+?*+?*) $echoq "assuming you are still running $mailer";;
+*)	case "$quick" in
+	'') cat <<EOM
+ 
+If problems occur internally, the programme tries to send an error message
+to the user, using the local mail system.
+EOM
+    ;;
+    esac
+    case "$mailer" in
+    '')	dflt=
+	for m in $mailers
+	do guess=`loc $m XX $mailerdirs`
+	   case "$guess" in
+	   XX) ;;
+	   *)  dflt="$guess";;
+	   esac
+	done;;
+    *)	dflt="$mailer";;
+    esac
+    $echoq $n "What is your local mailer? [$dflt] $c"
+    case "$quiet" in
+    '')	. myread;;
+    *)	ans="$dflt";;
+    esac
+    case "$ans" in
+    '') mailer="$dflt";;
+    *)  mailer="$ans";;
+    esac;;
+esac
+
+: check need for grp
+case "$quick+$chgrp+$grp" in
+?*+*echo*+*) ;;
+?*+?*+?*) $echoq "assuming your system still uses group $grp";;
+*)	case "$quick" in
+	'') cat <<EOM
+
+Some files need to have the group changed.
+Thius may be a name which is found in /etc/group or a number.
+EOM
+    ;;
+    esac
+    case "$grp" in
+    ?*)	dflt="$grp";;
+    *)	if $contains "niftp:" /etc/group >/dev/null 2>&1
+	then dflt=niftp
+	elif $contains "ftp:" /etc/group >/dev/null 2>&1
+	then dflt=ftp
+	else dflt=0
+	fi
+    esac
+    case "$quick+$dflt" in
+    +*|*+0) echo $n "What group should be used? [$dflt] $c"
+	. myread
+	case "$ans" in
+	'') ans="$dflt";;
+	esac;;
+    *)	ans="$dflt"
+	$echoq assuming your system uses group $ans
+    esac
+    grp="$ans"
+esac
+
+$echoq "        Now for some choices which are totally up to you"
+
+case "$quick+$bannedfile" in
+?*+' ')	$echoq "assuming you still do not want a banned file";;
+?*+?*)	$echoq "assuming you still want the banned files $bannedfile";;
+*)	case "$bannedfile" in
+	' '|'')	dflt=n;;
+	*)	dflt="$bannedfile";;
+	esac
+	case "$quick" in
+	'') cat <<EOM
+ 
+Some sites want to ban certain users from being able to FTP files.
+To achieve this a file of banned users is maintained.
+This can be configued in niftptailor, but a default can also be set now.
+EOM
+;;
+	esac
+	echo $n "Do you want a file of banned users (n, no or filename) ? [$dflt] $c"
+	. myread
+	case "$ans" in '') ans="$dflt";; esac
+	case "$ans" in
+	n|no)	bannedfile=" ";;
+	*)	bannedfile="$ans";;
+	esac;;
+esac
+
+case "$quick+$maxfile+$maxfilesize" in
+?*+define+?*) $echoq "assuming you still want max file size $maxfilesize";;
+?*+undef+*) $echoq "assuming you still do not to set maxfilesize";;
+*)	case "$maxfile" in
+	define)	dflt=y;;
+	undef)	dflt=n;;
+	*)  if test ! -r libc.list; then ar t $libc > libc.list; fi
+		if $contains ulimit libc.list > /dev/null 2>&1
+		then	dflt=y
+		else	dflt=n
+		fi;;
+	esac
+	case "$quick" in
+	'') cat <<EOM
+ 
+Some systems have a restricted maximum file size which can be increased
+for incoming transfers by a call to ulimit.
+EOM
+;;
+	esac
+	$echoq $n "Do you want to set the file size limit? [$dflt] $c"
+	case "$quiet" in
+	'')	. myread;;
+	*)	ans=$dflt;;
+	esac
+	case "$ans$dflt" in
+	y*)	maxfile=define
+		case "$maxfilesize" in
+		'')	dflt=10000000;;
+		*)	dflt=$maxfilesize;;
+		esac
+		echo $n "What filesize limit (in bytes)? [$dflt] $c"
+		. myread
+		case "$ans" in
+		'')	maxfilesize=$dflt;;
+		0)	maxfile=undef;;
+		*)	maxfilesize=$ans;;
+		esac;;
+	*)	maxfile=undef;;
+	esac;;
+esac
+
+: check for mailer
+case "$quick+$mail+$mailtype" in
+?*+define+?*) $echoq "assuming you are still running $mailtype as a mailer";;
+?*+undef+*) $echoq "assuming you are still not running a mailer";;
+*)	case "$quick" in
+	'') cat <<EOM
+ 
+The code can support mail as well as niftp.
+EOM
+    ;;
+    esac
+    case "$mail" in
+    undef)	dflt=n;;
+    *)	dflt=y;;
+    esac
+    echo $n "Do you want to support mail? [$dflt] $c"
+    . myread
+    case "$ans$dflt" in
+	y*) mail=define
+	    case "$mailtype" in
+	    '')	case "$mailer" in
+		*sendmail)	dflt=sendmail;;
+		*mmdf*|*/v6mail)dflt=mmdf;;
+		*hhmail)	dflt=binmail;;
+		*/mail)		dflt=binmail;;
+		esac;;
+	    *)	dflt="$mailtype";;
+	    esac
+	    case "$quick" in
+	    '') cat <<EOM
+
+The mailer run for incoming FTP.MAIL traffic can be one of:
+	mmdf	 clever mailer
+	sendmail fairly bright mailer
+	binmail	 DUMB mailer
+	progmail arbitary program
+EOM
+	    ;;
+	    esac
+	    $echoq $n "What type of mailer? (mmdf, sendmail, binmail, progmail)? [$dflt] $c"
+	    case "$quiet" in
+	    "")	. myread;;
+	    *)	ans="$dflt";;
+	    esac
+	    case "$ans" in '') ans="$dflt";; esac
+	    mailtype="$ans"
+	;;
+	*)  mail=undef;;
+    esac
+esac
+
+: check for strip
+case "$quick+$strip" in
+?*+' ') $echoq "assuming you are still not stripping";;
+?*+-s) $echoq "assuming you are still stripping";;
+?*+?*) $echoq "assuming you are still stripping using $strip";;
+*)	case "$quick" in
+	'') cat <<EOM
+ 
+Binaries can be made smaller (and less understandable) by stripping
+the linkage information. This makes debugging difficult.
+EOM
+    ;;
+    esac
+    case "$strip" in
+    ''|' ')	dflt=n;;
+    -s)		dflt=y;;
+    *)		dflt="$strip";;
+    esac
+    $echoq $n "Do you want to strip binaries (y, n or -flag)? [$dflt] $c"
+        case "$quiet" in
+	quiet)	ans=$dflt;;
+	*)	. myread;;
+	esac
+    case "$ans" in '') ans="$dflt";; esac
+    case "$ans" in
+    y*)	strip=-s;;
+    n*)	strip=' ';;
+    *)	strip="$ans";;
+    esac
+esac
+
+: check for profile
+case "$quick+$profile" in
+?*+' ') $echoq "assuming you are still not profiling";;
+?*+-g) $echoq "assuming you are still profiling";;
+?*+?*) $echoq "assuming you are still profiling using $profile";;
+*)	case "$quick" in
+	'') cat <<EOM
+ 
+Binaries can be made larger (and more understandable) by profiling
+generated. This makes debugging easier.
+EOM
+    ;;
+    esac
+    case "$profile" in
+    ''|' ')	dflt=n;;
+    -g)		dflt=y;;
+    *)		dflt="$profile";;
+    esac
+    $echoq $n "Do you want to profile binaries (y, n or -flag)? [$dflt] $c"
+        case "$quiet" in
+	quiet)	ans=$dflt;;
+	*)	. myread;;
+	esac
+    case "$ans" in '') ans="$dflt";; esac
+    case "$ans" in
+    y*)	profile=-g;;
+    n*)	profile=' ';;
+    *)	profile="$ans";;
+    esac
+esac
+
+: check for cflags
+case "$quick+$cflags" in
+?*+' ') $echoq "assuming you still have no special cc flags";;
+?*+?*) $echoq "assuming you still need cc flags $cflags";;
+*)	case "$quick" in
+	'') cat <<EOM
+ 
+Some systems need special flags for the compiler (e.g. -DICDOC).
+EOM
+    ;;
+    esac
+    case "$cflags" in
+    ''|' ')	dflt=n;;
+    *)		dflt="$cflags";;
+    esac
+    $echoq $n "Do you want any cc flags (n or -flags)? [$dflt] $c"
+        case "$quiet" in
+	quiet)	ans=$dflt;;
+	*)	. myread;;
+	esac
+    case "$ans" in '') ans="$dflt";; esac
+    case "$ans" in
+    n*)	cflags=' ';;
+    *)	cflags="$ans";;
+    esac
+esac
+
+: check for ldflags
+case "$quick+$ldflags" in
+?*+' ') $echoq "assuming you still have no special ld flags";;
+?*+?*) $echoq "assuming you still need ld flags $ldflags";;
+*)	case "$quick" in
+	'') cat <<EOM
+ 
+Some systems need special flags for the linker ld.
+EOM
+    ;;
+    esac
+    case "$ldflags" in
+    ''|' ')	dflt=n;;
+    *)		dflt="$ldflags";;
+    esac
+    $echoq $n "Do you want any ld flags (n or -flags)? [$dflt] $c"
+        case "$quiet" in
+	quiet)	ans=$dflt;;
+	*)	. myread;;
+	esac
+    case "$ans" in '') ans="$dflt";; esac
+    case "$ans" in
+    n*)	ldflags=' ';;
+    *)	ldflags="$ans";;
+    esac
+esac
+
+for d in $configlist
+do
+    val=`eval echo \\$$d`
+    nam=`expr $d : 'd\(.*\)'`
+    case "$all$val" in
+ 	define)	$echoq "assuming $nam    	network is still wanted" ;;
+ 	undef)	$echoq "assuming $nam    	network is still not wanted" ;;
+	*)	dflt=yes
+		echo $n "is the network $nam	wanted [$dflt] $c"
+		. myread
+		case $ans in
+		''|y*)	eval $d=define ;;
+		*)	eval $d=undef ;;
+		esac ;;
+    esac
+done
+
+: check for rmtdbm
+case "$quick+$rmtdbm" in
+?*+undef) $echoq "assuming you still do not want remote dbm access";;
+?*+define) $echoq "assuming you still want remote dbm access";;
+*)	case "$quick" in
+	'') cat <<EOM
+ 
+There is code which allows remote access to the dbm NRS database.
+This is only used if the tailorfile TABLE contains an @, so even if you
+do not intend you use it, it does little harm.
+EOM
+    ;;
+    esac
+    case "$rmtdbm" in
+    undef)	dflt=n;;
+    *)		dflt=y;;
+    esac
+    $echoq $n "Do you want to allow remote NRS dbm access ? [$dflt] $c"
+        case "$quiet" in
+	quiet)	ans=$dflt;;
+	*)	. myread;;
+	esac
+    case "$ans$dflt" in
+    n*)	rmtdbm=undef;;
+    *)	rmtdbm=define;;
+    esac
+esac
+
+: check for rmtdbmd
+case "$quick+$rmtdbm+$rmtdbmd" in
+*+undef+*)	;;
+?*+*+' ') $echoq "assuming you still do not want a remote dbm server";;
+?*+define+?*) $echoq "assuming you still want a remote dbm server in $rmtdbmd";;
+*)	case "$quick" in
+	'') cat <<EOM
+ 
+On the NRS dbm server only, the server code needs to be installed.
+EOM
+    ;;
+    esac
+    case "$rmtdbmd" in
+    ' '|'')	dflt=/usr/etc/in.rmtdbm;;
+    *)		dflt="$rmtdbmd";;
+    esac
+    $echoq $n "Where do you want the remote NRS dbm server installed ? [$dflt] $c"
+        case "$quiet" in
+	quiet)	ans=$dflt;;
+	*)	. myread;;
+	esac
+    case "$ans" in '') ans="$dflt";; esac
+    case "$ans" in
+    '')	rmtdbmd="$dflt";;
+    *)	rmtdbmd="$ans";;
+    esac
+esac
+
+: check for default packet size
+case "$quick+$def_pktsize" in
+?*+?*) $echoq "assuming you still want default packet size of $def_pktsize";;
+*)	case "$quick" in
+	'') cat <<EOM
+ 
+On some systems it is possible to set a default packet size.
+This can be over-ridden by NET tailor entries, a command line argument to
+the P process, and by per host UAIEF records.
+EOM
+    ;;
+    esac
+    case "$def_pktsize" in
+    '')	dflt=0;;
+    *)	dflt="$def_pktsize";;
+    esac
+    while true
+    do	$echoq $n "What default packet size do you want ? [$dflt] $c"
+        case "$quiet" in
+	quiet)	ans=$dflt;;
+	*)	. myread;;
+	esac
+	case "$ans" in '') ans="$dflt";; esac
+	case "$ans" in
+	0|128|256|512|1024|2048|4096)	def_pktsize="$ans"; break;;
+	esac
+	echo Packet size must be 0, 128, 256, 512, 1024, 2048 or 4096
+	echo ""
+    done
+esac
+
+: check for default window size
+case "$quick+$def_wndsize" in
+?*+?*) $echoq "assuming you still want default window size of $def_wndsize";;
+*)	case "$quick" in
+	'') cat <<EOM
+ 
+On some systems it is possible to set a default window size.
+This can be over-ridden by NET tailor entries, a command line argument to
+the P process, and by per host UAIEF records.
+EOM
+    ;;
+    esac
+    case "$def_wndsize" in
+    '')	dflt=0;;
+    *)	dflt="$def_wndsize";;
+    esac
+    while true
+    do	$echoq $n "What default window size do you want ? [$dflt] $c"
+        case "$quiet" in
+	quiet)	ans=$dflt;;
+	*)	. myread;;
+	esac
+	case "$ans" in '') ans="$dflt";; esac
+	case "$ans" in
+	[0-7])	def_wndsize="$ans"; break;;
+	esac
+	echo Window size must be in the range 1-7 or 0
+	echo ""
+    done
+esac
+
+: check for news
+case "$quick+$news" in
+?*+define) $echoq "assuming you are still running newser";;
+?*+undef) $echoq "assuming you are still not running news";;
+*)	case "$quick" in
+	'') cat <<EOM
+ 
+The code can support news as well as niftp.
+EOM
+    ;;
+    esac
+    case "$news" in
+    undef)	dflt=n;;
+    *)	dflt=y;;
+    esac
+    echo $n "Do you want to support news? [$dflt] $c"
+    . myread
+    case "$ans$dflt" in
+	y*) news=define;;
+	*)  news=undef;;
+    esac
+esac
+
+: check for softnews
+case "$quick+$news+$softnews" in
+*+undef+*) softnews=undef;;
+?*+define) $echoq "assuming you still want soft news failure";;
+?*+undef) $echoq "assuming you still want hard news failure";;
+?*+undef+*) softnews=define;;
+*)	case "$quick" in
+	'') cat <<EOM
+ 
+It is not really meaningful for news reception to fail.
+It probably means that a disk is not mounted or some such,
+so it reasonable to treat ALL news failures as retryable errors.
+EOM
+    ;;
+    esac
+    case "$softnews" in
+    undef)	dflt=n;;
+    *)	dflt=y;;
+    esac
+    echo $n "Do you want all news failures to be soft? [$dflt] $c"
+    . myread
+    case "$ans$dflt" in
+	y*) softnews=define;;
+	*)  softnews=undef;;
+    esac
+esac
+
+: check for newsspooldir
+case "$quick+$news+$newsspooldir" in
+*+undef+*)	;;
+?*+*+?*) $echoq "assuming you still want news spooled in $newsspooldir";;
+*)	case "$quick" in
+	'') cat <<EOM
+ 
+If you use the newstoniftp program, it needs a directory in which to keep
+directories holding the files to be transferred.
+EOM
+    ;;
+    esac
+    case "$newsspooldir" in
+    '')	dflt=/usr/spool/news/batch;;
+    *)	dflt=$newsspooldir;;
+    esac
+    echo $n "Where do you want outgoing news spooled ? [$dflt] $c"
+    . myread
+    case "$ans" in
+	'') newsspooldir=$dflt;;
+	*)  newsspooldir=$ans;;
+    esac
+esac
+
+: check for newsmode
+case "$quick+$news+$newsmode" in
+*+undef+*)	;;
+?*+*+?*) $echoq "assuming you still want news spooled mode $newsmode";;
+*)  while true
+    do case "$quick" in
+	'') cat <<EOM
+ 
+News spool files are reated with a default mode.
+This might be 0644, 0444 or even 0400
+EOM
+       ;;
+       esac
+       case "$newsmode" in
+       '')	dflt=0444;;
+       *)	dflt=$newsmode;;
+       esac
+       echo $n "What mode should the news spool files be ? [$dflt] $c"
+       . myread
+       case "$ans" in
+	'') newsmode=$dflt;;
+	0[46][046][046])  newsmode=$ans;;
+	[46][046][046])  newsmode=0$ans;;
+	*)	echo $ans is no good -- try again; continue;;
+       esac
+       break;
+    done
+esac
+
+: check for pp
+case "$quick+$pp" in
+?*+define) $echoq "assuming you are still running pp in addition to mail";;
+?*+undef) $echoq "assuming you are still not running pp in addition to mail";;
+*)	case "$quick" in
+	'') cat <<EOM
+ 
+The code can support pp as well as mail.
+EOM
+    ;;
+    esac
+    case "$pp" in
+    undef)	dflt=n;;
+    *)	dflt=y;;
+    esac
+    echo $n "Do you want to support pp as well as mail? [$dflt] $c"
+    . myread
+    case "$ans$dflt" in
+	y*) pp=define;;
+	*)  pp=undef;;
+    esac
+esac
+
+: check for softpp
+case "$quick+$pp+$softpp" in
+*+undef+*)	;;
+?*+define) $echoq "assuming you still want soft pp failure";;
+?*+undef) $echoq "assuming you still want hard pp failure";;
+?*+undef+*) softpp=define;;
+*)	case "$quick" in
+	'') cat <<EOM
+ 
+It is not really meaningful for pp reception to fail.
+It probably means that a disk is not mounted or some such,
+so it reasonable to treat ALL pp failures as retryable errors.
+EOM
+    ;;
+    esac
+    case "$softpp" in
+    undef)	dflt=n;;
+    *)	dflt=y;;
+    esac
+    echo $n "Do you want all pp failures to be soft? [$dflt] $c"
+    . myread
+    case "$ans$dflt" in
+	y*) softpp=define;;
+	*)  softpp=undef;;
+    esac
+esac
+
+: check for pplib
+case "$quick+$pp+$pplib" in
+*+undef+*)	;;
+?*+*+?*) $echoq "assuming you still want pp libraries $pplib";;
+*)	case "$quick" in
+	'') cat <<EOM
+ 
+the PP code need to link in the PP libraries, typically
+"-lpp -lisode -ldbm", with a UN*X envionment variable set to
+specify the searcg directory.
+EOM
+    ;;
+    esac
+    case "$pplib" in
+    '')	dflt="-lpp -lisode -ldbm";;
+    *)	dflt="$pplib";;
+    esac
+    echo $n "What are the PP libraries ? [$dflt] $c"
+    . myread
+    case "$ans" in
+	'') pplib="$dflt";;
+	*)  pplib="$ans";;
+    esac
+esac
+
+: check for envppld
+case "$quick+$pp+$envppld" in
+*+undef+*)	;;
+?*+*+?*) $echoq "assuming you still want the envionment variable $envppld when linking PP";;
+*)	case "$quick" in
+	'') cat <<EOM
+ 
+THE pP code need to link in the PP libraries, and the latest may not yet
+be installed, so you can set the LD_LIBRARY_PATH=/usr/src/pp/Lib
+EOM
+    ;;
+    esac
+    case "$envppld" in
+    '')	dflt="LD_LIBRARY_PATH=/usr/src/pp/Lib";;
+    *)	dflt="$envppld";;
+    esac
+    echo $n "What env variable should be set when linking PP ? [$dflt] $c"
+    . myread
+    case "$ans" in
+	'') envppld="$dflt";;
+	*)  envppld="$ans";;
+    esac
+esac
+
+: check for deslib
+case "$quick+$crypt+$deslib" in
+*+cruddy+*) $echoq "assuming no need for des library";;
+*+kerberos+*) $echoq "assuming you still want kerberos";;
+?*+*+' ') $echoq "assuming you still want no des library";;
+?*+*+?*) $echoq "assuming you still want des library $deslib";;
+*)	case "$quick" in
+	'') cat <<EOM
+ 
+The code can use cruddy (insecure) encryption, des encryption or Kerberos.
+Des enscryption is available from "info-server@ic.doc", comp.sources.unix
+[ Submitted by: alo@kampi.hut.fi (Antti Louko)
+  Posting-number: Volume 18, Issue 7
+  Archive-name: des-no-usa/Part01
+]
+or direct from finland [ kampi.hut.fi (128.214.3.9) ] if it is not already
+in your libraries.
+Copies of the libraries are held in lib/des/libdes-<mctype>.a for
+As these are linked in the subdirectory bin/ they shoule be prefixed with
+a "../", e.g. ../lib/des/libdes-sun4.a
+sun3s, sun4s, Vax/Ultrix, Mips/Ultrix and HP/UX.
+Only if none of the above are suitable should you consider not using DES.
+Note that it is not just your site that may be compromised, but all sites
+to which your users call.
+If des is REALLY not wanted, type a single space.
+EOM
+    ;;
+    esac
+    case "$deslib" in
+    '')	if [ -r /usr/lib/libdes.a -o -r /lib/libdes.a ]
+	then dflt="-ldes";
+	else for arch in $archs
+	     do case "$ARCH" in '') ARCH="`$arch`";; esac
+	     done
+	     case "$ARCH" in
+	     '') for type in $valid
+		 do	if [ -r /bin/${type} ] && /bin/${type}
+			then    ARCH=$type; break
+			fi
+		 done;;
+	     esac
+	     case "$ARCH" in
+	     sun3*)	dflt=../lib/des/libdes-sun3.a;;
+	     sun4*)	dflt=../lib/des/libdes-sun4.a;;
+	     vax*)	dflt=../lib/des/libdes-vaxu.a;;
+	     mips*)	dflt=../lib/des/libdes-mips.a;;
+	     hp*)	dflt=../lib/des/libdes-hpux.a;;
+	     *)		dflt=""
+	     esac
+	fi;;
+    *)	dflt="$deslib";;
+    esac
+    echo $n "Where is the des library ? [$dflt] $c"
+    . myread
+    case "$ans" in
+	'') deslib="$dflt";;
+	*)  deslib="$ans";;
+    esac
+esac
+
+: check for des.h
+case "$deslib" in
+*des*)	if [ ! -r /usr/include/des.h -a ! -r h/des.h ]
+	then	dflt=y
+		case "$quiet" in
+		'')	case "$quick" in
+			'')	cat << EOM
+
+You appear not to have a "des.h" in /usr/include/ or h/
+There is a copy in lib/des/des.h
+EOM
+			esac
+			echo $n "Do you want h/des.h linked to lib/des/des.h ? [$dflt] $c"
+			. myread;;
+		*)	ans="$dflt";;
+		esac
+		case "$ans" in
+		n*|N*)	;;
+		*)	echo "        ln -s ../lib/des/des.h h/des.h"
+			ln -s ../lib/des/des.h h/des.h;;
+		esac
+	fi
+esac
+
+: check for crypt
+case "$quick+$crypt" in
+?*+des) $echoq "assuming you are still using des encryption";;
+?*+kerberos) $echoq "assuming you are still using Kerberos encryption";;
+?*+compat) $echoq "assuming you are still using des (or cruddy) encryption";;
+?*+cruddy) $echoq "assuming you are still using cruddy encryption (YUCK)";;
+*)	case "$quick" in
+	'') cat <<EOM
+
+If you are installing for a Kerberos site, ask for "kerberos".
+If you are installing a new system and using des, ask for "des".
+If you are upgrading an old system which did use des, ask for "des".
+If you are upgrading an old system which did not use des, ask for "compat".
+If you are building a system without des, ask for "cruddy".
+EOM
+    ;;
+    esac
+    case "$crypt+$deslib" in
+    kerberos+*|des+*|compat+*|cruddy+*)	dflt=$crypt;;
+    *+' '|*+)			dflt=cruddy;;
+    *)				dflt=des;;
+    esac
+    echo "Valid encryption types are kerberos, des, compat or cruddy"
+    echo $n "What type of encryption do you want ? [$dflt] $c"
+    . myread
+    case "$ans" in
+	y|Y|'')	crypt=$dflt;;
+	kerberos|des|compat|cruddy)	crypt=$ans;;
+	*)	echo Assuming des; crypt=des;;
+    esac
+esac
+
+kerberos=undef
+: where are the kerberos libraries and include files?
+case "$crypt" in
+kerberos)
+	kerberos=define
+	if [ \( -r /usr/lib/libkrb.a -o -r /usr/local/lib/libkrb.a \) -a \
+	     \( -r /usr/lib/libdes.a -o -r /usr/local/lib/libdes.a \) ]; then
+		krblib="-lkrb -ldes"
+	else	case "$quick" in
+		'')	cat <<EOM
+
+I cannot find where you keep the kerberos libraries libkrb.a and, normally,
+libdes.a.
+EOM
+		;;
+		esac
+		echo $n "Where are the Kerberos libraries ? $c"
+		. myread
+		krblib="$ans"
+	fi
+	krbcdone=n
+	if [ -r /usr/local/include/kerberos/krb.h ]; then
+		krbcdone=y
+		krbcflags="-I/usr/local/include/kerberos -DKRB_PASSWD -DKRB_STD_INC"
+	else
+		if [ -r /usr/local/include/krb.h ]; then
+			krbcdone=y
+			krbcflags="-I/usr/local/include"
+		else	if [ -r /usr/include/krb.h ]; then
+				krbcdone=y
+				: no need to set krbcflags
+			fi
+		fi
+	fi
+	case "$krbcdone" in
+	'n')	case "$quick" in
+		'')	cat <<EOM
+
+I cannot find where you keep the kerberos include files are.  I need to
+no the directory that krb.h is in.
+EOM
+		;;
+		esac
+		echo $n "Which directory are the Kerberos include files in ? $c"
+		. myread
+		krbcflags="$ans"
+		;;
+	esac
+esac
+
+: check for ppproc
+case "$quick+$pp+$ppproc" in
+*+undef+*)	;;
+?*+*+inline) $echoq "assuming you still want un-spooled PP mail";;
+?*+*+?*) $echoq "assuming you still want pp to use $ppproc to process mail";;
+*)	case "$quick" in
+	'') cat <<EOM
+ 
+PP can work in un-spooled (preferred) or unspooled mode.
+To select the former, set ppproc to "inline".
+Otherwise set ppproc to the pathname of the procedure to process the mail.
+EOM
+    ;;
+    esac
+    case "$ppproc" in
+    '')	dflt=inline;;
+    *)	dflt=$ppproc;;
+    esac
+    echo $n "How do you want to process incoming PP mail ? [$dflt] $c"
+    . myread
+    case "$ans" in
+	'') ppproc=$dflt;;
+	*)  ppproc=$ans;;
+    esac
+esac
+
+: check for ppchan
+case "$quick+$pp+$ppchan" in
+*+undef+*)	;;
+?*+*+?*) $echoq "assuming you still want pp to use channel $ppchan";;
+*)	case "$quick" in
+	'') cat <<EOM
+ 
+PP needs to be given a channel name for all incoming items.
+This can either be a fixed string (e.g. "grey") or it can contain %s,
+which will be replaced by the unix-niftp channel name.
+EOM
+    ;;
+    esac
+    case "$ppchan" in
+    '')	dflt=gb-%s;;
+    *)	dflt=$ppchan;;
+    esac
+    echo $n "What channel do you want PP to use ? [$dflt] $c"
+    . myread
+    case "$ans" in
+	'') ppchan=$dflt;;
+	*)  ppchan=$ans;;
+    esac
+esac
+
+: check for ppspooldir
+case "$quick+$pp+$ppspooldir" in
+*+undef+*)	;;
+?*+*+?*) $echoq "assuming you still want pp spooled in $ppspooldir";;
+*)	case "$quick" in
+	'') cat <<EOM
+ 
+If you use the pptoniftp program, it needs a directory in which to keep
+directories holding the files to be transferred.
+EOM
+    ;;
+    esac
+    case "$ppspooldir" in
+    '')	dflt=/usr/spool/niftp/pp;;
+    *)	dflt=$ppspooldir;;
+    esac
+    echo $n "Where do you want outgoing pp spooled ? [$dflt] $c"
+    . myread
+    case "$ans" in
+	'') ppspooldir=$dflt;;
+	*)  ppspooldir=$ans;;
+    esac
+esac
+
+: check for ppmode
+case "$quick+$pp+$ppmode" in
+*+undef+*)	;;
+?*+*+?*) $echoq "assuming you still want pp spooled mode $ppmode";;
+*)  while true
+    do case "$quick" in
+	'') cat <<EOM
+ 
+PP spool files are created with a default mode.
+This might be 0644, 0444 or even 0400
+EOM
+       ;;
+       esac
+       case "$ppmode" in
+       '')	dflt=0444;;
+       *)	dflt=$ppmode;;
+       esac
+       echo $n "What mode should the pp spool files be ? [$dflt] $c"
+       . myread
+       case "$ans" in
+	'') ppmode=$dflt;;
+	0[46][046][046])  ppmode=$ans;;
+	[46][046][046])  ppmode=0$ans;;
+	*)	echo $ans is no good -- try again; continue;;
+       esac
+       break;
+    done
+esac
+
+: check for mailmode
+case "$quick+$mail+$mailtype+$mailmode" in
+*+undef+*)	;;
+?*+define+sendmail+?*)
+	$echoq "assuming you still want mail spooled in $mailmode";;
+*+define+sendmail+*)
+    while true
+    do case "$quick" in
+	'') cat <<EOM
+ 
+Mail spool files are created with a default mode.
+This might be 0644, 0444 or even 0400
+EOM
+       ;;
+       esac
+       case "$mailmode" in
+       '')	dflt=0444;;
+       *)	dflt=$mailmode;;
+       esac
+       echo $n "What mode should the mail spool files be ? [$dflt] $c"
+       . myread
+       case "$ans" in
+	'') mailmode=$dflt;;
+	0[46][046][046])  mailmode=$ans;;
+	[46][046][046])  mailmode=0$ans;;
+	*)	echo $ans is no good -- try again; continue;;
+       esac
+       break;
+    done
+esac
+
+: check for mailspooldir
+case "$quick+$mail+$mailtype+$mailspooldir" in
+*+undef+*)	;;
+?*+define+sendmail+?*)
+	$echoq "assuming you still want mail spooled in $mailspooldir";;
+*+define+sendmail+*)
+	case "$quick" in
+	'') cat <<EOM
+ 
+Sendmail needs a directory in which to keep the mail to be transferred.
+If there is restricted access to this directory, "MAILOWNSMAIL" should be
+defined (for bin/cpf.c).
+EOM
+    ;;
+    esac
+    case "$mailspooldir" in
+    '')	dflt=$spool/mail;;
+    *)	dflt=$mailspooldir;;
+    esac
+    echo $n "Where do you want outgoing mail spooled ? [$dflt] $c"
+    . myread
+    case "$ans" in
+	'') mailspooldir=$dflt;;
+	*)  mailspooldir=$ans;;
+    esac
+    case "$quick+$mailownsmail" in
+    ?*+define)	$echoq "assuming mail still owns mail";;
+    ?*+undef)	$echoq "assuming mail still does not own mail";;
+    *)	case "$quick" in
+	'') cat <<EOM
+ 
+If there is restricted access to the directory which hold mail,
+"MAILOWNSMAIL" should be defined (for bin/cpf.c).
+EOM
+	;;
+	esac
+	case "$mailownsmail" in
+	undef)	dflt=n;;
+	*)	dflt=y;;
+	esac
+	echo $n "Do you want mail owned by mail (e.g. secure mail dir) ? [$dflt] $c"
+	. myread
+	case "$ans$dflt" in
+	n*) mailownsmail=undef;;
+	*) mailownsmail=define;;
+    	esac
+    esac
+esac
+
+case "$mailownsmail" in
+define|undef)	;;
+*)	case "$quick" in
+	'') cat <<EOM
+ 
+If there is restricted access to the directory which hold mail,
+"MAILOWNSMAIL" should be defined (for bin/cpf.c).
+EOM
+	;;
+	esac
+	case "$mailownsmail" in
+	define)	dflt=y;;
+	*)	dflt=n;;
+	esac
+	echo $n "Do you want mail owned my mail (e.g. secure mail dir) ? [$dflt] $c"
+	. myread
+	case "$ans$dflt" in
+	y*) mailownsmail=define;;
+	*) mailownsmail=undef;;
+	esac
+esac
+
+: check for softmail
+case "$quick+$mail+$softmail" in
+?*+*+define) $echoq "assuming you still want soft mail failure";;
+?*+*+undef) $echoq "assuming you still want hard mail failure";;
+?*+undef+*) softmail=define;;
+*)	case "$quick" in
+	'') cat <<EOM
+ 
+It is not really meaningful for mail reception to fail, except for
+unknown calling address (or unknown user).
+It often means that a disk is not mounted or some such,
+so it reasonable to treat most mail failures as retryable errors.
+EOM
+    ;;
+    esac
+    case "$softmail" in
+    undef)	dflt=n;;
+    *)	dflt=y;;
+    esac
+    echo $n "Do you want most mail failures to be soft? [$dflt] $c"
+    . myread
+    case "$ans$dflt" in
+	y*) softmail=define;;
+	*)  softmail=undef;;
+    esac
+esac
+
+: check for freedisk
+case "$quick+$freedisk" in
+?*+0) $echoq "assuming you still want no free disk kept";;
+?*+?*) $echoq "assuming you still was $freedisk bytes of disk kept";;
+*)	case "$quick" in
+	'') cat <<EOM
+ 
+The system can reject calls if there is not much disk left.
+The default free space can be set now.
+The actual values for NEWS, MAIL and FTP can be set separately and
+changed dynamically in the tailor file, but the code is only compiled
+if the size is set non zero (e.g. 1 won't have much effect)
+EOM
+    ;;
+    esac
+    case "$freedisk" in
+    '')	dflt=500000;;
+    *)	dflt=$freedisk;;
+    esac
+    echo $n "How much disk do you want kept free? [$dflt] $c"
+    . myread
+    case "$ans" in
+    '')	freedisk=$dflt;;
+    *)	freedisk=$ans;;
+    esac;;
+esac
+
+: check for longform
+case "$quick+$longform" in
+?*+1) $echoq "assuming you still want longform addresses";;
+?*+0) $echoq "assuming you still do not want longform addresses";;
+*)	case "$quick" in
+	'') cat <<EOM
+ 
+The NRS supports two forms, the normally used (short) form, or the
+over verbose (long) form.  When a lookup is done, either can be
+returned.  Note that some mail systems only expect one form.
+EOM
+    ;;
+    esac
+    case "$longform" in
+    1)	dflt=y;;
+    *)	dflt=n;;
+    esac
+    $echoq $n "Do you want longform addresses? [$dflt] $c"
+        case "$quiet" in
+	quiet)	ans=$dflt;;
+	*)	. myread;;
+	esac
+    case "$ans$dflt" in
+	y*)  longform=1;;
+	*)   longform=0;;
+    esac
+esac
+
+: check for debugging
+case "$quick+$debug" in
+?*+define) $echoq "assuming you still want debugging code";;
+?*+undef) $echoq "assuming you still do not want debugging code";;
+*)	case "$quick" in
+	'') cat <<EOM
+ 
+If the code is compiled with debugging on, it is possible to dynamically
+enable and disable differing levels of debugging from the tailor file.
+If it's your first installation, leave it on.
+EOM
+    ;;
+    esac
+    case "$debug" in
+    undef)	dflt=n;;
+    *)	dflt=y;;
+    esac
+    $echoq $n "Do you want debugging code included? [$dflt] $c"
+        case "$quiet" in
+	quiet)	ans=$dflt;;
+	*)	. myread;;
+	esac
+    case "$ans$dflt" in
+	y*) debug=define;;
+	*)  debug=undef;;
+    esac
+esac
+
+: check for guest account
+case "$quick+$guest" in
+?*+define) $echoq "assuming you still want guest account access";;
+?*+undef) $echoq "assuming you still do not want guest account access";;
+*)	case "$quick" in
+	'') cat <<EOM
+ 
+Some sites allow the guest account access to the system.
+EOM
+    ;;
+    esac
+    case "$guest" in
+    undef)	dflt=n;;
+    *)	dflt=y;;
+    esac
+    $echoq $n "Do you want guest account access included? [$dflt] $c"
+        case "$quiet" in
+	quiet)	ans=$dflt;;
+	*)	. myread;;
+	esac
+    case "$ans$dflt" in
+	y*) guest=define;;
+	*)  guest=undef;;
+    esac
+esac
+
+: check for guest account
+case "$quick+$guest+$guestuser" in
+?*+define+?*) $echoq "assuming you still want guest account $guestuser";;
+*+undef+*) $echoq "assuming you still do not want guest account access";;
+*)	case "$quick" in
+	'') cat <<EOM
+ 
+The name used for guest access can be changed.
+EOM
+    ;;
+    esac
+    case "$guestuser" in
+    '')	dflt=guest;;
+    *)	dflt="$guestuser";;
+    esac
+    $echoq $n "What name do you want for guest access [$dflt] $c"
+        case "$quiet" in
+	quiet)	ans=$dflt;;
+	*)	. myread;;
+	esac
+    case "$ans" in
+    '') guestuser=$dflt;;
+    *)  guestuser=$ans;;
+    esac
+esac
+
+: check for macro netgetc etc ...
+case "$quick+$macros" in
+?*+define) $echoq "assuming you still want netgetc() macros";;
+?*+undef) $echoq "assuming you still do not want netgetc() macros";;
+*)	case "$quick" in
+	'') cat <<EOM
+ 
+Usually net_getc() and net_putc(c) behave like stdio & simple work from
+buffers until they are empty/full.
+If this is how your system works, then you can use some simple macros.
+If in doubt, say no.
+EOM
+    ;;
+    esac
+    case "$macros" in
+    define)	dflt=y;;
+    *)	dflt=n;;
+    esac
+    $echoq $n "Do you want netgetc() macros included? [$dflt] $c"
+        case "$quiet" in
+	quiet)	ans=$dflt;;
+	*)	. myread;;
+	esac
+    case "$ans$dflt" in
+	y*) macros=define;;
+	*)  macros=undef;;
+    esac
+esac
+
+case "$quick+$catchall" in
+?*+define) $echoq "assuming you still want to send all mail errors to postmaster";;
+?*+undef)  $echoq "assuming you still do not want all mail errors to go to postmaster";;
+*)	case "$quick" in
+	'') cat <<EOM
+ 
+If mail processing fails, should all mail be forwarded to postmaster,
+or should some (??) be quietly ignored.
+EOM
+    ;;
+    esac
+    case "$catchall" in
+    undef)	dflt=n;;
+    define)	dflt=y;;
+    *)		dflt=n;;
+    esac
+    $echoq $n "Do you want postmaster to get all failed mail? [$dflt] $c"
+        case "$quiet" in
+	quiet)	ans=$dflt;;
+	*)	. myread;;
+	esac
+    case "$ans$dflt" in
+	y*) catchall=define;;
+	*)  catchall=undef;;
+    esac
+esac
+
+case "$quick+$noleadingzeros" in
+?*+define) $echoq "assuming you still want stripped leading zeros (YUCK)";;
+?*+undef)  $echoq "assuming you still want to keep leading zeros";;
+*)	case "$quick" in
+	'') cat <<EOM
+ 
+Some vile systems actually strip leading zeros from DTEs before
+attempting pattern matching.  Only do this if you HAVE TO ..
+EOM
+    ;;
+    esac
+    case "$noleadingzeros" in
+    define)	dflt=y;;
+    *)		dflt=n;;
+    esac
+    $echoq $n "Do you want to strip leading zeros? [$dflt] $c"
+        case "$quiet" in
+	quiet)	ans=$dflt;;
+	*)	. myread;;
+	esac
+    case "$ans$dflt" in
+	n*) noleadingzeros=undef;;
+	*)  noleadingzeros=define;;
+    esac
+esac
+
+case "$quick+$camtechack" in
+?*+define) $echoq "assuming you still want missing YBTS separators inserted";;
+?*+undef)  $echoq "assuming you still don't have missing YBTS separators";;
+*)	case "$quick" in
+	'') cat <<EOM
+
+Some Camtec firmware omits the separator between the calling DTE address
+and calling YBTS address.  You have the option of making the software insert
+this separator where necessary.
+
+If in doubt, say yes.  This will only cause problems if the calling 'DTE
+address' will sometimes be a MAC address (e.g. in pinkbook operation).
+EOM
+    ;;
+    esac
+    case "$camtechack" in
+	define)	dflt=y;;
+	*)	dflt=n;;
+    esac
+    echo $n "Do you want missing YBTS separators inserted? [$dflt] $c"
+    case "$quiet" in
+	quiet)	ans=$dflt;;
+	*)	. myread;;
+    esac
+    case "$ans$dflt" in
+	y*)	camtechack=define;;
+	*)	camtechack=undef;;
+    esac
+esac
+
+case "$ddex+$mixedlines" in
+define+*)
+    case "$quick+$mixedlines" in
+    ?*+define) $echoq "assuming you still have many networks per line";;
+    ?*+undef)  $echoq "assuming you still have one network per line";;
+    *)	case "$quick" in
+	'') cat <<EOM
+
+On some systems the network can be determined by the line on which the
+call arrived. On others the lines serve multiple networks.
+EOM
+	;;
+	esac
+	case "$mixedlines" in
+	undef)	dflt=n;;
+	*)		dflt=y;;
+	esac
+	echo $n "Do you have multiple networks on incoming lines? [$dflt] $c"
+	. myread
+	case "$ans$dflt" in
+	    y*) mixedlines=define;;
+	    *)  mixedlines=undef;;
+	esac
+    esac;;
+*+define|*+undef) ;;
+*)	mixedlines='define'
+esac
+
+case "$dubc" in
+define)
+    case "$quick+$standalone" in
+    ?*+define) $echoq "assuming you are still running ubc standalone";;
+    ?*+undef)  $echoq "assuming you are still not running ubc standalone";;
+    *)	case "$quick" in
+	'') cat <<EOM
+
+Some systems run the ubc code standalone (??)
+EOM
+	;;
+	esac
+	case "$standalone" in
+	define)	dflt=y;;
+	*)	dflt=n;;
+	esac
+	echo $n "Do you run ubc standalone? [$dflt] $c"
+	. myread
+	case "$ans$dflt" in
+	    y*) standalone=define;;
+	    *)  standalone=undef;;
+	esac
+    esac
+
+    case "$quick+$testprotid" in
+    ?*+define) $echoq "assuming you still want to check the ubc protocol id";;
+    ?*+undef)  $echoq "assuming you still want to not check the ubc protocol id";;
+    *)	case "$quick" in
+	'') cat <<EOM
+
+Some ubc systems test that TS calls have the correct protocol id
+EOM
+	;;
+	esac
+	case "$testprotid" in
+	define)	dflt=y;;
+	*)	dflt=n;;
+	esac
+	echo $n "Do you want to check the ubc protocol id? [$dflt] $c"
+	. myread
+	case "$ans$dflt" in
+	    y*) testprotid=define;;
+	    *)  testprotid=undef;;
+	esac
+    esac;;
+*)  case "$standalone" in
+    define|undef) ;;
+    *) standalone=undef;;
+    esac
+  case "$testprotid" in
+    define|undef) ;;
+    *) testprotid=undef;;
+    esac
+esac
+
+: check for ucl code
+: ** UCL_ISID UCL_V77 UCL_STATS
+case "$quick+$ucl+$externuser" in
+?*+define+?*) $echoq "assuming you still want ucl code";;
+?*+undef+*) $echoq "assuming you still do not want ucl code";;
+*)	case "$quick" in
+	'') cat <<EOM
+ 
+Some bits of code are UCL specific. (YUCK)
+EOM
+    ;;
+    esac
+    case "$ucl" in
+    define)	dflt=y;;
+    *)	dflt=n;;
+    esac
+    $echoq $n "Do you want ucl code included? [$dflt] $c"
+        case "$quiet" in
+	quiet)	ans=$dflt;;
+	*)	. myread;;
+	esac
+    case "$ans$dflt" in
+    y*)	ucl=define
+	case "$quick" in
+	'') cat <<EOM
+ 
+UCL code has the idea of an EXTERNAL user with restricted access. This is
+decided by the userid being large.
+EOM
+	;;
+	esac
+	case "$externuser" in
+	'') dflt="10000";;
+	*)  dflt="$externuser";;
+	esac
+	echo $n "Where do external userids start ? [$dflt] $c"
+	. myread
+	case "$ans" in
+	'') externuser="$dflt";;
+	*)  externuser="$ans"
+	esac;;
+    *) ucl=undef
+    esac
+esac
+
+: check for ukc code
+: ** KENT_MAIL
+case "$quick+$ukc" in
+?*+define) $echoq "assuming you still want ukc code";;
+?*+undef) $echoq "assuming you still do not want ukc code";;
+*)  case "$quick" in
+    '') cat <<EOM
+ 
+Some bits of code are UKC specific. (YUCK)
+EOM
+    ;;
+    esac
+    case "$ukc" in
+    define)	dflt=y;;
+    *)	dflt=n;;
+    esac
+    $echoq $n "Do you want ukc code included? [$dflt] $c"
+        case "$quiet" in
+	quiet)	ans=$dflt;;
+	*)	. myread;;
+	esac
+    case "$ans$dflt" in
+	y*) ukc=define;;
+	*)  ukc=undef;;
+    esac
+esac
+
+: preserve RCS keywords in files with variable substitution, grrr
+Log='$Log'
+Header='$Header'
+State='$State'
+
+: Warnings
+case "$v7" in
+define)
+    cat <<'EOM'
+ 
+NOTE: the V7 compiler may ignore some #undefs.
+Some V7 compilers also have difficulties with #defines near buffer
+boundaries, so beware.  You may have to play with the .h spacings.
+EOM
+;;
+esac
+
+$echoq " "
+$echoq "End of configuration questions."
+$echoq " "
+
+: now for derived info ......
+case "$crypt" in
+compat)		cryptcruddy=undef  cryptcompat=define;;
+cruddy)		cryptcruddy=define cryptcompat=undef;;
+*)		cryptcruddy=undef  cryptcompat=undef;;
+esac
+case "$mailtype" in
+sendmail)	hashsendmail=' ';;
+*)		hashsendmail='#';;
+esac
+case "$mailtype" in
+sendmail|binmail) maildir=progmail;;
+*)		  maildir=$mailtype;;
+esac
+case "$mail" in
+define)		hashmailer=' ';;
+*)		hashmailer='#';;
+esac
+case "$news" in
+define)		hashnews=' ';;
+*)		hashnews='#';;
+esac
+case "$pp" in
+define)		hashpp=' ';;
+*)		hashpp='#';;
+esac
+case "$freedisk" in
+0|'')		freediskdef='undef';;
+*)		freediskdef='define';;
+esac
+case "$dinet" in
+define)		hashinet=' ';;
+*)		hashinet='#';;
+esac
+case "$rmtdbm" in
+define)		hashrmtdbm=' ';;
+*)		hashrmtdbm='#';;
+esac
+case "$rmtdbmd" in
+' ')		hashrmtdbmd='#';;
+*)		hashrmtdbmd=' ';;
+esac
+hack42="$bsd4_2"
+
+: create config.sh file
+$echoq $blank
+$echoq "Creating config.sh..."
+$spitshell <<EOT >config.sh
+$startsh
+# config.sh
+# This file was produced by running the Configure script.
+#
+# First the items in lists ...
+EOT
+for x in $systems $configlist;do echo "$x='`eval echo \\$$x`'";done>>config.sh
+for h in $configlist;do eval x=$`echo $h`; case $x in define) echo "hash$h=' '";; *) echo "hash$h=#";; esac ; done >> config.sh
+
+$spitshell <<EOT >>config.sh
+#
+# now the rest
+#
+
+Header='$Header'
+Log='$Log'
+State='$State'
+ascii='$ascii'
+awkf='$awkf'
+bannedfile='$bannedfile'
+bcopy='$bcopy'
+bzero='$bzero'
+catchall='$catchall'
+cflags='$cflags'
+chgrp='$chgrp'
+chmod='$chmod'
+chown='$chown'
+chug='$chug'
+cpp='$cpp'
+cp='$cp'
+creatrunc='$creatrunc'
+crypt='$crypt'
+cryptcompat='$cryptcompat'
+cryptcruddy='$cryptcruddy'
+debug='$debug'
+deslib='$deslib'
+def_pktsize='$def_pktsize'
+def_wndsize=''$def_wndsize
+dircompacts='$dircompacts'
+echoq='$echoq'
+envppld='$envppld'
+eunice='$eunice'
+eunicefix='$eunicefix'
+externuser='$externuser'
+fcntl='$fcntl'
+flock='$flock'
+fopena='$fopena'
+freedisk='$freedisk'
+getgroups='$getgroups'
+gethostname='$gethostname'
+getwd='$getwd'
+grp='$grp'
+guestuser='$guestuser'
+guest='$guest'
+hashndir='$hashndir'
+iandd='$iandd'
+ioctl='$ioctl'
+kerberos='$kerberos'
+krbcflags='$krbcflags'
+krblib='$krblib'
+ldflags='$ldflags'
+libc='$libc'
+libexp='$libexp'
+libndir='$libndir'
+local='$local'
+longform='$longform'
+macros='$macros'
+mail='$mail'
+mailer='$mailer'
+mailmode='$mailmode'
+mailownsmail='$mailownsmail'
+mailspooldir='$mailspooldir'
+mailtype='$mailtype'
+manext='$manext'
+mansrc='$mansrc'
+maxfile='$maxfile'
+maxfilesize='$maxfilesize'
+mixedlines='$mixedlines'
+mmdfboth='$mmdfboth'
+mode='$mode'
+ndir='$ndir'
+ndircomm='$ndircomm'
+ndirh='$ndirh'
+ndirlib='$ndirlib'
+news='$news'
+newsmode='$newsmode'
+newsspooldir='$newsspooldir'
+noleadingzeros='$noleadingzeros'
+camtechack='$camtechack'
+novfork='$novfork'
+novoid='$novoid'
+oldc='$c'
+oldn='$n'
+pp='$pp'
+ppmode='$ppmode'
+ppchan='$ppchan'
+pplib='$pplib'
+ppproc='$ppproc'
+ppspooldir='$ppspooldir'
+privatebin='$privatebin'
+profile='$profile'
+publicbin='$publicbin'
+ranlib='$ranlib'
+rename='$rename'
+restartsys='$restartsys'
+rmtdbm='$rmtdbm'
+rmtdbmd='$rmtdbmd'
+seteuid='$seteuid'
+setvbuf='$setvbuf'
+setlinebuf='$setlinebuf'
+sharpbang='$sharpbang'
+shsharp='$shsharp'
+sigret='$sigret'
+small_proc='$small_proc'
+softmail='$softmail'
+softnews='$softnews'
+softpp='$softpp'
+spitshell='$spitshell'
+spool='$spool'
+standalone='$standalone'
+startsh='$startsh'
+strchr='$strchr'
+string='$string'
+strip='$strip'
+termio='$termio'
+testprotid='$testprotid'
+uchar='$uchar'
+ucl='$ucl'
+ukc='$ukc'
+uname='$uname'
+usendir='$usendir'
+#
+# derived by Config
+#
+freediskdef='$freediskdef'
+maildir='$maildir'
+hashrmtdbmd='$hashrmtdbmd'
+hashinet='$hashinet'
+hashmailer='$hashmailer'
+hashnews='$hashnews'
+hashpp='$hashpp'
+hashsendmail='$hashsendmail'
+hack42='$bsd4_2'
+CONFIG=true
+EOT
+# Now check it is all correct ....
+. config.sh
+
+rm -f loc filexp myread libc.list
+
+$echoq " "
+$echoq "Doing variable substitutions on various files..."
+$echoq " "
+set XX `grep <core-files '\.SH' | sed 's+^[^/]*/++' | awk '{print $1}'`
+shift
+for file in $*; do
+    if test -r ${file}.local ; then
+	. ${file}.local
+    else
+	. $file
+    fi
+done

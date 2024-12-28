@@ -1,0 +1,4 @@
+nott-cs:cs,un,nott,uk,eunet,net,world,comp,news,sci,rec,misc,soc,talk,fa,mod,to::
+#tuck:cs,un,nott,uk,eunet,net,world,comp,news,sci,rec,misc,soc,talk,fa,mod,to.tuck:F:/usr/spool/news/batchout/tuck
+dcl-cs:mod,net,world,comp,news,sci,rec,misc,soc,talk,uk,eunet,to.dcl-cs:F:/usr/spool/news/batchout/dcl-cs
+ucl-cs:mod,net,world,comp,news,sci,rec,misc,soc,talk,uk,eunet,to.ucl-cs:F:/usr/spool/news/batchout/ucl.cs

@@ -1,0 +1,388 @@
+# unix-niftp bin/Makefile.real : 5.0 Date: 87/03/23 03:19:20
+#
+# Makefile for the commands and daemons
+#
+L	= ../lib
+LIBG	= $L/gen/libgen.a
+LIBQ	= $L/pqproc/libq.a $(LIBM) $(LIBG)
+LIBP	= $L/pqproc/libp.a $(LIBM) $(LIBG)
+LIBPPP	= $L/pqproc/libppp.a $(LIBM) $(LIBG)
+LIBX25	= /usr/lib/libx25.a
+LIBCCI	= /usr/lib/libcci.a
+PROC	= $(DEXBIN) $(INEBIN) $(IPCBIN) $(UBCBIN) $(YORBIN) $(X25BBIN) \
+	  $(SUNBIN) $(SYMBIN)
+NRSBUILD= # dersplit nrsbuild
+SRCS	= cpf.c fixtime.c fpc.c ftp.c ftpkey.c ftpq.c ftprm.c ftpspool.c \
+	  ftq.c qft.c setup.c killspool.c \
+	  in.rmtdbm.c \
+	  dbencode.c dbpatch.c lookdbm.c ftshow.c \
+	  dersplit.c nrsbuild.c ftpreq.c \
+	  Makefile.real
+# dbextract.c 
+# install these so that they can be run by anyone
+EXECIN	= $(LBINDIR)/lookdbm $(UBINDIR)/ftshow $(UBINDIR)/lookdbm \
+	  $(LBINDIR)/dersplit
+# install these priv programmes (setuid or setgid)
+SETIN	= $(UBINDIR)/cpf $(UBINDIR)/ftpq $(UBINDIR)/ftprm $(UBINDIR)/qft
+# This should be SETUID ROOT, execute access to group, NOT other
+SETRIN	= $(LBINDIR)/killspool
+# install these so that root can run them
+ROOTIN	= $(LBINDIR)/ftpkey $(LBINDIR)/setup $(LBINDIR)/dbencode \
+	  $(LBINDIR)/dbpatch $(LBINDIR)/nrsbuild \
+	  $(LBINDIR)/ftpspool $(LBINDIR)/fpc $(LBINDIR)/fixtime \
+	  $(LBINDIR)/ftpreq
+# $(LBINDIR)/dbextract 
+
+MAKEPARAMS = RANLIB="$(RANLIB)" MAKE="$(MAKE)" SPOOL="$(SPOOL)" \
+		MAILER="$(MAILER)" NDIRLIB="$(NDIRLIB)" \
+		H="$H" CFLAGS="$(CFLAGS)" LDFLAGS="$(LDFLAGS)" \
+		LIBM="$(LIBM)" \
+		DEXBIN="$(DEXBIN)" INEBIN="$(INEBIN)" IPCBIN="$(IPCBIN)" \
+		YORBIN="$(YORBIN)" UBCBIN="$(UBCBIN)" SUNBIN="$(SUNBIN)" \
+		SYMBIN="$(SYMBIN)" \
+		CHGRP="$(CHGRP)" CHMOD="$(CHMOD)" CHOWN="$(CHOWN)" \
+		CHUG="$(CHUG)" 
+
+all	= $(std) $(PROC)
+std	= fpc ftprm cpf ftpq ftpspool fixtime ftpreq \
+	  $(RMTDBM) ftpkey setup killspool \
+	  dbencode dbpatch lookdbm ftshow qft $(NRSBUILD)
+# dbextract 
+
+all:    $(all)
+std:	$(std)
+
+# The main bits are the P and Q processes ...
+
+# DEXPAND (dex)
+dex dexpand: $(DEXBIN)
+
+qdex:	ftq.o $(LIBQ) $L/dexpand/libnet.a $(LIBCCI) $(NDIRLIB)
+	$(ENVPPLD) $(CC) -o qdex $(LDFLAGS) ftq.o $(LIBQ) $L/dexpand/libnet.a \
+		$(LIBQ) $(LIBCCI) $(NDIRLIB) $(LIBDES) $(LIBPP)
+
+pdex:	ftp.o $(LIBP) $L/dexpand/libnet.a $(LIBCCI) $(NDIRLIB)
+	$(CC) -o pdex $(LDFLAGS) ftp.o $(LIBP) $L/dexpand/libnet.a \
+		$(LIBP) $(LIBCCI) $(NDIRLIB) $(LIBDES)
+
+$L/dexpand/libnet.a:
+	cd ..; $(MAKE) $(MFLAGS) $(MAKEPARAMS) lib/dexpand
+
+# SOCKETS/ETHER (inet)
+soc socket ether inet: $(INEBIN)
+
+qinet:  ftq.o $(LIBQ) $L/inet/libnet.a $(NDIRLIB)
+	$(ENVPPLD) $(CC) -o qinet $(LDFLAGS) ftq.o $(LIBQ) $L/inet/libnet.a \
+		$(LIBQ) $(NDIRLIB) $(LIBDES) $(LIBPP)
+
+pinet:  ftp.o $(LIBP) $L/inet/libnet.a $(NDIRLIB)
+	$(CC) -o pinet $(LDFLAGS) ftp.o $L/pqproc/adr_trans.o $(LIBP) \
+		$L/inet/libnet.a $(LIBP) $(NDIRLIB) $(LIBDES)
+
+$L/inet/libnet.a:
+	cd ..; $(MAKE) $(MFLAGS) $(MAKEPARAMS) lib/inet
+
+# SOCKETS/SUNlink (sun)
+sun sunlink: $(SUNBIN)
+
+qsun:  ftq.o $(LIBQ) $L/sun/libnet.a $(NDIRLIB)
+	$(ENVPPLD) $(CC) -o qsun $(LDFLAGS) ftq.o $(LIBQ) $L/sun/libnet.a \
+		$(LIBQ) $(NDIRLIB) $(LIBDES) $(LIBPP)
+
+psun:  ftp.o $(LIBP) $L/sun/libnet.a $(NDIRLIB)
+	$(CC) -o psun $(LDFLAGS) ftp.o $L/pqproc/adr_trans.o $(LIBP) \
+		$L/sun/libnet.a $(LIBP) $(NDIRLIB) $(LIBDES)
+
+$L/sun/libnet.a:
+	cd ..; $(MAKE) $(MFLAGS) $(MAKEPARAMS) lib/sun
+
+# SOCKETS/X25bridge (x25b)
+x25b x25bridge: $(X25BBIN)
+
+qx25b:  ftq.o $(LIBQ) $L/x25b/libnet.a $(NDIRLIB)
+	$(ENVPPLD) $(CC) -o qx25b $(LDFLAGS) ftq.o $(LIBQ) $L/x25b/libnet.a \
+		$(LIBQ) $(NDIRLIB) $(LIBDES) $(LIBPP)
+
+px25b:  ftp.o $(LIBP) $L/x25b/libnet.a $(NDIRLIB)
+	$(CC) -o px25b $(LDFLAGS) ftp.o $L/pqproc/adr_trans.o $(LIBP) \
+		$L/x25b/libnet.a $(LIBP) $(NDIRLIB) $(LIBDES)
+
+$L/x25b/libnet.a:
+	cd ..; $(MAKE) $(MFLAGS) $(MAKEPARAMS) lib/x25b
+
+# IPCS (ipcs)
+ipc ipcs: $(IPCBIN)
+
+qipcs:  ftq.o $(LIBQ) $L/ipcs/libnet.a $(NDIRLIB) $(LIBDES)
+	$(ENVPPLD) $(CC) -o qipcs $(LDFLAGS) ftq.o $(LIBQ) $L/ipcs/libnet.a \
+		$(LIBQ) $(NDIRLIB) $(LIBDES) $(LIBPP)
+
+pipcs:  ftp.o $(LIBP) $L/ipcs/libnet.a $(NDIRLIB)
+	$(CC) -o pipcs $(LDFLAGS) ftp.o $(LIBP) $L/ipcs/libnet.a \
+		$(LIBP) $(NDIRLIB) $(LIBDES)
+
+$L/ipcs/libnet.a:
+	cd ..; $(MAKE) $(MFLAGS) $(MAKEPARAMS) lib/ipcs
+
+# UBC X25 SOCKETS (ubc)
+ubc: $(UBCBIN)
+qubc:	ftq.o $(LIBQ) $L/ubc/libnet.a $(NDIRLIB)
+	$(ENVPPLD) $(CC) -o qubc $(LDFLAGS) ftq.o $(LIBQ) $L/ubc/libnet.a \
+		$(LIBQ) $(NDIRLIB) $(LIBDES) $(LIBPP)
+
+pubc:	ftp.o $(LIBP) $L/ubc/libnet.a $(NDIRLIB)
+	$(CC) -o pubc $(LDFLAGS) ftp.o $(LIBP) $L/ubc/libnet.a \
+		$(LIBP) $(NDIRLIB) $(LIBDES)
+
+$L/ubc/libnet.a:
+	cd ..; $(MAKE) $(MFLAGS) $(MAKEPARAMS) lib/ubc
+
+# YORKBOX (york)
+yor york yorkbox: $(YORBIN)
+
+qyork:  ftq.o $(LIBQ) $L/yorkbox/libnet.a $(LIBX25) $(NDIRLIB)
+	$(ENVPPLD) $(CC) -o qyork $(LDFLAGS) ftq.o $(LIBQ) $L/yorkbox/libnet.a \
+		$(LIBQ) $(LIBX25) $(NDIRLIB) $(LIBDES) $(LIBPP)
+
+pyork:  ftp.o $(LIBP) $L/yorkbox/libnet.a $(LIBX25) $(NDIRLIB)
+	$(CC) -o pyork $(LDFLAGS) ftp.o $(LIBP) $L/yorkbox/libnet.a \
+		$(LIBP) $(LIBX25) $(NDIRLIB) $(LIBDES)
+
+$L/yorkbox/libnet.a:
+	cd ..; $(MAKE) $(MFLAGS) $(MAKEPARAMS) lib/yorkbox
+
+# Sequent (seq)
+seq sequent: $(SYMBIN)
+
+qseq:  ftq.o $(LIBQ) $L/seq/libnet.a $(NDIRLIB)
+	$(ENVPPLD) $(CC) -o qseq $(LDFLAGS) ftq.o $(LIBQ) $L/seq/libnet.a \
+		$(LIBQ) $(LIBX25) $(NDIRLIB) $(LIBDES) $(LIBPP)
+
+pseq:  ftp.o $(LIBP) $L/seq/libnet.a $(NDIRLIB)
+	$(CC) -o pseq $(LDFLAGS) ftp.o $(LIBP) $L/seq/libnet.a \
+		$(LIBP) $(LIBX25) $(NDIRLIB)
+
+$L/seq/libnet.a:
+	cd ..; $(MAKE) $(MFLAGS) $(MAKEPARAMS) lib/seq
+
+# The PP P end, which is NOT part of unix-niftp, so is not normally built.
+
+ftpp.o:	ftp.c
+	$(CC) $(CFLAGS) -DFULLPP -c ftp.c -o ftpp.o
+xgreyout greyout:  ftpp.o $(LIBPPP) $L/$(NIFTPINTERFACE)/libnet.a $(NDIRLIB)
+	$(ENVPPLD) $(CC) -o $@ $(LDFLAGS) ftpp.o $L/pqproc/adr_trans.o $(LIBPPP) \
+		$L/$(NIFTPINTERFACE)/libnet.a $(LIBPPP) $(NDIRLIB) $(LIBPP) \
+		$(LIBDES)
+
+q$(NIFTPINTERFACE):  ftq.o $(LIBQ) $L/$(NIFTPINTERFACE)/libnet.a $(NDIRLIB)
+	$(ENVPPLD) $(CC) -o q$(NIFTPINTERFACE) $(LDFLAGS) ftq.o $(LIBQ) \
+		$L/$(NIFTPINTERFACE)/libnet.a $(LIBQ) $(NDIRLIB) $(LIBDES) \
+		$(LIBPP) 
+
+p$(NIFTPINTERFACE):  ftp.o $(LIBP) $L/$(NIFTPINTERFACE)/libnet.a $(NDIRLIB)
+	$(ENVPPLD) $(CC) -o p$(NIFTPINTERFACE) $(LDFLAGS) ftp.o $L/pqproc/adr_trans.o \
+		$(LIBP) $L/$(NIFTPINTERFACE)/libnet.a $(LIBP) $(NDIRLIB) \
+		$(LIBDES) $(LIBPP)
+# the standard libraries ...
+
+$L/gen/libgen.a:
+	cd ..; $(MAKE) $(MFLAGS) $(MAKEPARAMS) lib/gen
+
+$L/pqproc/libp.a $L/pqproc/libq.a $L/pqproc/libpq.a:
+	cd ..; $(MAKE) $(MFLAGS) $(MAKEPARAMS) lib/pqproc
+
+$L/mmdf/libmail.a:
+	cd ..; $(MAKE) $(MFLAGS) $(MAKEPARAMS) lib/mmdf
+
+$L/sendmail/libmail.a:
+	cd ..; $(MAKE) $(MFLAGS) $(MAKEPARAMS) lib/sendmail
+
+$L/binmail/libmail.a:
+	cd ..; $(MAKE) $(MFLAGS) $(MAKEPARAMS) lib/binmail
+
+../ndir/libndir.a:
+	cd ..; $(MAKE) $(MFLAGS) $(MAKEPARAMS) ndir
+
+# other misc programmes ...
+fpc:	fpc.o $(LIBG) $(NDIRLIB)
+	$(CC) -o fpc $(LDFLAGS) fpc.o $(LIBG) $(NDIRLIB)
+
+ftprm:  ftprm.o $(LIBG) $(NDIRLIB)
+	$(CC) -o ftprm $(LDFLAGS) ftprm.o $(LIBG) $(NDIRLIB)
+
+cpf:	cpf.o $(LIBG) $(NDIRLIB)
+	$(CC) -o cpf $(LDFLAGS) cpf.o $(LIBG) $(NDIRLIB) $(LIBDES)
+
+ftpq:   ftpq.o $(LIBG) $(NDIRLIB)
+	$(CC) -o ftpq $(LDFLAGS) ftpq.o $(LIBG) $(NDIRLIB)
+
+fixtime:   fixtime.o $(LIBG) $(NDIRLIB)
+	$(CC) -o fixtime $(LDFLAGS) fixtime.o $(LIBG) $(NDIRLIB)
+
+ftpreq:   ftpreq.o $(LIBG) $(NDIRLIB)
+	$(CC) -o ftpreq $(LDFLAGS) ftpreq.o $(LIBG) $(NDIRLIB)
+
+ftpspool:  ftpspool.o $(LIBG) $(NDIRLIB)
+	$(CC) -o ftpspool $(LDFLAGS) ftpspool.o $(LIBG) $(NDIRLIB)
+
+qft:    qft.o $(LIBG) $(NDIRLIB)
+	$(CC) -o qft $(LDFLAGS) qft.o $(LIBG) $(NDIRLIB)
+
+ftpkey: ftpkey.o $(LIBG) $(NDIRLIB)
+	$(CC) -o ftpkey $(LDFLAGS) ftpkey.o $(LIBG) $(NDIRLIB)
+
+in.rmtdbm: in.rmtdbm.o $(LIBG) $(NDIRLIB)
+	$(CC) -o in.rmtdbm $(LDFLAGS) in.rmtdbm.o $(LIBG) $(NDIRLIB)
+
+killspool:  killspool.o $(LIBG)
+	$(CC) -o killspool $(LDFLAGS) killspool.o $(LIBG)
+
+setup:  setup.o $(LIBG) $(NDIRLIB)
+	$(CC) -o setup $(LDFLAGS) setup.o $(LIBG) $(NDIRLIB) $(LIBDES)
+
+dbencode: dbencode.o $(LIBG) $(NDIRLIB)
+	$(CC) -o dbencode $(LDFLAGS) dbencode.o $(LIBG) $(NDIRLIB)
+
+dbpatch: dbpatch.o $(LIBG) $(NDIRLIB)
+	$(CC) -o dbpatch $(LDFLAGS) dbpatch.o $(LIBG) $(NDIRLIB)
+
+dbextract: dbextract.o $(LIBG) $(NDIRLIB)
+	$(CC) -o dbextract $(LDFLAGS) dbextract.o $(LIBG) $(NDIRLIB)
+
+lookdbm: lookdbm.o $(LIBQ) $(LIBG) $(NDIRLIB)
+	$(CC) -o lookdbm $(LDFLAGS) lookdbm.o $(LIBG) $(LIBQ) $(NDIRLIB)
+
+ftshow: ftshow.o $(LIBG) $(NDIRLIB)
+	$(CC) -o ftshow $(LDFLAGS) ftshow.o $(LIBG) $(LIBQ) $(NDIRLIB)
+
+dersplit: dersplit.o $(LIBG) $(NDIRLIB)
+	$(CC) -o dersplit $(LDFLAGS) dersplit.o $(LIBG) $(NDIRLIB)
+
+nrsbuild: nrsbuild.o $(LIBG) $(NDIRLIB)
+	$(CC) -o nrsbuild $(LDFLAGS) nrsbuild.o $(LIBG) $(NDIRLIB)
+
+ftp.o:		$H/files.h $H/jtmp.h $H/infusr.h $H/retry.h $H/nrs.h ../version.h  $H/stat.h
+ftpp.o:		$H/files.h $H/jtmp.h $H/infusr.h $H/retry.h $H/nrs.h ../version.h  $H/stat.h
+ftq.o:		$H/nrs.h ../version.h $H/stat.h
+fpc.o:		$H/qfiles.h $H/nrs.h $H/retry.h $H/opts.h
+ftprm.o:	$H/tab.h $H/files.h $H/nrs.h $H/opts.h
+cpf.o:		$H/qfiles.h $H/nrs.h $H/tab.h $H/opts.h
+ftpq.o:		$H/tab.h $H/files.h $H/nrs.h $H/opts.h ../version.h
+fixtime.o:	$H/tab.h $H/files.h $H/nrs.h $H/opts.h
+ftpspool.o:	$H/nrs.h $H/retry.h $H/files.h $H/opts.h
+qft.o:		$H/tab.h $H/nrs.h $H/files.h $H/opts.h ../version.h
+ftpkey.o:	$H/opts.h
+setup.o:	$H/qfiles.h $H/opts.h
+dbencode.o:	$H/opts.h $H/nrs.h $H/db.h
+dbpatch.o:	$H/opts.h $H/nrs.h $H/db.h
+dbextract.o:	$H/opts.h $H/nrs.h $H/db.h
+lookdbm.o:	$H/opts.h $H/nrs.h
+ftshow.o:	$H/opts.h $H/nrs.h $H/stat.h
+dersplit.o:	$H/opts.h $H/nrs.h $H/nrsrecs.h
+nrsbuild.o:	$H/opts.h $H/nrs.h $H/nrsrecs.h $H/db.h
+
+shardist: $(SRCS)
+	shar $(SHOPT) $(SRCS) > /tmp/niftp-bin.sh
+
+clean:
+	-rm -f $(all) *.old *.o xgreyout greyout
+
+install: inst-cpf inst-ftpq inst-ftprm inst-qft inst-fpc inst-ftpspool \
+	inst-fixtime inst-ftpkey inst-setup inst-killspool inst-ftpreq \
+	inst-dbencode inst-dbpatch inst-lookdbm inst-ftshow \
+	inst-in.rmtdbm inst-proc
+#	inst-dbextract inst-nrsbuild inst-dersplit
+inst-cpf:		$(UBINDIR)/cpf
+inst-dbencode:		$(LBINDIR)/dbencode
+inst-dbextract:		$(LBINDIR)/dbextract
+inst-dbpatch:		$(LBINDIR)/dbpatch
+inst-dersplit:		$(LBINDIR)/dersplit
+inst-fixtime:		$(LBINDIR)/fixtime
+inst-fpc:		$(LBINDIR)/fpc
+inst-ftpkey:		$(LBINDIR)/ftpkey
+inst-ftpq:		$(UBINDIR)/ftpq
+inst-ftprm:		$(UBINDIR)/ftprm
+inst-ftpspool:		$(LBINDIR)/ftpspool
+inst-killspool:		$(LBINDIR)/killspool
+inst-ftpreq:		$(LBINDIR)/ftpreq
+inst-ftshow:		$(UBINDIR)/ftshow
+inst-lookdbm:		$(UBINDIR)/lookdbm	# was $(LBINDIR)/lookdbm
+inst-in.rmtdbm:		$(RMTDBMD)
+inst-nrsbuild:		$(LBINDIR)/nrsbuild
+inst-qft:		$(UBINDIR)/qft
+inst-setup:		$(LBINDIR)/setup
+
+$(LBINDIR)/dbencode:	dbencode
+$(LBINDIR)/dbextract:	dbextract
+$(LBINDIR)/dbpatch:	dbpatch
+$(LBINDIR)/dersplit:	dersplit
+$(LBINDIR)/fixtime:	fixtime
+$(LBINDIR)/fpc:		fpc
+$(LBINDIR)/ftpkey:	ftpkey
+$(LBINDIR)/ftpspool:	ftpspool
+$(LBINDIR)/killspool:	killspool
+$(LBINDIR)/ftpreq:	ftpreq
+$(LBINDIR)/lookdbm:	lookdbm
+$(LBINDIR)/nrsbuild:	nrsbuild
+$(LBINDIR)/setup:	setup
+$(UBINDIR)/cpf:		cpf
+$(UBINDIR)/ftpq:	ftpq
+$(UBINDIR)/ftprm:	ftprm
+$(UBINDIR)/ftshow:	ftshow
+$(UBINDIR)/lookdbm:	lookdbm
+$(UBINDIR)/qft:		qft
+dummy $(RMTDBMD):	$(RMTDBM)
+	$(CP) $(RMTDBM) $@
+	-$(CHUG) root $@
+	$(CHGRP) $(GRP) $@
+	$(CHMOD) 2110 $@
+	ls -ldg $@
+$(SETIN):
+	$(CP) `expr $@ : '.*/\(.*\)'` $@
+	-$(CHUG) root $@
+	$(CHGRP) $(GRP) $@
+	$(CHMOD) 2111 $@
+	ls -ldg $@
+$(SETRIN):
+	$(CP) `expr $@ : '.*/\(.*\)'` $@
+	-$(CHUG) root $@
+	$(CHGRP) $(GRP) $@
+	$(CHMOD) 4110 $@
+	ls -ldg $@
+$(ROOTIN):
+	$(CP) `expr $@ : '.*/\(.*\)'` $@
+	-$(CHUG) root $@
+	$(CHGRP) $(GRP) $@
+	$(CHMOD) 2110 $@
+	ls -ldg $@
+$(EXECIN):
+	$(CP) `expr $@ : '.*/\(.*\)'` $@
+	-$(CHUG) root $@
+	$(CHGRP) $(GRP) $@
+	$(CHMOD) 111 $@
+	ls -ldg $@
+inst-proc: $(PROC)
+	$(CP) $(PROC) $(LBINDIR)/
+	cd $(LBINDIR); $(CHGRP) $(GRP) $(PROC); $(CHMOD) 2110 $(PROC); ls -ldg $(PROC)
+tidy:
+	rm -f *.o
+
+clobber: tidy
+	rm -f $(all)
+
+#	anything else ??
+
+setaccess:
+	-for x in $(SETIN); \
+	 do $(CHUG) root $$x; $(CHGRP) $(GRP) $$x; $(CHMOD) 2111 $$x; ls -ldg $$x; done
+	-for x in $(SETRIN); \
+	 do $(CHUG) root $$x; $(CHGRP) $(GRP) $$x; $(CHMOD) 4111 $$x; ls -ldg $$x; done
+	-for x in $(ROOTIN); \
+	 do $(CHUG) root $$x; $(CHGRP) $(GRP) $$x; $(CHMOD) 2110 $$x; ls -ldg $$x; done
+	-for x in $(EXECIN); \
+	 do $(CHUG) root $$x; $(CHGRP) $(GRP) $$x; $(CHMOD) 0111 $$x; ls -ldg $$x; done
+	-for x in $(PROC); \
+	 do $(CHUG) root $$x; $(CHGRP) $(GRP) $$x; $(CHMOD) 2110 $$x; ls -ldg $$x; done
+
+showaccess:
+	@ls -ldg $(SETIN) $(SETRIN) $(ROOTIN) $(EXERCIN) $(RMTDBMD) $(PROC)

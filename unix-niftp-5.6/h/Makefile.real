@@ -1,0 +1,9 @@
+SRCS	= db.h files.h ftp.h hcontrol.h infusr.h jtmp.h Makefile.real \
+	nrs.h nrsrecs.h opts.h qfiles.h retry.h sfttab.h tab.h
+
+shardist: $(SRCS)
+	shar $(SHOPT) $(SRCS) > /tmp/niftp-h.sh
+
+install:; echo "	"OK - nothing to install
+clean:;	echo nothing to clean
+lint:;	echo nothing to lint

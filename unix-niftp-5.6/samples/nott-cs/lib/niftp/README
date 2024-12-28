@@ -1,0 +1,3 @@
+The niftp.* scripts are responsible for starting and maintaining the niftp
+system. Most of these are the relevent fragments from the real scripts we
+run that perform non-niftp functions not illustrated.

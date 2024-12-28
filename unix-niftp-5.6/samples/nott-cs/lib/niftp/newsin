@@ -1,0 +1,16 @@
+#! /bin/sh
+# connect the output of the ftp to rnews
+# now we move the file to /usr/spool/news/batchin where rnewd can find it
+
+BATCHIN=/usr/spool/news/batchin
+
+BASE=rnews.`IFS=": "; set \`date\`; echo $3.$4`
+for SUF in a b c d e f g h i j k l m n o p q r s t u v w x y z
+do
+	if ln $1 $BATCHIN/$BASE.$SUF
+	then
+		rm $1
+		exit 0
+	fi
+done
+exit 1

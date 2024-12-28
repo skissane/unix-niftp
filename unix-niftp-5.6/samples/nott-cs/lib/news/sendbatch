@@ -1,0 +1,75 @@
+: '@(#)sendbatch	1.2	4/22/85'
+# switches (effective for the remainder of the command unless changed):
+#	-c7	compression + 7-bit encoding (f-proto!)
+#	-c	compression only
+#	-nc	no compression
+#	-snum	max. output file length num bytes
+#	-bflags	flags for the compress program
+#	-Bflags	idem
+#
+# Example: sendbatch -c7 site1 site2 -nc -s20000 site3 site4
+
+LDIR=/usr/lib/news
+BDIR=/usr/spool/news/batchout
+
+cflags='-q'
+compr=-nc
+LIM=100000
+
+umask 22
+
+for rmt in $*
+do
+	case $rmt in
+	-[bB]*)	cflags="$cflags $rmt"; continue;;
+	-s*)	LIM=`expr "$rmt" : '-s\(.*\)'`; continue;;
+	-*c*)	compr=$rmt; continue;;
+	esac
+
+	while test $? -eq 0 -a \( -s $BDIR/$rmt -o -s $BDIR/$rmt.work \)
+	do
+
+		# keep a temporary backup; file.log should be removed regularly
+		if test -s $BDIR/$rmt -a ! -s $BDIR/$rmt.work
+		then
+			date >> $BDIR/$rmt.log
+			cat $BDIR/$rmt >> $BDIR/$rmt.log
+		fi
+
+		case $compr in
+		# compression + 7-bit
+		-c7)
+			(echo "#! c7unbatch"; $LDIR/batch $BDIR/$rmt $LIM |
+				/usr/lib/news/compress $cflags |
+				/usr/lib/news/encode) |
+				if test -s $BDIR/$rmt.cmd
+				then
+					$BDIR/$rmt.cmd
+				else
+					uux - -r -z -gN $rmt!rnews
+				fi
+			;;
+		# only compression
+		-c)
+			(echo "#! cunbatch"; $LDIR/batch $BDIR/$rmt $LIM |
+				$LDIR/compress $cflags) |
+				if test -s $BDIR/$rmt.cmd
+				then
+					$BDIR/$rmt.cmd
+				else
+					uux - -r -z -gN $rmt!rnews
+				fi
+			;;
+		# no compression
+		-nc)
+			($LDIR/batch $BDIR/$rmt $LIM) |
+				if test -s $BDIR/$rmt.cmd
+				then
+					$BDIR/$rmt.cmd
+				else
+					uux - -r -z -gN $rmt!rnews
+				fi
+			;;
+		esac
+	done
+done

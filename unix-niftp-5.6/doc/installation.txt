@@ -1,0 +1,1409 @@
+
+
+
+
+
+
+
+
+
+          Installation process for the UNIX-NIFTP
+
+
+               Piete Brooks (pb@cl.cam.ac.uk)
+
+          Cambridge University Computer Laboratory
+                          CB1 3QG
+
+
+        Andrew Findlay (Andrew.Findlay@brunel.ac.uk)
+
+                     Brunel University
+                          Uxbridge
+                          UB8 3PH
+
+
+             Julian Onions (jpo@cs.nott.ac.uk)
+
+                   Nottingham University
+                      University Park,
+                         Nottingham
+                          NG7 2RD
+
+
+                          _A_B_S_T_R_A_C_T
+
+          This document details the installation  steps
+     that   are   part   of  the  installation  of  the
+     _U_n_i_x-_N_i_f_t_p system for  blue  and  grey  book  file
+     transfer.   This package is extremely configurable
+     and is designed to work on  all  X.25  implementa-
+     tions.
+
+
+
+_1.  _I_n_t_r_o_d_u_c_t_i_o_n
+
+This document comes in several parts. It is  probably  worth
+reading the document through once before attempting to build
+and install _U_n_i_x-_N_i_f_t_p.  The  process  for  installation  is
+basically the following:
+
+o+    Unpacking the distribution. This is dependant obviously
+     on how you received the distribution.
+
+o+    Configuring the compile time options  (if  you  have  a
+     source distribution). This process is aided by the Con-
+     figure script.
+
+o+    Installation of the software
+
+
+
+
+                      November 7, 1990
+
+
+
+
+
+                           - 2 -
+
+
+o+    Setting up the run time tailoring options.
+
+o+    Starting up the system.
+
+Obviously some of these steps are more involved than  others
+- but the system is designed to be easy to install.
+
+_1._1.  _R_e_p_o_r_t_i_n_g _P_r_o_b_l_e_m_s
+
+The maintainers of this package are interested  in  feedback
+to  do with the software and installation.  If you find par-
+ticular difficulty or feel there is something missing either
+from  the  system  or  the  documentation  please report it.
+There is a distribution list of people involved in maintain-
+ing and running the _U_n_i_x-_N_i_f_t_p package, if you would like to
+be added send a message to the address:
+
+        unix-niftp-request@uk.ac.nott.cs
+
+However, for reporting bugs, discussing problems and so  on,
+the appropriate address is
+
+        unix-niftp@uk.ac.nott.cs
+
+Please include with your comments the following information.
+
+1.   The version of _U_n_i_x-_N_i_f_t_p that you are running.
+
+2.   The machine type you are running it on and the  version
+     of the operating system.
+
+3.   What sort of X.25 interface you  are  running  and  the
+     version of that if appropriate.
+
+Well, with the commercial out of the way,  we  will  take  a
+look at the configuration of the system.
+
+_2.  _R_e_q_u_i_r_e_m_e_n_t_s
+
+You will need some disk space, at least one  network  inter-
+face, and a few days to understand and install _U_n_i_x-_N_i_f_t_p.
+
+_2._1.  _D_i_s_k _s_p_a_c_e
+
+The source distribution takes around  1.1 MB  in  tar  form.
+When unpacked and compiled it takes around 6.5 MB (the exact
+figure depends on the distribution and the number of network
+interfaces you configure).
+
+The installation puts files in several places:
+
+
+
+
+
+
+
+                      November 7, 1990
+
+
+
+
+
+                           - 3 -
+
+
+8___________________________________________________________
+ Files             Typical location       Approximate size
+8___________________________________________________________
+ User binaries     /usr/local             0.7 MB
+8___________________________________________________________
+ System binaries   /usr/local/lib/niftp   2.5 MB
+8___________________________________________________________
+ Spool areas       /usr/spool/niftp       5 MB
+8___________________________________________________________
+7|7|7|7|7|7|
+
+
+
+
+                |7|7|7|7|7|
+
+
+
+
+                                       |7|7|7|7|7|
+
+
+
+
+                                                          |7|7|7|7|7|
+
+
+
+
+
+
+
+The figure for spool area includes a copy of the  NRS  data-
+base,  but  as  the  dbm(3) files are built in this area and
+moved into place you will need at  least  3MB  of  headroom.
+Mail  files are also held here awaiting transmission or pro-
+cessing, so an overall 10 MB might be a better estimate  for
+spool space.
+
+The NRS (Name Registration Scheme) database is almost essen-
+tial  if  you  are  in the UK academic community. It is less
+useful or irrelevant in other cases.  If  using  NRS,  allow
+space  for  the raw (DERFIL) form and for the nrs processing
+software: more about this later.
+
+_2._2.  _N_e_t_w_o_r_k _i_n_t_e_r_f_a_c_e_s
+
+_U_n_i_x-_N_i_f_t_p will work with a wide  range  of  network  inter-
+faces.  It  is  possible  to configure several interfaces at
+once. The list of available interfaces is continuously grow-
+ing:  contact  the  mailing list for the latest information.
+Most of the interfaces are based on X25, but the  code  will
+work  with  any reasonable full-duplex network.  The current
+list of interfaces follows.
+
+_2._2._1.  _S_u_n
+
+SunLink-X25 (Sun part number 700-1190-04,  manual  800-1333-
+04)  allows  either  serial port on a Sun processor board to
+act as an X25 synchronous interface.  It can  also  be  used
+with the SunLink Communication Processor board.  Performance
+is quite adequate at 9600  Baud  with  the  on-board  serial
+port;  this  could  probably be pushed to 19200 Baud without
+serious problems.
+
+_2._2._2.  _X_2_5_B
+
+This allows any machine with access to TCP/IP services on  a
+network to make calls out on X25 through a `bridge' machine.
+The bridge will run on any machine  which  runs  the  "spad"
+program (contact pb@uk.ac.cam.cl for details).
+
+_2._2._3.  _U_B_C
+
+The University of British Columbia have produced  a  socket-
+based  implementation  of X25 as part of their EAN mail sys-
+tem.  This is known to run on DEC VAX using a  DMF-32  comms
+board  and  SUNs  using  the  zss lines. It may run on other
+
+
+9                      November 7, 1990
+
+
+
+
+
+                           - 4 -
+
+
+4.2Bsd-like systems.  Contact John Demco <demco@ean.ubc.cdn>
+for  information  on  licensing.   Contact  William Armitage
+<wja@cs.nott.ac.uk> for UK implementation info.  The distri-
+bution  is  in the form of a set of sources to implement the
+'CCITT' network in the kernel.
+
+_2._2._4.  _I_n_t_e_r_n_e_t
+
+If your machine supports Berkeley sockets, you already  have
+this network interface. It can be used over ethernet or any-
+thing else that your IP network runs on.
+If you have TCP connectivity, why not use the  standard  TCP
+protocols ?
+
+_2._2._5.  _I_P_C_S
+
+This is a UCL special -- you probably do not want it.
+
+_2._2._6.  _D_e_x_p_a_n_d
+
+Dexpand is made by Camtec Electronics, and  is  an  X25  (or
+Cambridge  Ring)  interface  for  DEC VAX machines. You will
+need the Z1 software supplied by the manufacturers.
+If you have an option, do not use this interface.
+
+_2._2._7.  _Y_o_r_k
+
+_U_n_i_x-_N_i_f_t_p can use the YorkBox  Front  End  Processor,  thus
+replacing  a  large  part  of the original York code. It can
+also use any network interface which has the same procedural
+interface  as  the YorkBox. This includes many manufacturers
+X25 offerings.
+
+To use the York interface, you will need the netio interface
+library.
+
+
+
+
+
+
+
+_3.  _U_n_p_a_c_k_i_n_g _t_h_e _D_i_s_t_r_i_b_u_t_i_o_n.
+
+There are a number of ways in which you may receive the dis-
+tribution.   These are generally either by tape, NIFTP or as
+several mail messages.  Essentially though, they  are  basi-
+cally  all  the  same  in  that you should end up with a tar
+image to extract. Decide which of the methods  listed  below
+is  the  one  that  reflects  your  situation and follow the
+instructions.
+Each way will eventally leave you with a tar file.  Create a
+directory  for the image to reside in - this can be anywhere
+in  the  file  system,  but  is   usually   somewhere   like
+
+
+
+                      November 7, 1990
+
+
+
+
+
+                           - 5 -
+
+
+/usr/src/unix-niftp or /usr/src/local/unix-niftp.
+
+        mkdir /usr/src/local/unix-niftp
+        cd /usr/src/local/unix-niftp
+
+
+_3._1.  _T_a_r _T_a_p_e
+
+To unpack a tar image sent on a tape, read in the  tape  the
+directory with the appropriate tar command.
+
+        tar xv
+
+You should now have the distribution unpacked and  ready  to
+compile.
+
+_3._2.  _N_I_F_T_P
+
+If you have received the tar image via NIFTP you  will  most
+likely  find that it has been compressed to reduce space and
+transmission overhead  with  the  _c_o_m_p_r_e_s_s(1)  program.  The
+compress  program  is widely available and is distributed as
+standard with most  versions  of  UNIX|-  now.   The  version
+currently in use is version 4.0, if you don't have this ver-
+sion you should get it.
+
+Take the ftp file and uncompress it if necessary,  and  then
+extract  the  contents.  This  can be done as one operation,
+which is useful if disk space is tight.
+
+        uncompress < unix.niftp.tar.Z | tar xvf -
+
+This process should contain no errors. If it does,  then  it
+is  either  the  case  that  you have a corrupt distribution
+(this happens frequently when copying binary files using old
+niftp  code)  or  you don't have permissions to write in the
+directory you have created!
+
+_3._3.  _M_a_i_l _D_i_s_t_r_i_b_u_t_i_o_n
+
+This is basically the same as the NIFTP version, so only the
+changes  are noted here.  The distribution is almost certain
+to be compressed and then fed  through  a  binary  to  ascii
+translation  program.  The  two  most  like translations are
+uuencode/uudecode and atob/btoa. The  distribution  will  be
+also  usually  be  in separate messages, you must first edit
+these together remvoing extraneous headers and footers. Make
+sure you put them together in the right order too!  Once you
+have done all this you should be left with one file. You now
+need  to convert it to the binary form. This is most usually
+uudecode but try atob if you have it and uudecode fails.
+_________________________
+|- UNIX is a trademark of Bell Laboratories.
+
+
+
+
+                      November 7, 1990
+
+
+
+
+
+                           - 6 -
+
+
+
+        uudecode < file
+        atob < file > unix-niftp.tar.Z
+
+From this stage on it is the same as the NIFTP case.
+
+
+
+
+
+
+
+_4.  _C_o_m_p_i_l_e _t_i_m_e _t_a_i_l_o_r_i_n_g
+
+This process should be fairly painless. It consists of  run-
+ning the script _C_o_n_f_i_g_u_r_e script and answering the questions
+it asks. The configure script attempts to discover  as  much
+as it can for itself, but will in some cases ask for confir-
+mation. In other cases it will ask  direct  questions  about
+where to put binaries and so on.
+
+Selecting options at compilation may not  be  easy,  if  you
+have installed any PD software you will be used to questions
+about compiler options and so on - but  the  questions  that
+you may find hard are the ones about network options.  There
+is a simple rule here, if you have not heard of it  -  don't
+select  it.   You may cause compilation to fail when it does
+not find the code.
+
+If you are using sendmail, you  probably  want  the  compile
+option
+
+        -DMAILOWNSMAIL
+
+which causes all qmail in the niftp queues to  be  owned  by
+the mail user, rather than the sender of the mail.
+
+When it has finished, Configure will  update  several  files
+with its results and you are then ready to compile. However,
+it is worth checking certain files to see if the values look
+reasonable.  A  list  of the current defines and is given in
+Appendix 1.
+
+Now, to compile, simply type make and watch the  files  fly.
+If  it  throws  up  errors, you may have specified something
+wrong in the Configure or else you may have a weird system.
+
+
+
+
+
+
+
+
+
+
+
+                      November 7, 1990
+
+
+
+
+
+                           - 7 -
+
+
+_5.  _I_n_s_t_a_l_l_a_t_i_o_n _o_f _t_h_e _S_o_f_t_w_a_r_e
+
+This should be achieved the first time by the command:
+
+        make fullinstall
+
+which does a "make dirs"  to  create  the  necessary  direc-
+tories,  "make install" to install the files, and "make key-
+file" to generate the secret key  for  password  encryption.
+On subsequent installations, only the "make install" need be
+run.
+
+Note that you will most likely need to be the super-user  to
+complete  this  step as it copies the software to the normal
+system directories.  It is probably worth running make  with
+the  `-n'  flag at this point just to be sure it isn't going
+to do something unexpected.
+
+Some assistance in checking and setting the modes  of  files
+may  be  achied  by  invoking  make with the "showmodes" and
+"setmodes" keys.  See "make help" for the full set  of  meta
+keys for make.
+
+
+
+
+
+
+
+_6.  _R_u_n _t_i_m_e _c_o_n_f_i_g_u_r_a_t_i_o_n
+
+Run time configuration allows the  administrator  to  change
+the  behaviour  of  the system once compiled. The _U_n_i_x-_N_i_f_t_p
+package has the vast majority  of  the  important  variables
+tailorable in this way. This means that a change in the sys-
+tem usually does not require a recompilation.
+
+To begin with it is worth looking at some  of  the  standard
+run  time  tailoring  files  supplied with the distribution.
+These are in the directory samples/.
+
+The best way to construct a tailor file is to  take  one  of
+these  that  closely  resembles  your  system and modify the
+things you need to.  A full list of the possible  option  is
+listed  below,  together with some idea of what they do, and
+how important they are.  First a quick note about the syntax
+of the file.
+
+Comments are allowed in the file, and start with a hash  (#)
+and  terminate  at  the  end  of  the  line. Blank lines are
+ignored and may be inserted to aid readability.  Most  items
+occur in the form `Key value' or `Key List-of-values'.
+
+
+
+
+
+                      November 7, 1990
+
+
+
+
+
+                           - 8 -
+
+
+_6._1.  _T_a_i_l_o_r_i_n_g _f_i_l_e _k_e_y_w_o_r_d_s
+
+A list of the correspondence between tailoring keywords  and
+the #defines that they are related to appears in Appendix 1.
+However, this is a description of what  the  tailoring  key-
+words control.
+
+ALIAS
+
+BINDIR
+
+DISKFULL
+
+DOCKETDIR
+
+DOMAIN
+
+DQUEUE
+
+FTPUSER
+
+HOST Not currently used
+
+KEYFILE
+
+KILLSPOOL
+
+LISTEN
+
+LOGDIRDirectory to place log files in.
+
+LONGFORM
+
+MAILDIR
+
+MAILPROG
+
+MAILFMT
+
+NET
+
+OURNAME
+
+OUTDTYPE
+
+PADDRTYPE
+
+PRINTER
+
+QADDRTYPE
+
+QRETRIES
+
+QTIMEOUT
+
+
+
+                      November 7, 1990
+
+
+
+
+
+                           - 9 -
+
+
+QUEUE
+
+SECUREDIRS
+
+SETUPPROG
+
+SPOOLER
+
+TABLE
+
+JMTPDIR
+
+JTMPPROC
+
+JTMPUSER
+
+MAILUSER
+
+NEWSDIR
+
+NEWSPROC
+
+NEWSUSER
+
+
+
+
+
+
+
+_7.  _S_t_a_r_t_i_n_g _u_p _t_h_e _s_y_s_t_e_m
+
+This area is divided into two. There are  a  few  once  only
+things  that  have to be done to allow the system to be run,
+and some things that must be done each time a new version is
+installed.
+
+_7._1.  _O_n_c_e _o_n_l_y _a_c_t_i_o_n_s
+
+The once only actions are as follows.   Normally,  you  will
+want  the  _U_n_i_x-_N_i_f_t_p  system to start running automatically
+when your system reboots. To achieve this it is necessary to
+add the following lines to your /etc/rc.local file.
+
+        if [ -f /pathname/ftpspool ]; then
+                /pathname/ftpspool logfile & (echo -n ' ftpspool') >/dev/console
+        fi
+
+You will need to supply the correct pathname depending  upon
+where  you  installed  ftpspool.  Also check that you have a
+dbm database.
+
+
+
+
+
+
+                      November 7, 1990
+
+
+
+
+
+                           - 10 -
+
+
+_7._2.  _E_a_c_h _i_n_s_t_a_l_l_a_t_i_o_n _c_h_a_n_g_e_s.
+
+On each reinstallation you may need to  change  the  follow-
+ing...
+
+
+
+
+
+
+
+_8.  _U_s_e _w_i_t_h _t_h_e _N_R_S _d_a_t_a_b_a_s_e.
+
+The _U_n_i_x-_N_i_f_t_p package relies  fairly  heavily  on  the  NRS
+database.  This needs to be converted into a _d_b_m(3) database
+before it is usable. This is best done in the following way.
+If the NRS tables are to be used, the bulk of the  dbm  file
+is generated using the dbencode command.  Use c-nrs (contact
+pb@uk.ac.cam.cl for details) to generate this.
+In any case, it will be necessary to add some entries not in
+the  NRS.  If dbencode is not use, just "touch" the .pag and
+.dir files.  Having generated a  suitable  UAIEF  file  (see
+samples/), dbpatch will make the necessary changes, e.g.
+
+        nrs dbm1.cf
+        dbencode < dbm
+        dbpatch < UAIEF
+
+
+
+
+
+
+
+
+_9.  _C_o_n_f_i_g_u_r_i_n_g _M_a_i_l
+
+Mail is support over the blue book transfer system  as  grey
+book  mail.  An interface to some of the more common mailers
+is provided with _U_n_i_x-_N_i_f_t_p.  The interface works best  with
+a  smart  mailer, or which the two most popular are probably
+MMDF2 and Sendmail. The  _U_n_i_x-_N_i_f_t_p  has  support  for  both
+these and some more primitive mailers. If you run some other
+mailer, you may need to change some  things  in  the  source
+code.
+
+
+
+
+
+
+
+
+
+
+
+
+                      November 7, 1990
+
+
+
+
+
+                           - 11 -
+
+
+_9._1.  _C_o_n_f_i_g_u_r_i_n_g _w_i_t_h _M_M_D_F_2
+
+Set the mail owner to be MMDF.  Set  up  incoming  mail  ...
+Set up outgoing mail ...
+
+
+
+
+
+
+
+_9._2.  _C_o_n_f_i_g_u_r_i_n_g _w_i_t_h _S_e_n_d_m_a_i_l
+
+_9._2._1.  _C_o_n_f_i_g_u_r_i_n_g _U_n_i_x-_N_i_f_t_p
+
+If you use Sendmail as your mail handler, you must say so in
+the Configuration phase of _U_n_i_x-_N_i_f_t_p. Most of the work will
+then be done for you automatically.  When  running  Sendmail
+it  is  normal  for mail to be owned and handled by the user
+_r_o_o_t.
+
+Sendmail will be used for forwarding mail received from  the
+network,  and  also  for  notifying  users if something goes
+wrong with a file-transfer request.   The  way  sendmail  is
+invoked  and  the  parameters  passed  can  be configured in
+/etc/niftptailor, using the MAILPROG and MAILFMT lines.  The
+`mail  user'  can  also  be  specified.   These items should
+default to appropriate values, but you may wish  to  specify
+them anyway:
+
+        MAILUSER        root
+        MAILPROG        /usr/lib/sendmail
+        MAILFMT sendmail, "%s -t", "%s -ba -oiY -oMs%s", 7
+
+which means ...
+
+_9._2._2.  _C_o_n_f_i_g_u_r_i_n_g _S_e_n_d_m_a_i_l
+
+The real work comes when you  start  to  configure  Sendmail
+itself!   If  you  are  thinking  of  sitting down to edit a
+sendmail.cf file, _S_T_O_P!  Get a copy of  Jim  Crammond's  UK-
+sendmail-1.4a configuration compiler.
+
+_9._2._2._1.  _G_e_t_t_i_n_g _U_K-_s_e_n_d_m_a_i_l-_1._4_a
+
+If you already have access to network mail, send  a  message
+to info-server@uk.ac.ukc with the following contents:
+
+
+
+
+
+
+
+
+
+
+                      November 7, 1990
+
+
+
+
+
+                           - 12 -
+
+
+
+        request: sources
+        topic: uk-sendmail-1
+        topic: uk-sendmail-2
+        topic: uk-sendmail-3
+        topic: uk-sendmail-4
+        topic: uk-sendmail-5
+        topic: uk-sendmail-6
+        request: end
+
+
+You will receive six messages in reply. Trim  off  the  mail
+headers  and  feed each message in turn to sh(1). The result
+will be a system for constructing sendmail configurations.
+
+If you have not got access to mail  yet  (which  is  likely,
+since  this  document is telling you how to set it up!), you
+will have to get the package by some other means.
+
+Even if you are not installing _U_n_i_x-_N_i_f_t_p  in  the  UK,  the
+configuration package is worth considering as it takes a lot
+of the hassle out of setting up Sendmail. The rest  of  this
+section assumes that you will use UK-sendmail-1.4a.
+
+_9._2._2._2.  _C_h_o_o_s_i_n_g _a _d_o_m_a_i_n _n_a_m_e _f_o_r _m_a_i_l
+
+The first thing to do is to choose  a  name  for  your  mail
+`domain'.   This  must  follow certain rules: in particular,
+you will almost certainly be  part  of  some  larger  domain
+which  already  has  a name.  UK academic organisations will
+have names starting `uk.ac.' (note that the  largest  domain
+is  given  first  here, which is the reverse of normal prac-
+tise.  Only the UK suffers from this, but it is relevant  to
+_U_n_i_x-_N_i_f_t_p,  being  a  package of UK origin).  UK commercial
+organisations have names starting `uk.co.'.  Similar  domain
+names  exist  in other countries.  A new university at Tring
+in the UK might choose the name `uk.ac.tring'.  The UK's NRS
+allows each organisation to have _t_w_o names: one long and one
+short. The short name must fit  within  18  characters,  but
+there  is no (specified) limit on long names. If at all pos-
+sible, you should choose a _s_i_n_g_l_e name, and keep  it  short.
+Where  your domain name is used by UK-sendmail, it will usu-
+ally be the short form.
+
+One final word on choosing names: do not name your  machines
+by their CPU type. One day you might replace that VAX with a
+Cray running Berkeley 4.7; you would not want  to  keep  the
+same mail address on _t_h_a_t!
+Also avoid use of a final component which  might  be  a  top
+level  domain.   Most  new top level domains will be the two
+letter ISO values.
+
+If part of your organisation already has an electronic  mail
+address you should discuss domain names with them and try to
+
+
+
+                      November 7, 1990
+
+
+
+
+
+                           - 13 -
+
+
+present a consistent view to `the world  outside'.  This  is
+made  quite  easy by UK-sendmail's `Multihost configuration'
+option.
+
+_9._2._2._3.  _M_a_k_i_n_g _t_h_e _f_i_r_s_t _c_o_n_f_i_g_u_r_a_t_i_o_n
+
+You will eventually need to make a  configuration  for  each
+machine  in your organisation. Many of these will be identi-
+cal, so for the moment let us consider only the machine that
+will  be  running  _U_n_i_x-_N_i_f_t_p.  This  will  be the main mail
+interface to the outside world. Let us suppose that it is  a
+Sun, called Suleika.
+
+In the UK-sendmail directory, type _M_A_K_E  (You  may  need  to
+`chmod +x MAKE'  first).   The first question it will ask is
+the hostname, which defaults to the name of the machine  you
+are  using.  This name is used as the name of a subdirectory
+in which the configuration will be constructed.
+
+        Suleika% MAKE
+        Sendmail initial configuration program  UK-1.4
+
+        Enter hostname (Suleika):
+
+
+On this occasion we accept the default by hitting  <return>.
+When  making  configurations for other machines, the name of
+the configuration can be given at this stage. (It  does  not
+_h_a_v_e to be the name of a machine)
+
+The next question asks for the sitename, which also defaults
+to  the  machine name (obtained with _h_o_s_t_n_a_m_e(_1) ).  At this
+stage it is best to give the significant part of your domain
+name,  so  Tring  University  would give the `tring' part of
+`uk.ac.tring':
+
+        Enter sitename (Suleika): tring
+
+
+The sitename is used to identify data that is valid for  all
+machines on that site.
+
+The next question concerns `multihost sites'.  If  you  have
+(or  expect  to  have) more than one mail-handling computer,
+you should probably go for the multihost configuration:
+
+        Is this a multihost site, where a collection of hosts
+        are made to look like one site? (y|n) y
+
+
+The machine (or configuration) name will become part of  the
+`complete  domain  name'. Sendmail will use this name inter-
+nally, but  the  machine-name  part  will  never  appear  in
+addresses  sent  off-site.  Domain  names  are  specified in
+
+
+
+                      November 7, 1990
+
+
+
+
+
+                           - 14 -
+
+
+`little-endian' order from now on:
+
+        Complete domain name: Suleika.tring.ac.uk
+
+        Host name = Suleika, Site name = tring,
+        Domain name = tring.ac.uk (multihost site)
+        confirm? (y|n)
+
+
+If all that is OK, answer `y' and carry  on  to  select  the
+mailers  that  you  will use. In this context, a mailer is a
+means of sending a  message  to  a  remote  machine,  so  it
+includes  _U_n_i_x-_N_i_f_t_p,  uucp,  and  such  like. Assuming that
+Tring has an Ethernet and wants to use  _U_n_i_x-_N_i_f_t_p  for  all
+off-campus mail, the dialogue would be something like this:
+
+        ethernet? y
+        Domain name on ethernet channel (tring.ac.uk):
+        local uucp? n
+        uucp? n
+        janet? y
+        Domain name on janet channel (in 822 format) (tring.ac.uk):
+        bitnet? n
+        csnet? n
+
+                Are you using bsd4.3 or Sun 3.0 sendmail? (y|n) y
+
+        Making directory Suleika...
+        creating rules...
+        creating mailers...
+        creating Makefile...
+        creating Suleika.mc...
+        Initial configuration complete.
+
+        You now have to make the tring.dom and Suleika.chn files.
+
+
+The `janet' mailer will use _U_n_i_x-_N_i_f_t_p. JANET is the name of
+the  UK  Joint  Academic  Network, but the mailer is equally
+valid for any network handled by _U_n_i_x-_N_i_f_t_p.   The  question
+about  the  version  of Sendmail is there because later ver-
+sions  feed  _t_r_a_n_s_p_o_r_t  addresses  through  the   per-mailer
+rulesets  as  well  as _h_e_a_d_e_r addresses. If you don't under-
+stand that, _d_o_n'_t _p_a_n_i_c because it does not  really  matter.
+Just answer the question, and if in doubt say yes!
+
+The MAKE script has now finished, and has issued a  reminder
+that  the  job is not yet finished.  At this point, it would
+be a good idea to look in the  _U_n_i_x-_N_i_f_t_p  distribution,  in
+the  directory  _s_e_n_d_m_a_i_l  and select a mailer description to
+replace _h_h_c_p_m._m_4 in the newly-created directory. You  should
+check  that  the  pathname of the mailer binary (ni_send) is
+correct for your installation.
+
+
+
+
+                      November 7, 1990
+
+
+
+
+
+                           - 15 -
+
+
+The next job is to make the domain files, so _c_d _d_o_m and read
+the  README  file.   You  will  probably want to extract the
+example `.dom' files and look at them:
+
+        ar x Examples.a
+
+You can probably ignore  (and  delete)  the  bitnet.dom  and
+csnet.dom  files.  The  ukuucp.dom file may not be necessary
+either. Look at the file ed.local.dom, and create  something
+similar  for your own site.  This maps from machine names to
+full domain names and from any  subdomains  to  full  domain
+names,  so  Tring  (which  has only two machines at present)
+would have a file _t_r_i_n_g._l_o_c_a_l._d_o_m looking like this:
+
+        # tring.local.dom
+        #
+        # maps from machine names to full domain names
+
+        Suleika         Suleika.tring.ac.uk
+        Ceres           Ceres.tring.ac.uk
+
+
+If the _t_r_i_n_g._a_c._u_k domain were to be split into  subdomains,
+say  to allow three departments to manage their own mail, it
+might look like this:
+
+        # tring.local.dom
+        #
+
+        Suleika         Suleika.cs.tring.ac.uk
+        Ceres           Ceres.cs.tring.ac.uk
+        Juno            Juno.ee.tring.ac.uk
+        Papagena        Papagena.ee.tring.ac.uk
+        Astraea         Astraea.me.tring.ac.uk
+
+
+That sort of trick is a little more  complicated:  refer  to
+the  UK-sendmail  documentation  for  full  details. We will
+stick with the simpler case in this document.
+
+The _t_o_p._d_o_m file lists `top level domains' such  as  UK  and
+NZ.  The list supplied with UK-sendmail is now rather out of
+date, but will do for now.  At  a  later  stage  you  should
+obtain  an  up-to-date  list,  perhaps  by mailing the info-
+server at uk.ac.ukc (request:  uknet;  topic:  top-domains).
+If  in  doubt  about  what  `relay  site' to specify for any
+domain, the best default option is ukc. One line in the sup-
+plied _t_o_p._d_o_m file _m_u_s_t be changed if you have more than one
+host: The UK domain should be relayed by  whichever  machine
+you are installing _U_n_i_x-_N_i_f_t_p on:
+
+
+
+
+
+
+
+                      November 7, 1990
+
+
+
+
+
+                           - 16 -
+
+
+
+        # top.dom
+        #  Top level domains
+        #  if address hasn't matched a domain name in any other table then
+        #  it should match something here. The RHS is a domain which specifies
+        #  where the message should be relayed for further routing.
+        #
+        uk              Suleika.tring.ac.uk
+        com             ukc.ac.uk
+        gov             ukc.ac.uk
+        edu             ukc.ac.uk
+        mil             ukc.ac.uk
+        bitnet          ukc.ac.uk
+        csnet           ukc.ac.uk
+        nl              ukc.ac.uk
+        au              ukc.ac.uk
+        nz              ukc.ac.uk
+        oz              ukc.ac.uk
+
+
+The _u_k._d_o_m table can be left exactly as it comes  until  you
+have  the  NRS  processor  going.  If  you are not in the UK
+domain, there will probably  be  some  equivalent  table  to
+replace _u_k._d_o_m.
+
+The domain tables can now be merged using the MAKE script in
+the _d_o_m directory:
+
+        MAKE tring tring.local.dom top.dom uk.dom
+
+
+The channel tables now have to be  made,  so  _c_d ../_c_h_n  and
+look   at  the  README  file.   Extract  the  examples  with
+_a_r _x _E_x_a_m_p_l_e_s._a and have a look  at  them.  Again,  you  can
+delete the ones not required.  Edit the remaining ._c_h_n files
+to suit your local environment. Here are examples for Tring:
+
+        # ether.chn
+        #
+        # Ethernet channel table
+        #  The domain name on the LHS is routed to the host on the RHS.
+        #
+        Suleika.tring.ac.uk     Suleika
+        Ceres.tring.ac.uk       Ceres
+
+
+
+
+
+
+
+
+
+
+
+
+
+                      November 7, 1990
+
+
+
+
+
+                           - 17 -
+
+
+
+        # local.chn
+        #
+        #  The Local channel
+        #    The domain names listed here are local to this host
+        #
+        #       NRS names
+        #       Include both long and short forms
+        tring.ac.uk
+        #       UUCP name (if required)
+        # tring.uucp
+        #
+        #  As we are a multihost site, we must include the following host
+        names
+        #
+        Suleika.tring.ac.uk
+        Ceres.tring.ac.uk
+
+
+The _j_a_n_e_t._c_h_n file can be left empty for now, and filled  in
+by  the  NRS  processor.  One point worth noting: if you are
+using X25 to connect one or more of  the  machines  in  your
+domain,  you  will  need  to list them in _j_a_n_e_t._c_h_n to force
+their mail into _U_n_i_x-_N_i_f_t_p.  UK-sendmail has a default  rule
+that  causes  all mail to subdomains of `UK' to be handed to
+the `janet' mailer. If you are not in the `UK'  domain,  you
+may  need  to  modify the rule or place a list of sites into
+_j_a_n_e_t._c_h_n.
+
+The _t_o_p._c_h_n file may be linked to ../dom/top.dom for simpli-
+city.
+
+You are now ready to merge the channel tables:
+
+        MAKE Suleika local.chn ether.chn janet.chn top.chn
+
+
+The hard work is now over; _c_d ../_S_u_l_e_i_k_a and type _m_a_k_e (That
+is  the normal, lower-case, make!) Make will copy the domain
+and channel tables and merge them with the  machine-specific
+information set up in the first phase. You can then test the
+configuration by typing:  /_u_s_r/_l_i_b/_s_e_n_d_m_a_i_l -_b_t -_C_S_u_l_e_i_k_a._c_f
+You should test ruleset zero with a good selection of possi-
+ble addresses (both correct ones and bad ones). Ensure  that
+all correct addresses eventually produce a line specifying a
+mailer and an address. Here are a couple of examples:
+
+
+
+
+
+
+
+
+
+
+
+                      November 7, 1990
+
+
+
+
+
+                           - 18 -
+
+
+
+        /usr/lib/sendmail -bt -CSuleika.cf
+        ADDRESS TEST MODE
+        Enter <ruleset> <address>
+        > 0 fred
+        rewrite: ruleset  3   input: "fred"
+        rewrite: ruleset  3 returns: "fred"
+        rewrite: ruleset  0   input: "fred"
+        rewrite: ruleset  0 returns: "^V" "local" "^X" "fred"
+        > 0 bill@tring
+        rewrite: ruleset  3   input: "bill" "@" "tring"
+        rewrite: ruleset 11   input: "bill" "@" "tring"
+        rewrite: ruleset 11 returns: "bill" "@" "tring" "." "ac" "." "uk"
+        and so on........
+        rewrite: ruleset 15 returns: "bill"
+        rewrite: ruleset  0 returns: "^V" "local" "^X" "bill"
+
+
+Any off-site addresses should end up using the `hhcp' mailer
+(hhcp is the name of a mailer used by an old X25 NIFTP pack-
+age) Addresses within your own domain should  end  up  using
+the `local' mailer.
+
+Once you are happy with the behaviour of the  configuration,
+install  it  with:  _m_a_k_e _i_n_s_t_a_l_l  You  should  then find the
+existing sendmail daemon and kill it before starting  a  new
+daemon with:
+
+        /usr/lib/sendmail -bd -q1h
+
+or whatever command you find in your /etc/rc.local
+
+The job is done! If you have other  machines  to  configure,
+you  should  make  Sendmail  configurations for them at some
+stage. These will probably be much the  same  as  the  first
+one, but without the `janet' mailer if they are not going to
+use _U_n_i_x-_N_i_f_t_p.
+
+_9._2._2._4.  _T_e_s_t_i_n_g _t_h_e _s_e_n_d_m_a_i_l _c_o_n_f_i_g_u_r_a_t_i_o_n
+
+The address-testing phase above should  catch  most  errors,
+but  the only way to test the whole system is to send a mes-
+sage. Start by mailing something to yourself without  speci-
+fying any domain names:
+
+        echo hello | mail fred
+
+
+If that works, try your local domain name too:
+
+        echo hello | mail fred@tring.ac.uk
+
+
+None of that should have gone anywhere near  _U_n_i_x-_N_i_f_t_p,  so
+
+
+
+                      November 7, 1990
+
+
+
+
+
+                           - 19 -
+
+
+the  next thing is to try a bouncer. Pick some friendly site
+with a reasonably smart mailer (e.g. a site running MMDF  or
+Sendmail) and bounce a message off them:
+
+        echo bounce bounce bounce | mail fred%tring.ac.uk@brunel.ac.uk
+
+
+That request should put a mail message into  the  _U_n_i_x-_N_i_f_t_p
+outgoing queue.  You can then use _f_t_p_q to track its progress
+(e.g. ftpq -mald), and look in the _U_n_i_x-_N_i_f_t_p  logs  to  see
+what  happened  to  the  message.   If  everything is set up
+correctly and the remote site is alive, you should get  your
+message  back  within  a  few  minutes.  If not, look in the
+ftpspool log (the argument to ftpspool in /etc/rc.local) and
+the log files in (e.g.) /usr/spool/niftp/logs.
+
+
+_9._2._2._5.  _L_i_k_e_l_y _p_r_o_b_l_e_m_s
+
+Illegal format JNT mail file.
+     This is an error message that may be sent by  a  remote
+     MMDF  site.  It means that the remote site cannot iden-
+     tify you from your address.  The  solution  is  to  get
+     your  X25  calling  address correctly registered in the
+     NRS.
+
+Unknown host uk.ac.xyzzy
+     The host uk.ac.xyzzy is not in  the  database  used  by
+     _U_n_i_x-_N_i_f_t_p.    Sendmail   will   pass  the  address  to
+     _U_n_i_x-_N_i_f_t_p quite happily because it seems to be a valid
+     UK address.
+
+_9._2._2._6.  _D_i_s_g_u_s_t_i_n_g _H_A_C_K
+
+If you are an academic site with a JANET  line  but  no  PSS
+line  (or a commercial site with PSS but not JANET) you will
+want some way of relaying mail into the `other' domain.  UKC
+will  do  this  for  you,  as  will  a number of other well-
+connected sites. The problem is  to  get  the  mail  to  UKC
+without putting the name of every UK.CO site into _j_a_n_e_t._c_h_n.
+The trick here is to depend on the `domain escalation'  that
+is  built  into  ni_send.  Where  an  address  of  the  form
+'uk.ac.xx.yy' is presented to ni_send and not found  in  the
+database,  the  least-significant domain is stripped off and
+the lookup is retried. Thus,  mail  for  an  unknown  domain
+`uk.ac.xx.yy' would be sent to a known domain `uk.ac.xx' for
+forwarding. (This assumes that the machine representing that
+domain  is _c_a_p_a_b_l_e of forwarding! Not many non-Unix machines
+can do it...). Taking this one stage further, if there  were
+a known site `uk.co', it could relay all mail for subdomains
+of `uk.co'. There is no such site, but since the  mailer  at
+UKC  is quite tolerant it is possible to make a phantom site
+_c_a_l_l_e_d `uk.co' but having UKC's _n_e_t_w_o_r_k  _a_d_d_r_e_s_s.   This  is
+done with a line in the UAIEF file:
+
+
+
+                      November 7, 1990
+
+
+
+
+
+                           - 20 -
+
+
+
+        h:uk.co:uk.co:janet:4:000049200000:FTP.MAIL:::0:50:0:
+
+
+For a commercial site on PSS wishing  to  have  all  `uk.ac'
+mail relayed, the equivalent line would be:
+
+        h:uk.ac:uk.ac:pss:4:234222715151:FTP.MAIL:::0:50:0:
+
+
+See the section on setting up the database for more informa-
+tion on UAIEF.
+
+Note however, that this is contrary  to  the  GreyBook  spec
+[[or is it the NRS]].
+
+
+
+
+
+
+
+_1_0.  _C_o_n_f_i_g_u_r_i_n_g _N_e_w_s
+
+This needs doing if you want news, 'nuff said.
+
+_1_1.  _P_e_r_f_o_r_m_a_n_c_e _a_n_d _O_p_e_r_a_t_i_o_n _C_o_n_s_i_d_e_r_a_t_i_o_n
+
+running multiple queues..
+
+guest accounts
+
+etc. etc.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                      November 7, 1990
+
+
+
+
+
+                           - 21 -
+
+
+_A_p_p_e_n_d_i_x _1.
+
+The relationship between the keywords found in the tailoring
+file  and  the  #defines  used at compile time is summarised
+here.
+
+Tailor Keyword             #define                     Usage
+
+ALIAS                      NETALIASES
+BINDIR                     BINDIR
+DISKFULL                   DISKFULLS
+DOCKETDIR                  DOCKETDIR
+DOMAIN                     NRSdomains
+DQUEUE                     NRSdqueue
+FTPUSER                    FTPuser FTPuid
+HOST
+KEYFILE                    KEYFILE
+KILLSPOOL                  KILLSPOOL
+LISTEN                     NULL
+LOGDIR                     LOGDIR
+LONGFORM                   uselongform
+MAILDIR                    MAILDIR
+MAILPROG                   mailprog
+MAILFMT                    MAILFMT
+NET                        NETWORKS
+OURNAME                    ourname
+OUTDTYPE                   outdtype
+PADDRTYPE                  p_addrtype
+PRINTER                    printer Q
+QADDRTYPE                  q_addrtype
+QRETRIES                   QRETRIES Q
+QTIMEOUT                   QTIMEOUT Q
+QUEUE                      NRSqueues Q
+SECUREDIRS                 SECUREDIRS
+SETUPPROG                  SETUPPROG
+SPOOLER                    NRSdspooler
+TABLE                      NRSdbase
+JMTPDIR                    JTMPDIR
+JTMPPROC                   JTMPproc                    J
+JTMPUSER                   JTMPuser (uid)              J
+MAILUSER                   MAILuser (uid)              J
+NEWSDIR                    NEWSdir                     M
+NEWSPROC                   NEWSPROC                    N
+NEWSUSER                   NEWSuser (uid)              N
+
+
+
+
+
+
+
+
+
+
+
+
+
+                      November 7, 1990
+
+

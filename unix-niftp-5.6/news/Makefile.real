@@ -1,0 +1,78 @@
+L	= ../lib
+LIBG	= $L/gen/libgen.a
+NEWSDIR	= /usr/lib/news
+
+SRC= qnews.c unqnews.c ctl.c qerror.c loadav.c
+HEADER= config.h qnews.h
+
+all :	# Nothing at the moment newstoniftp qnews unqnews
+
+newstoniftp : newstoniftp.o $(LIBG)
+	$(CC) -o newstoniftp $(LDFLAGS) newstoniftp.o $(LIBG)
+
+newstoniftp.o : $H/opts.h $H/nrs.h
+
+qnews: qnews.o ctl.o qerror.o $(LIBG)
+	$(CC) -o qnews $(LDFLAGS) qnews.o ctl.o qerror.o $(LIBG)
+
+unqnews: unqnews.o ctl.o qerror.o loadav.o $(LIBG)
+	$(CC) -o unqnews $(LDFLAGS) unqnews.o ctl.o qerror.o loadav.o $(LIBG)
+
+clean:
+	-rm -f $(all) *.old *.o
+
+install: # Nothing at the moment $(LBINDIR)/newstoniftp ${NEWSDIR}/qnews ${NEWSDIR}/unqnews
+$(LBINDIR)/newstoniftp: newstoniftp
+	cp newstoniftp $(LBINDIR)/newstoniftp
+	$(CHUG) news $(LBINDIR)/newstoniftp
+	$(CHMOD) 700 $(LBINDIR)/newstoniftp
+${NEWSDIR}/qnews: qnews
+	install -m 500 -o news -g news qnews ${NEWSDIR}
+${NEWSDIR}/unqnews: unqnews
+	install -m 500 -o news -g news unqnews ${NEWSDIR}
+
+tidy:
+	rm -f *.o
+
+clobber: tidy
+	rm -f $(all)
+
+#	anything else ??
+depend:
+	for i in ${SRC}; do \
+		( /bin/grep '^#[ 	]*include[ 	]*"' $$i | sed -n \
+			-e 's/[^"]*"\([^"]*\)".*/\1/' \
+			-e H -e '$$g' -e '$$s/\n/ /g' \
+			-e '$$s/.*/'$$i': &/' -e '$$s/\.c:/.o:/p' \
+			>> makedep); done
+	for i in ${HEADER}; do \
+		echo '$$s/.*/'$$i': &\' >eddep; \
+		echo '	touch '$$i'/p' >>eddep; \
+		( /bin/grep '^#[ 	]*include[ 	]*"' $$i | sed -n \
+			-e 's/[^"]*"\([^"]*\)".*/\1/' \
+			-e H -e '$$g' -e '$$s/\n/ /g' \
+			-f eddep \
+			>> makedep); done
+	@echo '/^# DO NOT DELETE THIS LINE/+2,$$d' >eddep
+	@echo '$$r makedep' >>eddep
+	@echo 'w' >>eddep
+	@cp Makefile Makefile.bak
+	ed - Makefile < eddep
+	@rm -f eddep makedep
+	@echo '# DEPENDENCIES MUST END AT END OF FILE' >> Makefile
+	@echo '# IF YOU PUT STUFF HERE IT WILL GO AWAY' >> Makefile
+	@echo '# see make depend above' >> Makefile
+	- diff Makefile Makefile.bak
+	@rm -f Makefile.bak
+
+# DO NOT DELETE THIS LINE
+
+qnews.o:  qnews.h
+unqnews.o:  qnews.h
+ctl.o:  qnews.h
+qerror.o:  qnews.h
+qnews.h:  config.h
+	touch qnews.h
+# DEPENDENCIES MUST END AT END OF FILE
+# IF YOU PUT STUFF HERE IT WILL GO AWAY
+# see make depend above

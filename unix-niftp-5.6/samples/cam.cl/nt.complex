@@ -1,0 +1,72 @@
+# NRS configuration file
+TABLE   /usr/lib/niftp/nrsdbm
+DQUEUE  /usr/spool/niftp          # default queue
+# the directory containing the default binaries
+BINDIR  /usr/lib/niftp
+
+# the default logfile directory
+LOGDIR  /usr/spool/niftp/logs
+MAILUSER mmdf
+MAILPROG /usr/lib/mmdf/lib/v6mail
+#MAILPROG /usr/lib/sendmail
+#MAILPROG /usr/lib/niftp/progmail
+#MAILPROG /usr/lib/niftp/asismail
+#MAILFMT  /usr/lib/niftp/progmail "%s -s '%s' %s", "%s -v '%s'", 48
+MAILFMT  /usr/lib/mmdf/lib/v6mail "%s -f mmdf -g \"uk.ac.cam.cl NIFTP Daemon\" -s \"%s\" -t \"%s\"", "", 192
+NEWSPROC "/usr/lib/niftp/lognews %s"
+NEWSUSER news
+
+SETUPPROG  /usr/lib/niftp/setup
+KEYFILE    /usr/lib/niftp/key/keyfile
+SECUREDIRS /usr/lib/niftp/securedirs
+QADDRTYPE  ftp,ftp, ftp.mail,mail, ftp.news,news
+QADDRTYPE  news.npl.ftp,news
+QADDRTYPE  news.cam.ftp,news
+QADDRTYPE  news.icdoc.ftp,news, news.icdoc.ftp.news,news
+QADDRTYPE  news.ukc.ftp.news,news
+QADDRTYPE  news.btaxion.ftp,news
+QADDRTYPE  news.ftp,news, news.ftp.news,news
+QADDRTYPE  nrs.ftp,ftp
+
+#DISCFULL   /dev/xy0d bytes=100100000,type=ftp
+DISCFULL   /dev/xy1g bytes=1001000,type=mail
+DISCFULL   /dev/xy1g bytes=1501000,type=news
+
+# known about queues
+#QUEUE   qe      level=111,prog=pinet
+#QUEUE   qj      level=623,prog=psun
+QUEUE   qj      level=-1,prog=psun
+QUEUE   qj      level=107,prog=psun
+QUEUE   qj2     level=107,prog=psun,master=qj
+QUEUE   qj3     level=107,prog=psun,master=qj
+QUEUE   qn      level=107,prog=psun
+QUEUE   qu      level=107,prog=psun
+QUEUE   qu2     level=107,prog=psun,master=qu
+QUEUE   qu3     level=107,prog=psun,master=qu
+QUEUE   qu4     level=107,prog=psun,master=qu
+
+# various configuration details for each network
+#NET ether       queue=qe,address="%D%X%T",show="the ethernet"
+#NETjanet       queue=qj,address="/JENNY.%E%X%D/%T"
+NET janet       queue=qj,address="000008011706/%E%X%D/%T"
+NET nrs         queue=qn,address="000008011706/%E%X%D/%T"
+NET news        queue=qu,address="000008011706/%E%X%D/%T"
+
+DOMAIN  "uk.ac.cam.cl","uk.ac.cambridge.computer-lab","uk.ac.cam","uk.ac.cambridge","uk.ac","uk","uk.co" # known domains
+
+# specifications for listeners
+
+#LISTEN ether	address="911",level=107,prog=qinet,logfile=log.qe
+#LISTEN lf	address="FTP",level=-25601,prog=qsun
+#LISTEN lf	address="FTP",level=-1,prog=qsun
+LISTEN lf	address="FTP",level=107,prog=qsun
+LISTEN lj	address="FTP",level=107,prog=qsun
+#LISTEN lm	address="FTP.MAIL",level=6655,prog=qsun
+LISTEN lm	address="FTP.MAIL",level=107,prog=qsun
+LISTEN ln	address="NRS",level=107,prog=qsun
+LISTEN lu	address="NEWS",level=107,prog=qsun
+LISTEN lv	address="NEWS.CAM.FTP",level=107,prog=qsun
+LISTEN lw	address="NEWS.NPL.FTP",level=107,prog=qsun
+LISTEN lx	address="NEWS.UKC.FTP",level=107,prog=qsun
+LISTEN ly	address="NEWS.ICDOC.FTP",level=107,prog=qsun
+LISTEN lz	address="NEWS.BTAXION.FTP",level=107,prog=qsun

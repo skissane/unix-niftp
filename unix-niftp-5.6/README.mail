@@ -1,0 +1,73 @@
+..... some general info ....
+
+There are two distinct mail operations: notifying a (local) user of the state
+of a transfer, and the optional facility to deliver incoming X.25 GreyBook
+mail (selected by the MAIL #define).
+Most of the code is generic, except for MMDF which behaves so differently for
+X.25 mail delivery that it has it's own library for that purpose (the other is
+actually called "progmail").
+
+.... some more stuff ....
+
+
+MAIL TAILORING
+==============
+
+The runtime tailoring of the mail system is performed by the use of the items
+
+MAILPROG	a token, normally a full pathname of a command.
+MAILFMT		instructions on how to deliver mail
+MAILDIR		where incoming X.25 mail is stored.
+MAILUSER	the username under which X.25 mail is delivered.
+
+The only non obvious part is the interaction between MAILPROG and MAILFMT.
+
+MAILFMT	sendmail, "%s -t", "%s -ba -oMs%s", 7
+
+instructs progmail on how to deliver mail using sendmail.
+
+The first string is the token to match.  It first tries an exact match,
+and if that fails, it tries with just the last component. This means that
+given two lines starting /usr/ucb/mail and mail respectively, the first line
+will be obeyed for /usr/ucb/mail, but the second for /bin/mail.
+In this case if the token in MAILPROG ends with "sendmail", the match occurs.
+
+The next two strings are sprintf formats for notification and delivering X.25
+mail respectively.
+
+The final field (currently a number -- sorry !) is a bitmap of the options
+required, currently: 1) Add To: line, 2) Add Subject: line, 4) add a blank line
+after the header, 8) add a Received: line, 16) treat any error as serious and
+32) pass over incoming Greybook mail asis (don't process the recipient list).
+See h/ftp.h for the latest list.
+
+A number of standard mail formats are included in lib/gen/conf.c (initially in
+gen.conf.SH), so most users will not need to insert a MAILFMT line.
+
+
+When delivering notification mail, the first format is used, being passed
+arguments of MAILPROG, subject and user (extras can be added on request).
+If an item is to be skipped, %.0s can be used.
+Note that most entries use the actual value of MAILPROG, but the initial" %s"
+can be replaced by "/usr/lib/sendmail%0.s" if use /usr/lib/sendmail is to be
+forced.
+The default is "%s %.0s%s", 7, i.e. use MAILPROG followed by the recipient,
+generating a minimal header automatically.
+[ the code to do this is in lib/gen/ni_rtn.c ]
+
+When delivering X.25 mail (except for MMDF), the second format is used, being
+passed arguments of MAILPROG, calling host and queue name.
+If SEND_ASIS (32) is not set, the recipient list is stripped off the Greybook
+mail header and each recipient is appended to the command.
+If ADD_RECV (8) is set, a Received: line is prefixed to the message (not
+meaningful if SEND_ASIS is set).
+If CATCH_ALL (16) is set, any non-zero returncode is treated as an error.
+Otherwise only the bottom byte of the return code is inspected.
+
+The default is "%s -v %s ", 24, i.e. use MAILPROG followed by -v and the
+calling address, then the recipient list from the header, adding a Received:
+line and treating any error as serious.
+[ the code to do this is in lib/progmail/ni_mail.c ]
+
+
+SEE ALSO: README.pp

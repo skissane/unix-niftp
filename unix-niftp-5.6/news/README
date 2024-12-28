@@ -1,0 +1,108 @@
+newstoniftp 26/4/88
+
+Newstoniftp provides a simple mechanism for sending off news batches to
+neighbouring news sites. It takes a news batch as standard input and
+queues it for transmission to one or more hosts. The hosts are given
+(By UUCP name!) as arguments. Batches are spooled in the files
+/usr/spool/niftp/news/<site>/n.<pid>, where <site> is the UUCP name
+of the host to recieve the batch, and <pid> is an arbitrary number :-).
+
+UUCP names are translated into proper addresses by, unfortunately, an
+internal table which needs to be edited before compilation of newstoniftp.
+Perhaps someday this will be done properly - using a config file. The
+table looks something like this:
+
+struct news_addr addr_trans[] = {
+	"strath-cs",		"uk.ac.strath.cs",
+	"ukc",			"uk.ac.ukc",
+	"paisley",		"uk.ac.paisley.cs",
+	"glasgow",		"uk.ac.gla.cs",
+	"dcl-cs",		"uk.ac.lancs.comp",
+	"turing",		"uk.ac.turing",
+	"abacus",		"uk.ac.strath.abacus",
+	"its63b",		"uk.ac.ed.its63b",
+	0
+};
+
+The first field gives the UUCP name used by the news software and the second
+translates this into the proper address.
+
+For example, when batching news to ukc, /usr/lib/news/sendbatch will invoke
+/usr/spool/news/outbatch/ukc.cmd, which will start the newstoniftp process
+correctly:
+	: use /bin/sh
+	: Move news to ukc via niftp
+	exec /usr/local/niftp/newstoniftp ukc
+this will put the news batch in the file /usr/spool/niftp/news/ukc/n.<pid>
+and execute the command:
+	cpf -Nw /usr/spool/niftp/news/ukc/n.<pid> @uk.ac.ukc
+
+Note that pathnames may vary from site to site.
+
+Where newstoniftp is given more than one recipient site on the command line,
+the spool files are created using hard links, so that only one actual copy of
+the batch is stored.
+
+qnews/unqnews 8/4/88
+
+  Qnews and unqnews provide a simple queuing mechanism for incoming news
+batches. Qnews, invoked by the appropriate listener, places each news
+batch in a spool file. Unqnews picks up these spool files in chronological
+order and invokes inews(1) to process them.
+
+CONFIGURATION
+  There are several options to be configured before building qnews and
+unqnews. These are defined in config.h:
+
+UNQNEWS		The pathname where unqnews can be found. This is usually
+		/usr/lib/news/unqnews.
+
+BATCHDIR	The directory for spooling news batches. Batches are placed
+		filenames something like BATCHDIR/rnews.<serial number> and
+		collected (later?) by unqnews.
+
+ERRLOG		The absolute pathname of a file to be used for error
+		logging by either qnews or unqnews. The file should be
+		writable by the UID specified by NEWSUSER in the tailor
+		file. Typically, ERRLOG will be "/usr/lib/news/qnews.errlog".
+
+MAXLOAD		The maximum load average at which news processing will
+		be done. If this is undefined, no account will be taken
+		of the load average and news will be processed no matter
+		how crippling this could turn out to be to your poor
+		machine. If defined, the load average is examined before
+		starting the processing of each batch by inews. The load
+		average used is the one averaged over five minutes (the
+		middle of the three as printed by uptime etc.).
+
+PEAKTIME	If PEAKTIME is defined, no news processing will be done
+		during peak hours (8 a.m. to 6 p.m.). Unqnews will exit
+		whether it is started by qnews or cron.
+
+DAEMON		If daemon is defined, qnews will NOT start up unqnews
+		upon receiving a news batch. Unqnews can then be started
+		by cron at the appropriate time (usually sometime during
+		the night).
+
+RWHO		If rwho is defined, unqnews will use the rwho daemon
+		to find out the load average. If undefined, it will
+		dig around in /dev/kmem looking at kernel variables.
+		Only meaningful when MAXLOAD is defined.
+
+INSTALLATION
+  Usually the binaries for qnews and unqnews will reside in the news
+home directory, "/usr/lib/news". If this is not the case, edit Makefile
+and change NEWSDIR to be the directory you want to put them in.
+  Type "make" and, if all goes according to plan, "make install".
+
+INVOCATION
+  Qnews is invoked either with a list of pathnames of niftp spool files,
+or with the spool file open on the standard input:
+/usr/lib/news/qnews <filename> ...
+
+This is typically achieved by putting the following line in your
+niftptailor file:
+NEWSPROC   "/usr/lib/news/qnews %s"
+
+Allan Black <allan@uk.ac.strath.cs>
+

@@ -1,0 +1,396 @@
+
+
+
+
+
+
+
+
+
+          Configuring _U_N_I_X-_N_I_F_T_P for use with PP.
+
+
+                       Julian Onions
+                    J.Onions@xtel.co.uk
+
+                     X-Tel Services Ltd
+                   Nottingham University
+                     Nottingham NG7 2RD
+
+
+
+
+
+_I_n_t_r_o_d_u_c_t_i_o_n
+
+This short note is intended to be  a  stop-gap  that  covers
+what  you  need  to know to install _U_N_I_X-_N_I_F_T_P for operation
+with PP. It is not intended to be a tutorial on  _U_N_I_X-_N_I_F_T_P,
+partly  because  I  don't  know  enough and partly because I
+don't have time.
+
+_C_o_m_p_i_l_a_t_i_o_n
+
+Currently, both PP and _U_N_I_X-_N_I_F_T_P think they are  in  charge
+of  compilation, therefore there is a slight bootstrap prob-
+lem. The best method currently therefore is the following.
+
+1.   Compile PP without the greybook channel
+
+2.   Comple _U_N_I_X-_N_I_F_T_P
+
+3.   Compile PP with the greybook channel.
+
+To configure and compile, _U_N_I_X-_N_I_F_T_P, you basically run _C_o_n_-
+_f_i_g_u_r_e  and  answer  the  questions  it  asks. Make sure you
+request use of PP in the  unspooled  mode.  Other  questions
+such  as  the  place  for binaries etc are up to you. if you
+don;t understand  the  question  COnfigure  is  asking,  hit
+return and it will normally "do the right thing".
+
+     % sh Configure
+
+
+Once the configuration process is over, type _m_a_k_e and wait.
+
+     % make
+
+There should be no problems at this stage.
+
+After this completes, you should next type "_m_a_k_e _f_u_l_l_i_n_s_t_a_l_l
+
+
+
+                     February 20, 1991
+
+
+
+
+
+                           - 2 -
+
+
+which  should  install  everything  in the correct place. It
+will also ask you for a master password. This is  only  used
+for  ftp  transfers, and you can type anything you like here
+if you are going to  using _U_N_I_X-_N_I_F_T_P for PP mail only. Oth-
+erwise you should choose a good password, and forget it!
+
+     % make fullinstall
+
+
+_C_o_n_f_i_g_u_r_i_n_g _t_h_e _r_u_n_t_i_m_e _s_y_s_t_e_m
+
+The next step is to configure the run  time  support  system
+and  database that _U_N_I_X-_N_I_F_T_P needs.  This consists of first
+creating a tailor file (usually stored in  /etc/niftptailor)
+and secondly building a dbm database of hosts.
+
+_T_a_i_l_o_r_i_n_g _t_h_e _s_y_s_t_e_m.
+
+A sample tailor file can be found in  Appendix  A.  However,
+the necessary lines you will need are the following.
+
+     QUEUE PP level=7,prog=psun
+
+This line defines the PP queue. The name  "PP"  is  what  PP
+will  use as its queue name. The level is for logging in the
+niftp logs. Suitable levels vary from "1", minimal  logging,
+to  "-1"  -  all  logging.  The prog bit is superfluous, but
+doesn't hurt.
+
+     NET janet queue=qj,address="000021001029/%E%X%D/%T"
+
+This line identifies the network "janet" for outgoing calls.
+When  the  PP greybook channel makes a call, it consults the
+info field of the channel to determine the network. This  is
+used to work out what address to use in outgoing calls.  The
+queue key sets the queue, but I don;t know why.  The address
+key/value  sets  up the calling and called addresses respec-
+tively. These are constructed in a printf like  manner  with
+literal characters copied and %'s marking subsitutions.  The
+following substitutions are legal.
+
+     %E  Our YBTS string (e.g. FTP, FTP.MAIL)
+     %X  Separator between calling and called address
+     %D  Destintaion DTE number
+     %T  Destination YBTS string (e.g. FTP, FTP.MAIL)
+     %O  The variable set by OURNAME.
+     %P  pink book context
+
+So, the above string with DTE of  00000511160005  and  a  YB
+string of UCL-CS.FTP.MAIL we would generate
+
+     calling address:  000021001029/FTP.MAIL
+     called address:   00000511160005/UCL-CS.FTP.MAIL
+
+
+
+
+                     February 20, 1991
+
+
+
+
+
+                           - 3 -
+
+
+     LISTEN pj address="FTP.MAIL",level=7,prog=qsun,channel=janet
+
+This line registers a listener for incoming mail. It matches
+on  the  address "FTP.MAIL", has a logging level of "7", and
+claims to be from the janet network. This  implies  that  it
+will be channel "gb-janet" when passing on to PP.
+
+This is all that is essential for PP to make  use  of  _U_N_I_X-
+_N_I_F_T_P.   However,  there are a number of useful variable you
+can set that help if you wish to move things around (such as
+log  directories  for  example). Some of the more useful are
+given in Appendix B.
+
+_B_u_i_l_d_i_n_g _t_h_e _d_a_t_a_b_a_s_e.
+
+The easiest way of building the database is with  the  c-nrs
+program.  In  fact,  this  is  so easy that I'm not going to
+describe other methods!  So, first get  hold  of  the  c-nrs
+package and build that. Once this is done, you can then gen-
+erate the _U_N_I_X-_N_I_F_T_P database by the following commands.
+
+     nrs dbm1.cf > dbm1
+     nrs dbm1.cf 'output reverse' >> dbm1
+     dbencode < dbm1
+
+What could be simpler!
+
+_T_e_s_t_i_n_g _t_h_e _s_y_s_t_e_m _f_o_r _o_u_t_g_o_i_n_g _m_e_s_s_a_g_e.
+
+With all this done, the system should now work for  outgoing
+calls.   Make  sure  you  have done a "make install" in PP's
+Chans/grey directory to get the greybook channel  installed.
+Now mail a message to a host that makes use of the grey book
+channel and see if it works. Hopefully  if  it  doesn't  you
+will  get  a  useful diagnostic. This will appear usually in
+either the PP log directory in a file such as  "greyout"  or
+in the _U_N_I_X-_N_I_F_T_P log directory in "log.pPP".
+
+_S_e_t_t_i_n_g _u_p _t_h_e _i_n_c_o_m_i_n_g _s_y_s_t_e_m.
+
+This is best done by running a daemon such  as  ybtsd.  This
+daemon  is started at boot time usually and listens for Yel-
+low Book transport calls. When one is received, it looks  at
+the  Yellow Book address and determines what program to call
+to process this. This matching up is done through  the  file
+ybts-auth.  This is usually in an "etc" directory. It can be
+/etc/ybts-auth,         /usr/local/etc/ybts-auth          or
+/etc/sunlink/cbs/ybts-auth.
+
+To configure PP to accept incoming calls you need to do  the
+following.   In the PP chans directory, make a symbolic link
+from greyin to the name of the LISTEN name in the _U_N_I_X-_N_I_F_T_P
+file. This is "pj" in the above example.
+
+
+
+
+                     February 20, 1991
+
+
+
+
+
+                           - 4 -
+
+
+     % ln -s greyin pj
+
+Now arrange for the ybtsd to invoke this process for  incom-
+ing FTP.MAIL requests. A suitable line in the ybts-auth file
+might be
+
+     /usr/pp/chans/pj:ftp.mail:*
+
+The first part being the pathname of the symbolic  link  you
+just  created,  the second being the YBTS address (ftp.mail)
+and the third field saying any calling address is allowed to
+invoke this.
+
+This should now be set up to  allow  incoming  and  outgoing
+mail.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                     February 20, 1991
+
+
+
+
+
+                           - 5 -
+
+
+_A_p_p_e_n_d_i_x _A - _s_a_m_p_l_e _t_a_i_l_o_r _f_i_l_e
+
+
+     # known about queues
+     QUEUE   qj      level=7,prog=psun
+     QUEUE   PP      level=7,prog=psun
+
+
+     # various configuration details for each network
+     NET janet       queue=qj,address="000021001029/%E%X%D/%T"
+
+     # Domains that we know about
+     DOMAIN  "uk.ac.nott","uk.ac","uk","uk.co","uk.co.xtel" # known domains
+
+     # The listener information
+     LISTEN pj address="FTP.MAIL",level=107,prog=qsun,channel=janet,reverse
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                     February 20, 1991
+
+
+
+
+
+                           - 6 -
+
+
+_A_p_p_e_n_d_i_x _B - _u_s_e_f_u_l _t_a_i_l_o_r _v_a_r_i_a_b_l_e_s
+
+The following is a list of the more useful things  that  you
+can tailor.  This list is not exhaustive!
+
+BINDIR    The directory where binaries private to the  _U_N_I_X-
+          _N_I_F_T_P are looked for.
+
+               BINDIR /usr/lib/niftp
+
+
+DOMAIN    A list of domain prefixes. When looking for an NRS
+          name,  the software will try adding these names to
+          what it is looking for  should  the  first  lookup
+          fail.
+
+               DOMAIN "uk.ac", "uk.co"
+
+
+LOGDIR    The directory in which the log files  are  created
+          and written.
+
+               LOGDIR /usr/spool/niftp/logs
+
+
+TABLE     The DBM database that contains  the  NRS  name  to
+          address translations.
+
+               TABLE /usr/spool/niftp/nrsdbm
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                     February 20, 1991
+
+

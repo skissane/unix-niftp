@@ -1,0 +1,206 @@
+.ds f. lib/seq/x25d.tbl
+.TH X25D 8
+.SH NAME
+x25d \- listen for incoming X.25 calls
+.SH SYNOPSIS
+.B x25d 
+.SH DESCRIPTION
+.IR X25d
+listens for incoming calls and starts up a process based on
+the action described in /etc/x25d.conf.
+The process chosen is based on
+.B protocol id
+and (if appropriate)
+.B YBTS.
+.SH "CONFIGURATION FILE FORMAT"
+Each process description takes up one line of the configuration file
+and consists of five fields:
+.IP protid
+the protocol id ("X.29" or "YB").
+"X.29" matches "0x01<any><any><any>".
+"YB" matches "0x7fffffff".
+.IP YBTS
+the service required (e.g. "ftp" or "ftp.mail").
+This should be "-" for X.29.
+.IP adaptor
+The protocol adaptor (adapter) to be used - either "X.25" or "X.29".
+.IP program
+The program to be started to service the call.
+This should be the full pathname of either a UNIX-NIFTP listener (for YB)
+or a login handler (usually /etc/getty) for X.29.
+.IP args
+The arguments to the process,
+space separated and starting with the process name (i.e. argv[0]).
+.SH "variable substitution"
+Any argument of the form "$<variable name>"
+will be replaced by the appropriate string value.
+Variable names and the values to be substituted are as follows:
+.IP "host, calling_host or calling_name"
+The full NRS name of the host making the call,
+or the DTE if no name can be found.
+.IP "short or calling_shortname"
+As above, but shortened to fit a utmp host entry.
+.IP "dte or calling_dte"
+The DTE address of the host making the call.
+.IP "ybts, called or called_ybts"
+The service being requested, e.g. "ftp.mail".
+.IP "calling_ybts or calling"
+The calling hosts's YBTS.
+.IP called_dte
+The DTE address used to connect to you.
+.IP tty
+The tty name attached to the incomin call.
+This is of the form "tty[xyzefg][0-9a-zA-E]".
+.PP
+Comments (starting with "#") and blank lines are ignored.
+.SH example
+.TS
+.if \n+(b.=1 .nr d. \n(.c-\n(c.-1
+.de 35
+.ps \n(.s
+.vs \n(.vu
+.in \n(.iu
+.if \n(.u .fi
+.if \n(.j .ad
+.if \n(.j=0 .na
+..
+.nf
+.nr #~ 0
+.if n .nr #~ 0.6n
+.ds #d .d
+.if \(ts\n(.z\(ts\(ts .ds #d nl
+.fc
+.nr 33 \n(.s
+.rm 80 81 82 83 84
+.nr 80 0
+.nr 38 \w#ProtID
+.if \n(80<\n(38 .nr 80 \n(38
+.nr 38 \w#
+.if \n(80<\n(38 .nr 80 \n(38
+.nr 38 \wX.29
+.if \n(80<\n(38 .nr 80 \n(38
+.nr 38 \wYB
+.if \n(80<\n(38 .nr 80 \n(38
+.nr 38 \wYB
+.if \n(80<\n(38 .nr 80 \n(38
+.nr 38 \wYB
+.if \n(80<\n(38 .nr 80 \n(38
+.80
+.rm 80
+.nr 81 0
+.nr 38 \wYBTS or -
+.if \n(81<\n(38 .nr 81 \n(38
+.nr 38 \w-
+.if \n(81<\n(38 .nr 81 \n(38
+.nr 38 \wftp
+.if \n(81<\n(38 .nr 81 \n(38
+.nr 38 \wftp.mail
+.if \n(81<\n(38 .nr 81 \n(38
+.nr 38 \wftp.news
+.if \n(81<\n(38 .nr 81 \n(38
+.81
+.rm 81
+.nr 82 0
+.nr 38 \wAdaptor
+.if \n(82<\n(38 .nr 82 \n(38
+.nr 38 \wX.29
+.if \n(82<\n(38 .nr 82 \n(38
+.nr 38 \wX.25
+.if \n(82<\n(38 .nr 82 \n(38
+.nr 38 \wX.25
+.if \n(82<\n(38 .nr 82 \n(38
+.nr 38 \wX.25
+.if \n(82<\n(38 .nr 82 \n(38
+.82
+.rm 82
+.nr 83 0
+.nr 38 \wCommand
+.if \n(83<\n(38 .nr 83 \n(38
+.nr 38 \w/etc/getty
+.if \n(83<\n(38 .nr 83 \n(38
+.nr 38 \w/usr/lib/niftp/qseq
+.if \n(83<\n(38 .nr 83 \n(38
+.nr 38 \w/usr/lib/niftp/qseq
+.if \n(83<\n(38 .nr 83 \n(38
+.nr 38 \w/usr/etc/x25r
+.if \n(83<\n(38 .nr 83 \n(38
+.83
+.rm 83
+.nr 84 0
+.nr 38 \wargv[0->]
+.if \n(84<\n(38 .nr 84 \n(38
+.nr 38 \wgetty $tty
+.if \n(84<\n(38 .nr 84 \n(38
+.nr 38 \wjanet
+.if \n(84<\n(38 .nr 84 \n(38
+.nr 38 \wjanet
+.if \n(84<\n(38 .nr 84 \n(38
+.nr 38 \wx25r -h news-serv
+.if \n(84<\n(38 .nr 84 \n(38
+.84
+.rm 84
+.nr 38 1n
+.nr 79 0
+.nr 40 \n(79+(0*\n(38)
+.nr 80 +\n(40
+.nr 41 \n(80+(3*\n(38)
+.nr 81 +\n(41
+.nr 42 \n(81+(3*\n(38)
+.nr 82 +\n(42
+.nr 43 \n(82+(3*\n(38)
+.nr 83 +\n(43
+.nr 44 \n(83+(3*\n(38)
+.nr 84 +\n(44
+.nr TW \n(84
+.if t .if \n(TW>\n(.li .tm Table at line 64 file lib/seq/x25d.tbl is too wide - \n(TW units
+.fc  
+.nr #T 0-1
+.nr #a 0-1
+.eo
+.de T#
+.ds #d .d
+.if \(ts\n(.z\(ts\(ts .ds #d nl
+.mk ##
+.nr ## -1v
+.ls 1
+.ls
+..
+.ec
+.ta \n(80u \n(81u \n(82u \n(83u \n(84u 
+.nr 31 \n(.f
+.nr 35 1m
+\&\h'|\n(40u'#ProtID\h'|\n(41u'YBTS or -\h'|\n(42u'Adaptor\h'|\n(43u'Command\h'|\n(44u'argv[0->]
+.ta \n(80u \n(81u \n(82u \n(83u \n(84u 
+.nr 31 \n(.f
+.nr 35 1m
+\&\h'|\n(40u'#\h'|\n(41u'\h'|\n(42u'\h'|\n(43u'\h'|\n(44u'
+.ta \n(80u \n(81u \n(82u \n(83u \n(84u 
+.nr 31 \n(.f
+.nr 35 1m
+\&\h'|\n(40u'X.29\h'|\n(41u'-\h'|\n(42u'X.29\h'|\n(43u'/etc/getty\h'|\n(44u'getty $tty
+.ta \n(80u \n(81u \n(82u \n(83u \n(84u 
+.nr 31 \n(.f
+.nr 35 1m
+\&\h'|\n(40u'YB\h'|\n(41u'ftp\h'|\n(42u'X.25\h'|\n(43u'/usr/lib/niftp/qseq\h'|\n(44u'janet
+.ta \n(80u \n(81u \n(82u \n(83u \n(84u 
+.nr 31 \n(.f
+.nr 35 1m
+\&\h'|\n(40u'YB\h'|\n(41u'ftp.mail\h'|\n(42u'X.25\h'|\n(43u'/usr/lib/niftp/qseq\h'|\n(44u'janet
+.ta \n(80u \n(81u \n(82u \n(83u \n(84u 
+.nr 31 \n(.f
+.nr 35 1m
+\&\h'|\n(40u'YB\h'|\n(41u'ftp.news\h'|\n(42u'X.25\h'|\n(43u'/usr/etc/x25r\h'|\n(44u'x25r -h news-serv
+.fc
+.nr T. 1
+.T# 1
+.35
+.TE
+.if \n-(b.=0 .nr c. \n(.c-\n(d.-8
+.SH "SEE ALSO"
+x25(4)
+.SH FILES
+/etc/x25d.conf
+.SH BUGS
+At present only board 0 line 0 is supported.
+.SH AUTHOR
+Allan Black <allan@uk.ac.strath.cs>

@@ -1,0 +1,8 @@
+# /etc/rc.local fragment for starting the ftp
+
+FTPSPOOL=/usr/local/lib/niftp/ftpspool
+if [ -f $FTPSPOOL ]; then
+	nice -1 $FTPSPOOL /usr/spool/niftp/logs/spool &
+	echo -n ' niftp'					>/dev/console
+fi
+

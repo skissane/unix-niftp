@@ -1,0 +1,21 @@
+#! /bin/sh
+#
+# niftp.build [ derfil ]
+#
+# construct the niftp database
+#
+
+NRSDIR=/usr/adm/nrs
+FTPLIB=/usr/local/lib/niftp
+
+DEBUG=${DEBUG+:}
+DERFIL=${1-$NRSDIR/DERFIL1}
+
+cd $FTPLIB
+
+if $FTPLIB/dersplit $DERFIL && $FTPLIB/nrsbuild
+then
+	$DEBUG rm tmp/*
+else
+	exit $?
+fi

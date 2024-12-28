@@ -1,0 +1,28 @@
+# unix-niftp ndir/makefile $Header: /Nfs/heaton/glob/src/usr.lib/niftp/src/ndir/Makefile.real,v 5.5 90/08/01 13:40:36 pb Exp $
+# Makefile for the BSD4.2 compatability directory library
+#
+#	libndir.a
+#
+
+CFLAGS	= -O -w -I../h
+RANLIB	= /usr/bin/ranlib
+
+OBJS=	closedir.o opendir.o readdir.o seekdir.o telldir.o
+
+.c.o:
+	${CC} ${CFLAGS} -I. -c $*.c
+	-ld -x -r $*.o
+	mv a.out $*.o
+
+libndir.a: ${OBJS}
+	rm -f libndir.a
+	ar cru libndir.a `lorder ${OBJS} | tsort`
+	$(RANLIB) libndir.a
+
+${OBJS}: ndir.h
+
+clean:
+	rm -f libndir.a ${OBJS}
+
+install:
+	@echo "	"OK -- nothing to install.

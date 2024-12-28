@@ -1,0 +1,13 @@
+These are samples of the news/unix-niftp interface at Nottingham.
+Currently running 2.10.3 news or there abouts.
+
+sendbatch is called by crontab at intervals with named systems as arguments.
+This builds batches and invokes the *.cmd file which in turn calls on
+$(LIBDIR)/newsin.
+
+niftp calls $(LIBDIR)/newsout which moves the files into the path of rnewsd
+which is started from rc.local.
+
+To  send/receive news the niftp database must have news context entrys in
+its database. nrsbuild reads these from UAIEF. They clobber the NRS derived
+entrys for the host so you have to provide all the relevent contexts.

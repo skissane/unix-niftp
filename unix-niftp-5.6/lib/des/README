@@ -1,0 +1,22 @@
+The old code used a cruddy encryption algorithm.
+As the data held at your site pertains to local and remote hosts,
+it is both dangerous for your own local users, and for all other sites that
+anyone on your site contacts.
+It is thus HIGHLY RECOMMENDED that the des code is used instead.
+As an intermediate step, "CRUDDY_CRYPT_COMPAT" can be defined, which allows
+the old format encrypted files to be read, but writes DES.
+
+If you don't have a system supplied library, get the PD one from
+"info-server@cam.cl", comp.sources.unix
+[ Submitted by: alo@kampi.hut.fi (Antti Louko)
+  Posting-number: Volume 18, Issue 7
+  Archive-name: des-no-usa/Part01
+]
+or direct from finland [ kampi.hut.fi (128.214.3.9) ].
+
+I have included the compiled libraries for some of the architectures I have
+here. You can either install the relevant one in /usr/lib/libdes.a, or you can
+tell Configure to load the relevant one by setting the des library to
+something like ../lib/des/libdes-sun4.a
+
+Only if that fails should you consider setting "CRUDDY_CRYPT_ONLY" !!

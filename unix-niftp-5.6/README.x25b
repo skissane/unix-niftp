@@ -1,0 +1,98 @@
+Use of x25b protocol to relay X.25 calls over TCP
+=================================================
+
+x25b is a protocol (initially used for spad) which allows X.25 calls to be
+"transparently" relayed over TCP (or any other wet string) to a host which is
+not directly attached to X.25.
+This is all just a "temporary" [ :-( ] hack unless all vendors provide PinkBook
+(I mean a REAL implementation of PinkBook with sockets et al) in the kernel.
+
+The two halves (TCP -> X.25 and X.25 -> TCP) are totally distinct, most sites
+wanting TCP->X.25 only.
+
+
+TCP -> X.25 relaying
+====================
+
+A copy of "spad" should be obtained, and installed on a machine (called
+x25-serv in this case. It is better to use such a name and put an alias in
+/etc/hosts, YP, DNS or whatever, than to bind a host's main name, in case
+an alternative is used later) and tested (using spad).
+
+Build unix-niftp asking for x25b support.
+If you have already built it without x25b support, either do a full re Config,
+or remove all lines with "x25b" in them in config.sh and run
+"Config quick quiet".
+
+The niftp tailor file (e.g. /etc/niftptailor) should have the lines:
+
+QUEUE   qj      level=1,prog=px25b    # known about queues
+NET     janet   queue=qj,address="x25-serv/%E%X%D/%T"
+
+to tell the system to use px25b (at debug level 1 as an example),
+and that it should user x25-serv as the relay.
+
+As ever, if there is a problem, turn up the logging (level=-1) and look in
+the logs (e.g. /usr/spool/niftp/logs/log.pqj).
+
+
+X.25 -> TCP relaying
+====================
+
+A copy of "x25d" should be obtained. This is code to support X.25 listeners
+using a "super server" (like inetd, it listens and forks the relevant server
+when a call arrives).
+
+An entry in the ybts auth (/etc/ybts-auth) file for a directly X.25 connected
+host would be something like:
+
+/usr/lib/niftp/lj:ftp*:*
+
+Saying that all calls for anything starting FTP should be sent to
+/usr/lib/niftp/lj (shich should be a symb link to qsun or whatever).
+
+More sophisticated is to have an FTP, a mail, and several news listeners.
+
+/usr/lib/niftp/lf:ftp:*
+/usr/lib/niftp/lm:ftp.mail:*
+/usr/lib/niftp/lx:news.ukc*:000049200000.KESTREL/FTP.NEWS::
+/usr/lib/niftp/lw:news.npl*:000000000040.PSS.234213901102.FTP.NEWS::
+/usr/lib/niftp/ly:news.icdoc*:000005101000.0270.Y1.000005102001*::
+/usr/lib/niftp/lz:news.btaxion*:000040000040.PSS.234247303010.FTP.NEWS::
+/usr/lib/niftp/lz:news.btaxion*:000000000040.PSS.234247303010.FTP.NEWS::
+/usr/lib/niftp/lc:news.sslmac*:000000000040.PSS.234262500104.FTP.NEWS::
+
+However, the concern at the moment is for relaying.
+The call can be switched on YBTS called address or on the called X.121
+(sub)address. It is best to have a unique YBTS AND subaddress.
+Suitable entries would be:
+
+/usr/etc/x25r:ely.*:*
+/usr/etc/x25r:*:*:-a 00000801????74 -n x25r-ely\ -h\ ely:
+
+indicating that any call for a YBTS starting with "ELY." should be relayed
+over TCP, and that any call for subaddress 74 should be relayed to ely.
+[ if x25r is not given an explicit host name, it uses the first component of
+  the called YBTS string
+]
+
+This will forward the call to the ybtsd TCP port on ely, which should have a
+ybtsd listener running witn something like:
+
+/usr/lib/niftp/lb:ely.ftp|ely.ftp.pp|ftp|ftp.pp|ftp|ftp,mail|ftp.pp:*
+/usr/etc/x29d:*ts29*:*
+
+[first line could be "*ftp*"] and the niftp tailor file will have something like
+
+QADDRTYPE  ftp,ftp, ftp.mail,pp, ftp.news,news, ftp.pp,pp
+QADDRTYPE  ely.ftp,ftp, ely.ftp.mail,pp, ely.ftp.news,news, ely.ftp.pp,pp
+
+so that it will accept calls with of without the leading "ELY." prefix.
+
+It then has
+
+LISTEN  lb      address="FTP",channel=janet,level=1,prog=qx25b
+
+where most of the info (apart from the "level=1") is just for show.
+However, the entry MUST be present.
+As ever, /usr/lib/niftp/lb should be a link to qx25b

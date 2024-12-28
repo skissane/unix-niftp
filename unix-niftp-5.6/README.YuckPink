@@ -1,0 +1,41 @@
+It appears that for YuckBox PinkBook you need to:
+
+	chgrp niftp /dev/eth* /dev/isocontrol
+	chmod g+w   /dev/eth* /dev/isocontrol
+
+incomming calls from the net may not correctly translate to mnemonic form saying
+"unknown host".  If so you may have a bug in pink book kernel: basically if the
+transport address ends with numbers (which is true for all machines in the LAN running
+pink book) the last character of the transport service may be set to \200 and thus the
+reverse_lookup do not match.
+A temporary HACK is to put \200 in the UAIEF file (Yuck).
+
+
+The YuckBox "directory" file is still needed for the disgusting internals of tlisten.
+
+Simon Cooper <spc@uk.ac.cam.amtp.atm> has it running under Sun's Ed Yuckbox PB.
+
+For more details contact Khalid Sattar <admin@uk.ac.ex.cs> (and let pb know)
+
+	my yuck box "directory" file contains entries for all local
+	sites that can talk pink book.  And then only one other entry
+	is required for the pinkbook to x25 gateway machine.
+
+	That is all that is required in the "directory" file.  But
+	other changes need to be done to the dbm1 file.   Our
+	gateway machine uses local format which take addresses of the
+	form 
+
+		DTE.lfmXsitename
+
+	where DTE is the ethernet address of the gateway machine (and
+	may have LSAP appended - in our case we use 7e), X is the
+	context (b -bluebook, g - greybook etc) and sitename is in
+	abbreviated form.  eg
+
+		0000605990047e.lfm.guk.ac.cam.cl
+
+	so after extracting the dbm1 file from DERFIL1 I apply a small
+	script to convert each entry in mail and ftp context to this form.
+	then follows the UAIEF file which contains the local pinkbook
+	machines plus news context machines.

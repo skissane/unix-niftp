@@ -1,0 +1,191 @@
+# Full UAIEF file containing old hosts, OLD serc names, RElay hosts
+# does not contain any local information yet
+#
+#
+# file containing information about old sites no in the NRS database
+# Comments
+#   Lines may be "#  comment" or ":" separated fields.
+#   "\" is a single character quote.
+# Fields in order, none optional are:
+# 1) Long form name
+# 2) Short form name
+# 3) Net
+# 4) Context
+# 5) Forward DTE
+# 6) Forward YBTS
+# 7) Reverse DTE
+# 8) Reverse YBTS
+# 9) Gateway count/list as agreed
+# 10) The number of ftp transfers / TS connection
+# 11) Local host
+# 12) Any additional per entry parameters agreed
+#   Applications strings are intentionally omitted.  If only one
+#   direction, the other DTE/YBTS fields should be NULL.
+#   DTEs should be 12 or 14 digits.
+# Contexts are:-
+#  1) x29 2) TS29 3) NIFTP 4) MAIL
+# some examples
+# Local hosts
+# News hosts (currently got to enter all contexts!)
+h:uk.ac.nottingham.computer-science:uk.ac.nott.cs:janet:1:000021000018::000021000018::0:50:0:
+h:uk.ac.nottingham.computer-science:uk.ac.nott.cs:janet:3:000021000018:ftp:000021000018:ftp:0:50:0:
+h:uk.ac.nottingham.computer-science:uk.ac.nott.cs:janet:4:000021000018:ftp.mail:000021000018:ftp.mail:0:50:0:
+h:uk.ac.nottingham.computer-science:uk.ac.nott.cs:janet:127:000021000018:ftp.news:000021000018:ftp.news:0:50:0:
+h:uk.ac.lancaster.computing:uk.ac.lancs.comp:janet:1:000010407000::000010407000::0:50:0:
+h:uk.ac.lancaster.computing:uk.ac.lancs.comp:janet:3:000010407000:ftp:000010407000:ftp:0:50:0:
+h:uk.ac.lancaster.computing:uk.ac.lancs.comp:janet:4:000010407000:ftp.mail:000010407000:ftp.mail:0:50:0:
+h:uk.ac.lancaster.computing:uk.ac.lancs.comp:janet:127:000010407000:ftp.news:000010407000:ftp.news:0:50:0:
+h:uk.co.stc.idec:uk.co.stc.idec:janet:3:000000000040:pss.gb-243800105.ftp:000000000040:pss.gb-243800105.ftp:0:50:0:
+h:uk.co.stc.idec:uk.co.stc.idec:janet:4:000000000040:pss.gb-243800105.ftp.mail:000000000040:pss.gb-243800105.ftp.mail:0:50:0:
+# Local hosts
+h:uk.ac.nottingham.ccc.rsystem:uk.ac.nott.rsys:janet:3:000021000002:ftp:000021000002:ftp:0:50:0:
+h:uk.ac.nottingham.ccc.rsystem:uk.ac.nott.rsys:janet:4:000021000002:ftp.mail:000021000002:ftp.mail:0:50:0:
+# The real sites we currently know about
+h:brga:brga:janet:4:000000002301:ftp.mail:000000002301:ftp.mail:0:2:0:
+h:brga:brga:janet:3:000000002301:ftp:000000002301:ftp:0:2:0:
+s:cavs:uk.ac.cambridge.astronomy.starlink
+# cpve:cpve:janet:4:000009002004:ftp.mail:000009002004:ftp.mail:0:2:0:
+# cpve:cpve:janet:3:000009002004:ftp:000009002004:ftp:0:2:0:
+h:lava:lava:janet:4:000001101100:ftp.mail:000001101100:ftp.mail:0:50:0:
+h:lava:lava:janet:3:000001101100:ftp:000001101100:ftp:0:2:0:
+h:levc:levc:janet:4:000001080501:ftp.mail:000001080501:ftp.mail:0:50:0:
+h:levc:levc:janet:3:000001080501:ftp:000001080501:ftp:0:2:0:
+h:zmva:zmva:janet:4:000002009001:ftp.mail:000002009001:ftp.mail:0:50:0:
+h:zmva:zmva:janet:3:000002009001:ftp:000002009001:ftp:0:2:0:
+# all the other sites who did not bother to reply - or could not
+# reply....
+h:bhga:bhga:janet:4:000000002302:ftp.mail:000000002302:ftp.mail:0:2:0:
+h:bhga:bhga:janet:3:000000002302:ftp:000000002302:ftp:0:2:0:
+h:edgb:edgb:janet:4:000007001200:ftp.mail:000007001200:ftp.mail:0:2:0:
+h:edgb:edgb:janet:3:000007001200:ftp:000007001200:ftp:0:2:0:
+s:edxa:uk.ac.edinburgh.emas
+h:ltga:ltga:janet:4:000000002307:ftp.mail:000000002307:ftp.mail:0:2:0:
+h:ltga:ltga:janet:3:000000002307:ftp:000000002307:ftp:0:2:0:
+h:maga:maga:janet:4:000001020300:ftp.mail:000001020300:ftp.mail:0:2:0:
+h:maga:maga:janet:3:000001020300:ftp:000001020300:ftp:0:2:0:
+h:nega:nega:janet:4:000001500300:ftp.mail:000001500300:ftp.mail:0:2:0:
+h:nega:nega:janet:3:000001500300:ftp:000001500300:ftp:0:2:0:
+h:rgga:rgga:janet:4:000000002303:ftp.mail:000000002303:ftp.mail:0:2:0:
+h:rgga:rgga:janet:3:000000002303:ftp:000000002303:ftp:0:2:0:
+h:rsga:rsga:janet:4:000000000020:ftp.mail:000000000020:ftp.mail:0:2:0:
+h:rsga:rsga:janet:3:000000000020:ftp:000000000020:ftp:0:2:0:
+h:svga:svga:janet:4:000000002310:ftp.mail:000000002310:ftp.mail:0:2:0:
+h:svga:svga:janet:3:000000002310:ftp:000000002310:ftp:0:2:0:
+# ziga:ziga:janet:4:000002006001:ftp.mail:000002006001:ftp.mail:0:2:0:
+# ziga:ziga:janet:3:000002006001:ftp:000002006001:ftp:0:2:0:
+h:zmga:zmga:janet:4:000000000046:ftp.mail:000000000046:ftp.mail:0:2:0:
+h:zmga:zmga:janet:3:000000000046:ftp:000000000046:ftp:0:2:0:
+h:zuga:zuga:janet:4:000000000018:ftp.mail:000000000018:ftp.mail:0:2:0:
+h:zuga:zuga:janet:3:000000000018:ftp:000000000018:ftp:0:2:0:
+# various other hosts that I know about
+# most are military establishments
+# rsre has a second address which is shown here
+# finally a bunch of other hosts that fell through the net.
+h:umpa:umpa:janet:4:000000000028:ftp.mail:000000000028:ftp.mail:0:50:0:
+h:umpa:umpa:janet:3:000000000028:ftp:000000000028:ftp:0:2:0:
+h:umpb:umpb:janet:4:000000002250:ftp.mail:000000002250:ftp.mail:0:50:0:
+h:umpb:umpb:janet:3:000000002250:ftp:000000002250:ftp:0:2:0:
+h:magb:magb:janet:4:000001020100:ftp.mail:000001020100:ftp.mail:0:2:0:
+h:magb:magb:janet:3:000001020100:ftp:000001020100:ftp:0:2:0:
+h:uk.ac.paisley:uk.ac.paisley:janet:3:000007012001:ftp:000007012001:ftp:0:50:0:
+h:uk.ac.paisley:uk.ac.paisley:janet:4:000007012001:ftp.mail:000007012001:ftp.mail:0:50:0:
+h:cypa:cypa:janet:4:000002007001:ftp.mail:000002007001:ftp.mail:0:50:0:
+h:cypa:cypa:janet:3:000002007001:ftp:000002007001:ftp:0:2:0:
+# various other new sites
+h:eusip:eusip:janet:4:000007001004:000016000029.ftp.mail:00000700100400:000016000029/ftp.mail:0:2:0:
+h:eusip:eusip:janet:3:000007001004:000016000029.ftp:00000700100400:000016000029/ftp:0:2:0:
+h:zupa:zupa:janet:4:000000205003:ftp.mail:000000205003:ftp.mail:0:2:0:
+h:zupa:zupa:janet:3:000000205003:ftp:000000205003:ftp:0:2:0:
+# old SERC names -> current NRS entries - may be rather out of date.
+#
+#s:abxa:uk.ac.aberdeen
+#s:bdga:uk.ac.bradford.eleceng
+#s:bdgb:uk.ac.bradford.physics
+#s:bhia:uk.ac.birmingham.physics.ibm
+#s:bhvs:uk.ac.birmingham.space-research.starlink
+#s:caga:uk.ac.cambridge.engineering.serc-icf
+#s:cava:uk.ac.cambridge.physics.hep
+#s:cavj:uk.ac.cambridge.computer-lab.jenny
+#s:cfga:uk.ac.cardiff.geca
+#s:ddxa:uk.ac.dundee
+#s:dlga:uk.ac.daresbury.dlga
+#s:dlgb:uk.ac.daresbury.nnga
+#s:dlgd:uk.ac.daresbury.dlgd
+#s:dlgm:uk.ac.daresbury.dlgm
+#s:dlva:uk.ac.daresbury.dlva
+#s:eapa:uk.ac.east-anglia.serc.prime
+#s:eava:uk.ac.east-anglia.proteus
+#s:edee:uk.ac.edinburgh.edee
+#s:edga:uk.ac.edinburgh.edga
+#s:edva:uk.ac.edinburgh.phyvax
+#s:edxd:uk.ac.edinburgh.emas
+#s:ekva:uk.ac.glasgow.kelvin-laboratory.vaxa
+#s:ercc:uk.ac.edinburgh.emas
+#s:ercs:uk.ac.edinburgh.ecsvax
+#s:exda:uk.ac.exeter.da
+#s:expa:uk.ac.exeter.pa
+#s:gwia:uk.ac.glasgow.physics.ibm2
+#s:gxva:uk.ac.ro-greenwich
+#s:gxvs:uk.ac.ro-greenwich.starlink
+#s:hwga:uk.ac.heriot-watt.gec-a
+#s:leva:uk.ac.leeds.icf.leva
+#s:lse-1:uk.ac.lse.vax1
+#s:lse-2:uk.ac.lse.vax2
+#s:lse:uk.ac.lse.vax1
+#s:mavs:uk.ac.manchester.physics.starlink
+#s:neda:uk.ac.newcastle.cheviot
+#s:neva:uk.ac.newcastle.boole
+#s:nmpa:uk.ac.nottingham.prodeng
+#s:phga:uk.ac.serc-central-office.gec-a
+#s:quva:uk.ac.queens-belfast.app-maths.vax1
+#s:rco:uk.ac.edinburgh
+#s:rega:uk.ac.roe.geca
+#s:revs:uk.ac.roe.starlink
+#s:rlgb:uk.ac.rutherford.gec-b
+#s:rlgd:uk.ac.rutherford.gec-d
+#s:rlge:uk.ac.rutherford.gec-e
+#s:rlgf:uk.ac.rutherford.gec-f
+#s:rlgk:uk.ac.rutherford.gec-k
+#s:rlgm:uk.ac.rutherford.gec-m
+#s:rlib:uk.ac.rutherford.ibm-b
+#s:rlid:uk.ac.rutherford.ibm-d
+#s:rlpa:uk.ac.rutherford.prime-a
+#s:rlpc:uk.ac.rutherford.prime-c
+#s:rlpd:uk.ac.rutherford.prime-d
+#s:rlpe:uk.ac.rutherford.prime-e
+#s:rlpf:uk.ac.rutherford.prime-f
+#s:rlpg:uk.ac.rutherford.prime-g
+#s:rlph:uk.ac.rutherford.prime-h
+#s:rlqb:uk.ac.rutherford.perq-b
+#s:rlva:uk.ac.rutherford.vax1
+#s:rlvb:uk.ac.rutherford.vax2
+#s:rlvd:uk.ac.rutherford.vax-d
+#s:rlve:uk.ac.rutherford.vax-e
+#s:sgcs:uk.ac.stirling.compsci
+#s:sgva:uk.ac.stirling.vaxa
+#s:svpa:uk.ac.sussex.svpa
+#s:sype:uk.ac.surrey.syse
+#s:ucl-cs:uk.ac.ucl.cs
+#s:wkpa:uk.ac.warwick.prime-a
+#s:xxda:uk.ac.oxford.physics.dec10
+#s:xxva:uk.ac.oxford.physics.vax1
+#s:ykda:uk.ac.york.deacon
+#s:ykdb:uk.ac.york.minster
+#s:ykdc:uk.ac.york.abbot
+#s:ziia:uk.ac.imperial.physics.ibm1
+#s:ziva:uk.ac.imperial.physics.vax1
+#s:zkga:uk.ac.kcl.ph.ga
+#s:zuva:uk.ac.ucl.ph.v1
+#s:zuvs:uk.ac.ucl.starlink
+#s:zuxa:uk.ac.ucl.cs
+#s:snga:uk.ac.southampton.serc-workstation.gec-a
+# a yeuchy alias
+r:camphx:uk.ac.cambridge.phoenix:uk.ac.cambridge.engineering.serc-icf
+# various spurious relays
+r:dct:dct:uk.ac.dundee
+# this is specific to UCL
+r:ucl.euclid:ucl-cc:uk.ac.cambridge.engineering.serc-icf
+r:ucl-cc:ucl-cc:uk.ac.cambridge.engineering.serc-icf
+# this is specific to UCL
+r:euclid:ucl-cc:uk.ac.cambridge.engineering.serc-icf
+r:yorkcom:yorkcom:uk.ac.york.kl

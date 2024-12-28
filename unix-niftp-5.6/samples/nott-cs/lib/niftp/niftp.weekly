@@ -1,0 +1,17 @@
+#! /bin/sh
+#
+# niftp.weekly
+#
+# weekly housekeeping - mostly sweeping up files that have been left
+# around.
+# Mostly they shouldn't so you want to know about them
+#
+
+find /usr/spool/nitemp -mtime +14 -type f \
+	-exec ls -ls {} \; -exec rm -f {} \;
+find /usr/spool/niftp/dockets -mtime +7 -type f \
+	-exec ls -ls {} \; -exec rm -f {} \;
+find /usr/spool/niftp/mail -mtime +7 -type f \
+	-exec ls -ls {} \; -exec rm -f {} \;
+find /usr/spool/niftp/news -mtime +7 -type f \
+	-exec ls -ls {} \; -exec rm -f {} \;

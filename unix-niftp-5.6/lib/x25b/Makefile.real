@@ -1,0 +1,30 @@
+# unix-niftp lib/x25b/Makefile.real $Revision: 5.5 $ $Date: 90/08/01 13:39:11 $
+#
+# Makefile for x25bridge code
+#
+#	libnet.a
+#
+NOBJ	= x25b.o netopen.o netlisten.o netsubs.o
+SRCS	= netopen.c netlisten.c netsubs.c Makefile.real
+ETCDIR	= /etc
+
+all:	libnet.a
+
+libnet.a: $(NOBJ)
+	ar cr libnet.a $(NOBJ)
+	$(RANLIB) libnet.a
+
+shardist: $(SRCS)
+	shar $(SHOPT) $(SRCS) > /tmp/niftp-lib.sh
+
+install:
+	@echo "	"OK - nothing to install
+
+clean:
+	rm -f *.o
+
+$H/ftp.h: $H/tab.h
+
+netopen.o: $H/ftp.h $H/infusr.h
+netlisten.o: $H/ftp.h $H/infusr.h
+netsubs.o: $H/ftp.h $H/infusr.h
